@@ -25,7 +25,7 @@ Claude Code is a great agent UI, but it talks the Anthropic API. Most other LLMs
 
 ```powershell
 # 1. Clone
-git clone https://github.com/<your-username>/claude-code-anyllm.git
+git clone https://github.com/manhds82/claude-code-anyllm.git
 cd claude-code-anyllm
 
 # 2. Install the proxy (once)
