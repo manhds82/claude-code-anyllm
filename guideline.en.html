@@ -247,7 +247,7 @@ img { max-width: 100%; height: auto; }
 <section class="fpt-section" id="requirements">
 <h2 class="fpt-section__title">2. Requirements</h2>
 <ul class="fpt-list">
-  <li><strong>Windows + PowerShell</strong> (the one built into Win 10/11 is enough).</li>
+  <li><strong>Windows</strong> (PowerShell), <strong>macOS</strong>, or <strong>Linux</strong> (bash).</li>
   <li><strong>VS Code</strong> with the <strong>Claude Code</strong> extension (or the Claude Code CLI).</li>
   <li><strong>Python 3.11 or 3.12</strong> &mdash; check with <code>py -3.12 --version</code>. Get it at <a href="https://www.python.org/downloads/">python.org</a> (tick <em>Add to PATH</em>).</li>
   <li>An <strong>API key</strong> and <strong>base URL</strong> for any OpenAI-compatible provider.</li>
@@ -256,18 +256,28 @@ img { max-width: 100%; height: auto; }
 
 <section class="fpt-section" id="install">
 <h2 class="fpt-section__title">3. Install (once)</h2>
-<p class="fpt-p">Open PowerShell in the project folder and run <strong>a single command</strong>:</p>
-<pre class="guide-code">.\setup-litellm.ps1</pre>
-<p class="fpt-p">It finds Python, creates a <code>.venv</code> inside the project, installs <code>litellm[proxy]</code>, and verifies it. Reinstall from scratch any time with <code>.\setup-litellm.ps1 -Force</code>.</p>
+<p class="fpt-p">Open a terminal in the project folder and run the command for your OS:</p>
+<pre class="guide-code"><span class="cm"># Windows (PowerShell)</span>
+.\setup-litellm.ps1
+
+<span class="cm"># macOS / Linux (bash)</span>
+chmod +x *.sh
+./setup-litellm.sh</pre>
+<p class="fpt-p">It finds Python, creates a <code>.venv</code> inside the project, installs <code>litellm[proxy]</code>, and verifies it. Reinstall from scratch any time with <code>.\setup-litellm.ps1 -Force</code> (or <code>./setup-litellm.sh --force</code>).</p>
 <div class="fpt-callout" style="--callout-accent:#10B981"><span class="fpt-callout__icon" aria-hidden="true">&#10003;</span><div class="fpt-callout__body">Because <code>.venv</code> lives in the project, it does <strong>not depend on your username</strong> &mdash; copy the whole folder to another machine and it still works.</div></div>
 <div class="fpt-callout fpt-callout--warning" style="--callout-accent:#F58A07"><span class="fpt-callout__icon" aria-hidden="true">&#9888;</span><div class="fpt-callout__body">If PowerShell blocks the script (<em>execution policy</em>): run <code>Set-ExecutionPolicy -Scope Process Bypass</code> and try again.</div></div>
 </section>
 
 <section class="fpt-section" id="run">
 <h2 class="fpt-section__title">4. Run</h2>
-<pre class="guide-code">cd path\to\claude-code-anyllm
-.\start-claude.ps1</pre>
-<p class="fpt-p">The script starts the proxy in its own window, waits until it is ready, then opens VS Code with Claude Code pointed at the proxy. <strong>Stop the proxy:</strong> close the LiteLLM window, or run <code>.\start-claude.ps1 -Stop</code>.</p>
+<pre class="guide-code">cd path/to/claude-code-anyllm
+
+<span class="cm"># Windows (PowerShell)</span>
+.\start-claude.ps1
+
+<span class="cm"># macOS / Linux (bash)</span>
+./start-claude.sh</pre>
+<p class="fpt-p">The script starts the proxy (a separate window on Windows; the background on macOS/Linux, logging to <code>litellm-proxy.log</code>), waits until it is ready, then opens VS Code pointed at the proxy. <strong>Stop the proxy:</strong> close the proxy window, or run <code>-Stop</code> (Windows) / <code>--stop</code> (macOS/Linux). The parameters below use the Windows form (<code>-Model</code>); on macOS/Linux use the bash form (<code>--model</code>, <code>--key</code>, <code>--stop</code>, ...).</p>
 <div class="fpt-table-wrap"><table class="fpt-table fpt-table--zebra"><caption>Parameters of <code>start-claude.ps1</code></caption>
 <thead><tr><th>Parameter</th><th>What it does</th></tr></thead>
 <tbody>
@@ -358,8 +368,8 @@ $Key     = ""                                  <span class="cm"># blank = prompt
 <section class="fpt-section" id="structure">
 <h2 class="fpt-section__title">10. Project structure</h2>
 <pre class="guide-code">claude-code-anyllm\
-+-- setup-litellm.ps1         <span class="cm"># install LiteLLM (run once)</span>
-+-- start-claude.ps1          <span class="cm"># start proxy + open VS Code (daily driver)</span>
++-- setup-litellm.ps1 / .sh   <span class="cm"># install LiteLLM (Windows / macOS-Linux) - run once</span>
++-- start-claude.ps1 / .sh    <span class="cm"># start proxy + open editor (Windows / macOS-Linux)</span>
 +-- guideline.en.html         <span class="cm"># this guide (English)</span>
 +-- guideline.vi.html         <span class="cm"># guide (Vietnamese)</span>
 +-- README.md                 <span class="cm"># quick reference</span>

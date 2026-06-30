@@ -247,7 +247,7 @@ img { max-width: 100%; height: auto; }
 <section class="fpt-section" id="requirements">
 <h2 class="fpt-section__title">2. Yêu cầu</h2>
 <ul class="fpt-list">
-  <li><strong>Windows + PowerShell</strong> (bản có sẵn trên Win 10/11 là đủ).</li>
+  <li><strong>Windows</strong> (PowerShell), <strong>macOS</strong>, hoặc <strong>Linux</strong> (bash).</li>
   <li><strong>VS Code</strong> đã cài extension <strong>Claude Code</strong> (hoặc Claude Code CLI).</li>
   <li><strong>Python 3.11 hoặc 3.12</strong> &mdash; kiểm tra bằng <code>py -3.12 --version</code>. Chưa có thì tải tại <a href="https://www.python.org/downloads/">python.org</a> (nhớ tick <em>Add to PATH</em>).</li>
   <li>Một <strong>API key</strong> và <strong>base URL</strong> của bất kỳ provider OpenAI-compatible nào.</li>
@@ -256,18 +256,28 @@ img { max-width: 100%; height: auto; }
 
 <section class="fpt-section" id="install">
 <h2 class="fpt-section__title">3. Cài đặt (chỉ 1 lần)</h2>
-<p class="fpt-p">Mở PowerShell tại thư mục project rồi chạy <strong>một lệnh duy nhất</strong>:</p>
-<pre class="guide-code">.\setup-litellm.ps1</pre>
-<p class="fpt-p">Script tự tìm Python, tạo <code>.venv</code> ngay trong project, cài <code>litellm[proxy]</code> rồi kiểm tra. Cài lại từ đầu khi cần: <code>.\setup-litellm.ps1 -Force</code>.</p>
+<p class="fpt-p">Mở terminal tại thư mục project rồi chạy lệnh tương ứng với hệ điều hành:</p>
+<pre class="guide-code"><span class="cm"># Windows (PowerShell)</span>
+.\setup-litellm.ps1
+
+<span class="cm"># macOS / Linux (bash)</span>
+chmod +x *.sh
+./setup-litellm.sh</pre>
+<p class="fpt-p">Script tự tìm Python, tạo <code>.venv</code> ngay trong project, cài <code>litellm[proxy]</code> rồi kiểm tra. Cài lại từ đầu khi cần: <code>.\setup-litellm.ps1 -Force</code> (hoặc <code>./setup-litellm.sh --force</code>).</p>
 <div class="fpt-callout" style="--callout-accent:#10B981"><span class="fpt-callout__icon" aria-hidden="true">&#10003;</span><div class="fpt-callout__body">Vì <code>.venv</code> nằm trong project nên <strong>không phụ thuộc tên user</strong> &mdash; chép cả thư mục sang máy khác vẫn chạy.</div></div>
 <div class="fpt-callout fpt-callout--warning" style="--callout-accent:#F58A07"><span class="fpt-callout__icon" aria-hidden="true">&#9888;</span><div class="fpt-callout__body">Nếu PowerShell chặn chạy script (<em>execution policy</em>): chạy <code>Set-ExecutionPolicy -Scope Process Bypass</code> rồi thử lại.</div></div>
 </section>
 
 <section class="fpt-section" id="run">
 <h2 class="fpt-section__title">4. Chạy</h2>
-<pre class="guide-code">cd path\to\claude-code-anyllm
-.\start-claude.ps1</pre>
-<p class="fpt-p">Script bật proxy ở cửa sổ riêng, đợi sẵn sàng, rồi mở VS Code với Claude Code đã trỏ sang proxy. <strong>Tắt proxy:</strong> đóng cửa sổ LiteLLM, hoặc chạy <code>.\start-claude.ps1 -Stop</code>.</p>
+<pre class="guide-code">cd path/to/claude-code-anyllm
+
+<span class="cm"># Windows (PowerShell)</span>
+.\start-claude.ps1
+
+<span class="cm"># macOS / Linux (bash)</span>
+./start-claude.sh</pre>
+<p class="fpt-p">Script bật proxy (cửa sổ riêng trên Windows; chạy nền trên macOS/Linux, ghi log <code>litellm-proxy.log</code>), đợi sẵn sàng, rồi mở VS Code đã trỏ sang proxy. <strong>Tắt proxy:</strong> đóng cửa sổ proxy, hoặc chạy <code>-Stop</code> (Windows) / <code>--stop</code> (macOS/Linux). Các tham số bên dưới ghi theo dạng Windows (<code>-Model</code>); trên macOS/Linux dùng dạng bash (<code>--model</code>, <code>--key</code>, <code>--stop</code>, ...).</p>
 <div class="fpt-table-wrap"><table class="fpt-table fpt-table--zebra"><caption>Tham số của <code>start-claude.ps1</code></caption>
 <thead><tr><th>Tham số</th><th>Tác dụng</th></tr></thead>
 <tbody>
@@ -358,8 +368,8 @@ $Key     = ""                                  <span class="cm"># để trống 
 <section class="fpt-section" id="structure">
 <h2 class="fpt-section__title">10. Cấu trúc thư mục</h2>
 <pre class="guide-code">claude-code-anyllm\
-+-- setup-litellm.ps1         <span class="cm"># cài LiteLLM (chạy 1 lần)</span>
-+-- start-claude.ps1          <span class="cm"># bật proxy + mở VS Code (hằng ngày)</span>
++-- setup-litellm.ps1 / .sh   <span class="cm"># cài LiteLLM (Windows / macOS-Linux) - chạy 1 lần</span>
++-- start-claude.ps1 / .sh    <span class="cm"># bật proxy + mở editor (Windows / macOS-Linux)</span>
 +-- guideline.en.html         <span class="cm"># hướng dẫn (English)</span>
 +-- guideline.vi.html         <span class="cm"># hướng dẫn (Tiếng Việt)</span>
 +-- README.md                 <span class="cm"># tham khảo nhanh</span>

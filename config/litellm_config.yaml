@@ -1,0 +1,6 @@
+model_list:
+  - model_name: claude-sonnet-4-6
+    litellm_params:
+      model: openai/DeepSeek-V4-Flash
+      api_base: https://mkp-api.fptcloud.com/v1
+      api_key: os.environ/LLM_API_KEY

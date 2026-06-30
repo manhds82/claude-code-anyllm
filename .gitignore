@@ -2,8 +2,12 @@
 .venv/
 litellm-env/
 
-# Auto-generated each run by start-claude.ps1
-config/litellm_config.yaml
+# NOTE: config/litellm_config.yaml IS committed (a working example). It is
+# regenerated on every run, so it may show as modified when you change model/provider.
+
+# Proxy log written by start-claude.sh
+litellm-proxy.log
+*.log
 
 # Secrets / local env files
 .env
