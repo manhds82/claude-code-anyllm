@@ -1,0 +1,19 @@
+# LiteLLM virtual environment (created by setup-litellm.ps1)
+.venv/
+litellm-env/
+
+# Auto-generated each run by start-claude.ps1
+config/litellm_config.yaml
+
+# Secrets / local env files
+.env
+.env.*
+*.key
+
+# OS / editor cruft
+Thumbs.db
+desktop.ini
+.vscode/
+
+# Claude Code local-only settings
+.claude/settings.local.json

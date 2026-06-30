@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="generator" content="claude-fpt-bridge" />
+  <title>claude-code-anyllm - Run Claude Code on any OpenAI-compatible LLM</title>
+  <style>
+:root {
+  --fpt-navy: #002B5C;
+  --fpt-blue: #005BA6;
+  --fpt-light-blue: #D6E4F0;
+  --fpt-accent: #0096D6;
+  --fpt-orange: #F58A07;
+  --fpt-green: #10B981;
+  --fpt-red: #E04F5F;
+  --fpt-yellow: #F5C518;
+  --fpt-purple: #7C5CFC;
+  --fpt-white: #FFFFFF;
+  --fpt-dark: #1A1A2E;
+  --fpt-gray: #6B7280;
+  --fpt-light-gray: #F3F4F6;
+  --fpt-med-gray: #E0E3E8;
+  --fpt-primary: #005BA6;
+  --fpt-secondary: #0096D6;
+  --fpt-heading: #002B5C;
+  --fpt-text: #1A1A2E;
+  --fpt-muted: #6B7280;
+  --fpt-success: #10B981;
+  --fpt-warning: #F58A07;
+  --fpt-danger: #E04F5F;
+  --fpt-surface: #FFFFFF;
+  --fpt-surface-alt: #F3F4F6;
+  --fpt-border: #E0E3E8;
+  --fpt-font-heading: 'Segoe UI', Calibri, 'Helvetica Neue', Arial, sans-serif;
+  --fpt-font-body: 'Segoe UI', Calibri, 'Helvetica Neue', Arial, sans-serif;
+  --fpt-font-mono: 'Cascadia Code', Consolas, 'SFMono-Regular', Menlo, monospace;
+  --fpt-radius: 6.0px;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; padding: 0;
+  font-family: var(--fpt-font-body);
+  font-size: 16px; line-height: 1.6;
+  color: var(--fpt-text); background: var(--fpt-surface-alt);
+  -webkit-font-smoothing: antialiased;
+}
+.fpt-page {
+  max-width: 960px; margin: 0 auto; background: var(--fpt-surface);
+  box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 12px 40px rgba(0,0,0,.06);
+}
+.fpt-main { padding: 0 clamp(20px, 5vw, 56px) 8px; }
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--fpt-font-heading); color: var(--fpt-heading);
+  line-height: 1.25; margin: 1.4em 0 .5em; font-weight: 700;
+}
+.fpt-p { margin: 0 0 1em; }
+a { color: var(--fpt-primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+img { max-width: 100%; height: auto; }
+
+/* Hero */
+.fpt-hero {
+  background: linear-gradient(135deg, var(--fpt-navy), #00254E);
+  color: var(--fpt-white); padding: clamp(36px, 7vw, 72px) clamp(20px, 5vw, 56px);
+  text-align: left;
+}
+.fpt-hero__logo { height: 40px; width: auto; margin-bottom: 20px; display: block; }
+.fpt-hero__title {
+  font-family: var(--fpt-font-heading); color: var(--fpt-white);
+  font-size: clamp(28px, 5vw, 46px); margin: 0 0 .25em; line-height: 1.1;
+}
+.fpt-hero__subtitle { font-size: clamp(15px, 2.4vw, 20px); opacity: .92; margin: 0; max-width: 60ch; }
+
+/* Sections */
+.fpt-section { padding: 8px 0 16px; }
+.fpt-section__title {
+  font-size: clamp(20px, 3vw, 28px); margin-top: .8em;
+  padding-bottom: .3em; border-bottom: 2px solid var(--fpt-border);
+}
+.fpt-heading { font-size: 1.25em; }
+
+/* Lists */
+.fpt-list { margin: 0 0 1em; padding-left: 1.3em; }
+.fpt-list li { margin: .35em 0; }
+
+/* KPI row */
+.fpt-kpis {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px; margin: 8px 0 20px;
+}
+.fpt-kpi {
+  background: var(--fpt-surface); border: 1px solid var(--fpt-border);
+  border-top: 4px solid var(--kpi-accent, var(--fpt-primary));
+  border-radius: var(--fpt-radius); padding: 18px 16px; text-align: center;
+}
+.fpt-kpi__value { font-family: var(--fpt-font-heading); font-size: 2.1em; font-weight: 800; color: var(--kpi-accent, var(--fpt-primary)); line-height: 1.1; }
+.fpt-kpi__label { font-size: .82em; color: var(--fpt-muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 4px; }
+
+/* Cards */
+.fpt-cards {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px; margin: 8px 0 20px;
+}
+.fpt-card {
+  background: var(--fpt-surface); border: 1px solid var(--fpt-border);
+  border-left: 4px solid var(--card-accent, var(--fpt-primary));
+  border-radius: var(--fpt-radius); padding: 20px;
+  transition: box-shadow .2s ease, transform .2s ease;
+}
+.fpt-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,.08); transform: translateY(-2px); }
+.fpt-card__icon {
+  width: 40px; height: 40px; border-radius: 10px; display: flex;
+  align-items: center; justify-content: center; font-size: 20px; margin-bottom: 12px;
+}
+.fpt-card__title { margin: 0 0 .4em; font-size: 1.1em; }
+.fpt-card__body { margin: 0; color: var(--fpt-text); }
+
+/* Tables */
+.fpt-table-wrap { overflow-x: auto; margin: 8px 0 20px; }
+.fpt-table { width: 100%; border-collapse: collapse; font-size: .94em; }
+.fpt-table caption { caption-side: top; text-align: left; color: var(--fpt-muted); padding-bottom: 8px; font-style: italic; }
+.fpt-table th {
+  background: var(--fpt-primary); color: var(--fpt-white);
+  text-align: left; padding: 10px 12px; font-weight: 600;
+}
+.fpt-table td { padding: 9px 12px; border-bottom: 1px solid var(--fpt-border); }
+.fpt-table--zebra tbody tr:nth-child(even) { background: var(--fpt-surface-alt); }
+.fpt-table tbody tr:hover { background: var(--fpt-light-blue); }
+
+/* Callouts */
+.fpt-callout {
+  display: flex; gap: 12px; align-items: flex-start;
+  background: var(--fpt-surface-alt);
+  border-left: 4px solid var(--callout-accent, var(--fpt-primary));
+  border-radius: var(--fpt-radius); padding: 14px 16px; margin: 8px 0 18px;
+}
+.fpt-callout__icon { color: var(--callout-accent, var(--fpt-primary)); font-weight: 700; font-size: 1.1em; line-height: 1.5; }
+.fpt-callout__body { margin: 0; }
+
+/* Timeline */
+.fpt-timeline { list-style: none; margin: 8px 0 20px; padding: 0 0 0 8px; position: relative; }
+.fpt-timeline__item { position: relative; padding: 0 0 18px 28px; border-left: 2px solid var(--fpt-border); }
+.fpt-timeline__item:last-child { border-left-color: transparent; }
+.fpt-timeline__dot {
+  position: absolute; left: -8px; top: 2px; width: 14px; height: 14px;
+  border-radius: 50%; background: var(--tl-accent, var(--fpt-primary));
+  border: 3px solid var(--fpt-surface); box-shadow: 0 0 0 1px var(--tl-accent, var(--fpt-primary));
+}
+.fpt-timeline__label { font-weight: 700; color: var(--fpt-heading); }
+.fpt-timeline__text { color: var(--fpt-muted); }
+
+/* Quote */
+.fpt-quote {
+  margin: 16px 0; padding: 16px 22px; border-left: 4px solid var(--fpt-secondary);
+  background: var(--fpt-surface-alt); border-radius: var(--fpt-radius);
+}
+.fpt-quote__text { font-size: 1.15em; font-style: italic; margin: 0 0 .4em; color: var(--fpt-heading); }
+.fpt-quote__author { color: var(--fpt-muted); font-style: normal; }
+
+/* Figure */
+.fpt-figure { margin: 16px 0; }
+.fpt-figure img { border-radius: var(--fpt-radius); display: block; }
+.fpt-figure figcaption { color: var(--fpt-muted); font-size: .88em; margin-top: 6px; text-align: center; }
+
+/* Gallery */
+.fpt-gallery {
+  display: grid; gap: 16px; margin: 8px 0 20px;
+  grid-template-columns: repeat(var(--gallery-cols, 3), minmax(0, 1fr));
+}
+.fpt-gallery__item { margin: 0; }
+.fpt-gallery__item img {
+  width: 100%; height: auto; border-radius: var(--fpt-radius);
+  display: block; border: 1px solid var(--fpt-border);
+}
+.fpt-gallery__item figcaption { color: var(--fpt-muted); font-size: .85em; margin-top: 6px; text-align: center; }
+@media (max-width: 600px) {
+  .fpt-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Button */
+.fpt-btn-wrap { margin: 12px 0 20px; }
+.fpt-btn {
+  display: inline-block; background: var(--fpt-primary); color: var(--fpt-white) !important;
+  padding: 11px 22px; border-radius: var(--fpt-radius); font-weight: 600;
+  text-decoration: none !important;
+}
+.fpt-btn:hover { filter: brightness(1.08); }
+
+/* Divider & footer */
+.fpt-divider { border: 0; border-top: 1px solid var(--fpt-border); margin: 24px 0; }
+.fpt-footer {
+  background: var(--fpt-navy); color: var(--fpt-white); text-align: center;
+  padding: 22px clamp(20px, 5vw, 56px); font-size: .85em;
+}
+.fpt-footer a { color: var(--fpt-light-blue); }
+
+@media (max-width: 600px) {
+  .fpt-main { padding-left: 18px; padding-right: 18px; }
+  .fpt-kpi__value { font-size: 1.7em; }
+}
+
+@media print {
+  body { background: #fff; }
+  .fpt-page { box-shadow: none; max-width: none; }
+  .fpt-card, .fpt-kpi { break-inside: avoid; }
+  .fpt-hero { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  a[href^="http"]::after { content: " (" attr(href) ")"; font-size: .8em; color: #666; }
+}
+
+  </style>
+</head>
+<body>
+  <div class="fpt-page">
+    <main class="fpt-main">
+
+<style>
+  .guide-code{background:#0E1726;color:#E8EDF6;border-radius:10px;padding:14px 18px;
+    overflow:auto;font-family:var(--fpt-font-mono);font-size:13.5px;line-height:1.6;
+    margin:12px 0;border-left:4px solid var(--fpt-accent);white-space:pre;}
+  .guide-code .cm{color:#7FB4E6;}            /* comment */
+  .guide-toc{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 4px;}
+  .guide-toc a{display:inline-block;padding:7px 14px;border:1px solid var(--fpt-border);
+    border-radius:999px;color:var(--fpt-primary);text-decoration:none;font-weight:600;
+    font-size:14px;background:var(--fpt-surface);transition:.15s;}
+  .guide-toc a:hover{background:var(--fpt-primary);color:#fff;border-color:var(--fpt-primary);}
+  kbd{background:var(--fpt-surface-alt);border:1px solid var(--fpt-border);border-bottom-width:2px;
+    border-radius:6px;padding:1px 7px;font-family:var(--fpt-font-mono);font-size:12.5px;}
+</style>
+
+<header class="fpt-hero"><h1 class="fpt-hero__title">claude-code-anyllm</h1><p class="fpt-hero__subtitle">Use Claude Code in VS Code, powered by ANY OpenAI-compatible LLM (FPT Cloud, OpenAI, OpenRouter, Groq, DeepSeek, Ollama...) - bridged through a local LiteLLM proxy.</p></header>
+<div style="text-align:right;margin:6px 0 0;font-size:14px;color:var(--fpt-muted)"><strong>English</strong> &middot; <a href="guideline.vi.html">Ti&#7871;ng Vi&#7879;t</a></div>
+<nav class="guide-toc"><a href="#overview">1. Overview</a><a href="#requirements">2. Requirements</a><a href="#install">3. Install (once)</a><a href="#run">4. Run</a><a href="#change-key">5. &#9733; Change KEY</a><a href="#change-model">6. &#9733; Change MODEL</a><a href="#cheatsheet">7. Cheat sheet</a><a href="#how">8. How it works</a><a href="#troubleshooting">9. Troubleshooting</a><a href="#structure">10. Structure</a></nav>
+<section class="fpt-section" id="overview">
+<h2 class="fpt-section__title">1. Overview</h2>
+<p class="fpt-p">This toolkit lets you <strong>use Claude Code in VS Code as usual</strong>, while the actual "brain" answering you is <strong>any OpenAI-compatible LLM</strong> &mdash; FPT Cloud, OpenAI, OpenRouter, Groq, DeepSeek, a local Ollama, etc. The bridge is <strong>LiteLLM</strong>, a tiny proxy running on your own machine that translates between the Anthropic API and your provider.</p>
+<div class="fpt-callout" style="--callout-accent:#005BA6"><span class="fpt-callout__icon" aria-hidden="true">&#10148;</span><div class="fpt-callout__body"><strong>Data flow:</strong> VS Code (Claude Code) &rarr; LiteLLM <code>localhost:4000</code> &rarr; your provider's <code>/v1</code> endpoint</div></div>
+<div class="fpt-cards">
+  <div class="fpt-card" style="--card-accent:#0096D6"><div class="fpt-card__icon" style="background:#D6E4F0">&#128421;</div><h3 class="fpt-card__title">VS Code + Claude Code</h3><p class="fpt-card__body">The UI you type in. Pointed at the proxy via environment variables; no Anthropic key needed.</p></div>
+  <div class="fpt-card" style="--card-accent:#7C5CFC"><div class="fpt-card__icon" style="background:#E9E3FF">&#128256;</div><h3 class="fpt-card__title">LiteLLM proxy</h3><p class="fpt-card__body">Runs locally on port 4000. Accepts Anthropic-style requests, forwards them to your provider, and translates responses back.</p></div>
+  <div class="fpt-card" style="--card-accent:#10B981"><div class="fpt-card__icon" style="background:#D1FAE5">&#9729;</div><h3 class="fpt-card__title">Your provider</h3><p class="fpt-card__body">Where the real model runs. You only need a <strong>base URL</strong>, a <strong>model</strong>, and an <strong>API key</strong>.</p></div>
+</div>
+<p class="fpt-p">The whole thing is just <strong>2 scripts</strong> and <strong>1 auto-generated config</strong>. Install once, run once.</p>
+</section>
+
+<section class="fpt-section" id="requirements">
+<h2 class="fpt-section__title">2. Requirements</h2>
+<ul class="fpt-list">
+  <li><strong>Windows + PowerShell</strong> (the one built into Win 10/11 is enough).</li>
+  <li><strong>VS Code</strong> with the <strong>Claude Code</strong> extension (or the Claude Code CLI).</li>
+  <li><strong>Python 3.11 or 3.12</strong> &mdash; check with <code>py -3.12 --version</code>. Get it at <a href="https://www.python.org/downloads/">python.org</a> (tick <em>Add to PATH</em>).</li>
+  <li>An <strong>API key</strong> and <strong>base URL</strong> for any OpenAI-compatible provider.</li>
+</ul>
+</section>
+
+<section class="fpt-section" id="install">
+<h2 class="fpt-section__title">3. Install (once)</h2>
+<p class="fpt-p">Open PowerShell in the project folder and run <strong>a single command</strong>:</p>
+<pre class="guide-code">.\setup-litellm.ps1</pre>
+<p class="fpt-p">It finds Python, creates a <code>.venv</code> inside the project, installs <code>litellm[proxy]</code>, and verifies it. Reinstall from scratch any time with <code>.\setup-litellm.ps1 -Force</code>.</p>
+<div class="fpt-callout" style="--callout-accent:#10B981"><span class="fpt-callout__icon" aria-hidden="true">&#10003;</span><div class="fpt-callout__body">Because <code>.venv</code> lives in the project, it does <strong>not depend on your username</strong> &mdash; copy the whole folder to another machine and it still works.</div></div>
+<div class="fpt-callout fpt-callout--warning" style="--callout-accent:#F58A07"><span class="fpt-callout__icon" aria-hidden="true">&#9888;</span><div class="fpt-callout__body">If PowerShell blocks the script (<em>execution policy</em>): run <code>Set-ExecutionPolicy -Scope Process Bypass</code> and try again.</div></div>
+</section>
+
+<section class="fpt-section" id="run">
+<h2 class="fpt-section__title">4. Run</h2>
+<pre class="guide-code">cd path\to\claude-code-anyllm
+.\start-claude.ps1</pre>
+<p class="fpt-p">The script starts the proxy in its own window, waits until it is ready, then opens VS Code with Claude Code pointed at the proxy. <strong>Stop the proxy:</strong> close the LiteLLM window, or run <code>.\start-claude.ps1 -Stop</code>.</p>
+<div class="fpt-table-wrap"><table class="fpt-table fpt-table--zebra"><caption>Parameters of <code>start-claude.ps1</code></caption>
+<thead><tr><th>Parameter</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td><code>-BaseUrl "url"</code></td><td>Use a different endpoint for this run.</td></tr>
+<tr><td><code>-Model "name"</code></td><td>Use a different model for this run (no file edit). E.g. <code>-Model "Qwen3-32B"</code></td></tr>
+<tr><td><code>-Key "key"</code></td><td>Use a different key for this run (not saved to disk).</td></tr>
+<tr><td><code>-List</code></td><td>List the models the endpoint exposes, then exit.</td></tr>
+<tr><td><code>-Port 4010</code></td><td>Change the proxy port (default 4000; auto-advances if busy).</td></tr>
+<tr><td><code>-Stop</code></td><td>Stop a running proxy on that port.</td></tr>
+<tr><td><code>-NoVSCode</code></td><td>Only start the proxy; print env commands so you can open VS Code yourself.</td></tr>
+</tbody></table></div>
+<div class="fpt-callout" style="--callout-accent:#005BA6"><span class="fpt-callout__icon" aria-hidden="true">&#8505;</span><div class="fpt-callout__body">On the first run, if <strong>LiteLLM isn't installed</strong>, the script auto-runs <code>setup-litellm.ps1</code> for you &mdash; so you really only need to remember <code>start-claude.ps1</code>.</div></div>
+</section>
+
+<section class="fpt-section" id="change-key">
+<h2 class="fpt-section__title">5. &#9733; Where to change the API KEY</h2>
+<p class="fpt-p">Three ways &mdash; pick one:</p>
+<div class="fpt-cards">
+  <div class="fpt-card" style="--card-accent:#005BA6"><div class="fpt-card__icon" style="background:#D6E4F0">&#128204;</div><h3 class="fpt-card__title">Option 1 &mdash; Permanent</h3><p class="fpt-card__body">Open <code>start-claude.ps1</code> and set:<br><code>$Key = "your-key"</code></p></div>
+  <div class="fpt-card" style="--card-accent:#0096D6"><div class="fpt-card__icon" style="background:#D6E4F0">&#9889;</div><h3 class="fpt-card__title">Option 2 &mdash; One run</h3><p class="fpt-card__body">No file edit, pass it at runtime:<br><code>.\start-claude.ps1 -Key "your-key"</code></p></div>
+  <div class="fpt-card" style="--card-accent:#10B981"><div class="fpt-card__icon" style="background:#D1FAE5">&#128274;</div><h3 class="fpt-card__title">Option 3 &mdash; Safest</h3><p class="fpt-card__body">Leave <code>$Key = ""</code>. Each run the script <strong>asks for the key</strong> (hidden input, never written to disk).</p></div>
+</div>
+<div class="fpt-callout fpt-callout--warning" style="--callout-accent:#F58A07"><span class="fpt-callout__icon" aria-hidden="true">&#9888;</span><div class="fpt-callout__body"><strong>Don't</strong> paste the key into <code>config/litellm_config.yaml</code>. That file is regenerated every run; the real key is loaded via the <code>LLM_API_KEY</code> environment variable the script sets.</div></div>
+</section>
+
+<section class="fpt-section" id="change-model">
+<h2 class="fpt-section__title">6. &#9733; Where to change the MODEL</h2>
+<p class="fpt-p">The <strong>single place</strong> to change the model is the <code>$Model</code> line at the top of <code>start-claude.ps1</code>:</p>
+<pre class="guide-code"><span class="cm"># EDIT THESE FOR YOUR PROVIDER</span>
+$BaseUrl = "https://mkp-api.fptcloud.com/v1"   <span class="cm"># your provider endpoint</span>
+$Model   = "DeepSeek-V4-Flash"                 <span class="cm"># &lt;-- change the model here</span>
+$Key     = ""                                  <span class="cm"># blank = prompt at runtime</span></pre>
+<p class="fpt-p">Or change it without editing the file:</p>
+<pre class="guide-code">.\start-claude.ps1 -List               <span class="cm"># see which models exist</span>
+.\start-claude.ps1 -Model "Qwen3-32B"  <span class="cm"># use that model for this run</span></pre>
+<div class="fpt-callout fpt-callout--warning" style="--callout-accent:#E04F5F"><span class="fpt-callout__icon" aria-hidden="true">&#9733;</span><div class="fpt-callout__body"><strong>Pick a model that supports tool / function calling</strong> &mdash; otherwise Claude Code can only reply with text, not read or edit files. <strong>Test it:</strong> ask it to <em>"read README.md and summarize"</em> or <em>"create a file test.txt containing hello"</em>. If it touches the file, you're good; if it only talks, pick another model.</div></div>
+<div class="fpt-callout" style="--callout-accent:#6B7280"><span class="fpt-callout__icon" aria-hidden="true">&#8505;</span><div class="fpt-callout__body">To switch <strong>provider</strong> entirely, change <code>$BaseUrl</code> too (or pass <code>-BaseUrl</code>). You never need to touch <code>$ClaudeAlias</code> or the YAML &mdash; the script keeps them in sync.</div></div>
+</section>
+
+<section class="fpt-section" id="cheatsheet">
+<h2 class="fpt-section__title">7. Cheat sheet</h2>
+<div class="fpt-table-wrap"><table class="fpt-table fpt-table--zebra"><caption>I want to&hellip;</caption>
+<thead><tr><th>I want to</th><th>Do this</th></tr></thead>
+<tbody>
+<tr><td>Install (once)</td><td><code>.\setup-litellm.ps1</code></td></tr>
+<tr><td>Run</td><td><code>.\start-claude.ps1</code></td></tr>
+<tr><td>Change key &mdash; permanent</td><td>Edit <code>$Key</code> in <code>start-claude.ps1</code></td></tr>
+<tr><td>Change key &mdash; one run</td><td><code>-Key "..."</code></td></tr>
+<tr><td>Never store the key</td><td>Leave <code>$Key = ""</code> &rarr; prompted each run</td></tr>
+<tr><td>Change model &mdash; permanent</td><td>Edit <code>$Model</code> in <code>start-claude.ps1</code></td></tr>
+<tr><td>Change model &mdash; one run</td><td><code>-Model "..."</code></td></tr>
+<tr><td>Switch provider (one run)</td><td><code>-BaseUrl "..." -Model "..." -Key "..."</code></td></tr>
+<tr><td>List available models</td><td><code>-List</code></td></tr>
+<tr><td>Change the proxy port</td><td><code>-Port 4010</code></td></tr>
+<tr><td>Stop the proxy</td><td><code>-Stop</code></td></tr>
+<tr><td>Proxy only (no VS Code)</td><td><code>-NoVSCode</code></td></tr>
+</tbody></table></div>
+</section>
+
+<section class="fpt-section" id="how">
+<h2 class="fpt-section__title">8. How it works</h2>
+<p class="fpt-p">Useful for debugging &mdash; you normally never touch any of this.</p>
+<ul class="fpt-list">
+  <li><strong>Config is generated:</strong> each run rewrites <code>config/litellm_config.yaml</code> from <code>$ClaudeAlias</code>, <code>$Model</code>, <code>$BaseUrl</code> (UTF-8, no BOM). So <em>don't edit that file by hand</em>.</li>
+  <li><strong>Key via env var:</strong> the config points to <code>api_key: os.environ/LLM_API_KEY</code>; the script sets <code>LLM_API_KEY</code> for the proxy window. The key never lands in a file.</li>
+  <li><strong>Pointing Claude Code at the proxy</strong> via env vars: <code>ANTHROPIC_BASE_URL</code> (the proxy), <code>ANTHROPIC_AUTH_TOKEN</code> (a dummy token; the real key lives in the proxy), <code>ANTHROPIC_MODEL</code> = the alias.</li>
+  <li><strong>Background models routed too:</strong> the script also sets <code>ANTHROPIC_DEFAULT_HAIKU_MODEL</code> / <code>SONNET</code> / <code>OPUS</code> to the same alias, so Claude Code's background tasks don't call a model the proxy doesn't have.</li>
+  <li><strong>Real Anthropic key removed</strong> from the session so Claude Code can't silently fall back to Anthropic.</li>
+</ul>
+</section>
+
+<section class="fpt-section" id="troubleshooting">
+<h2 class="fpt-section__title">9. Troubleshooting</h2>
+<div class="fpt-table-wrap"><table class="fpt-table fpt-table--zebra"><caption>Symptom &rarr; fix</caption>
+<thead><tr><th>Symptom</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>PowerShell blocks the script</td><td><code>Set-ExecutionPolicy -Scope Process Bypass</code>, then rerun.</td></tr>
+<tr><td>Port 4000 is busy</td><td>The script auto-advances. Or choose one: <code>-Port 4010</code>.</td></tr>
+<tr><td>Model only replies with text, won't edit files</td><td>The model lacks tool calling &mdash; pick another (see section 6).</td></tr>
+<tr><td>Proxy crashes with <em>UnicodeDecodeError</em></td><td>A stray <code>.env</code> with bad encoding &mdash; <code>Rename-Item config\.env config\.env.bak</code>.</td></tr>
+<tr><td>Token-count errors</td><td>In the run window: <code>$env:CLAUDE_CODE_DISABLE_TOKEN_COUNTING = "1"</code> before opening VS Code.</td></tr>
+<tr><td>"Proxy ready" never appears after 30s</td><td>Read the LiteLLM window for the real error (bad key, wrong model name, network).</td></tr>
+<tr><td>"model not found" for haiku/sonnet</td><td>Make sure you're on the current script (it routes background models to the same alias &mdash; section 8).</td></tr>
+<tr><td>LiteLLM not found</td><td>Run <code>.\setup-litellm.ps1</code> (or <code>-Force</code> to reinstall).</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="fpt-section" id="structure">
+<h2 class="fpt-section__title">10. Project structure</h2>
+<pre class="guide-code">claude-code-anyllm\
++-- setup-litellm.ps1         <span class="cm"># install LiteLLM (run once)</span>
++-- start-claude.ps1          <span class="cm"># start proxy + open VS Code (daily driver)</span>
++-- guideline.en.html         <span class="cm"># this guide (English)</span>
++-- guideline.vi.html         <span class="cm"># guide (Vietnamese)</span>
++-- README.md                 <span class="cm"># quick reference</span>
++-- config\
+|   +-- litellm_config.yaml   <span class="cm"># AUTO-GENERATED each run - do not edit</span>
++-- .venv\                    <span class="cm"># LiteLLM environment (created by setup)</span></pre>
+</section>
+
+    </main>
+<footer class="fpt-footer">claude-code-anyllm &middot; MIT License</footer>
+  </div>
+</body>
+</html>
