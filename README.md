@@ -94,6 +94,39 @@ Not sure what models exist? Ask the endpoint — `.\start-claude.ps1 -List` (Win
 | Stop the proxy              | `-Stop`                                   | `--stop`                                        |
 | Proxy only (no VS Code)     | `-NoVSCode`                               | `--no-vscode`                                   |
 
+## 🧠 Brain toggle — persistent profile switching
+
+Toggle Claude Code between **real Anthropic** and **proxy mode** with a single command. Unlike `start-claude.ps1` (which sets env vars for one session), this writes a **persistent profile** to `~/.claude/settings.json` so the change survives VS Code restarts.
+
+```powershell
+# Windows
+.\toggle-brain.ps1 -Status          # → see what brain is active
+.\toggle-brain.ps1 -Mode claude     # → switch to real Anthropic
+.\toggle-brain.ps1 -Mode proxy      # → switch to proxy LLM
+.\toggle-brain.ps1 -Mode proxy -StartProxy -Key "sk-..."   # switch + start proxy
+.\toggle-brain.ps1 -StopProxy       # → stop the proxy
+.\toggle-brain.ps1 -ListProfiles    # → see available profiles
+```
+
+```bash
+# macOS / Linux
+./toggle-brain.sh status            # → see what brain is active
+./toggle-brain.sh claude            # → switch to real Anthropic
+./toggle-brain.sh proxy             # → switch to proxy LLM
+./toggle-brain.sh proxy --start --key "sk-..."   # switch + start proxy
+./toggle-brain.sh stop              # → stop the proxy
+./toggle-brain.sh profiles          # → see available profiles
+```
+
+**How it works:** `toggle-brain.ps1` copies a profile from `profiles/` (e.g. `claude.json` or `fpt.json`) to `~/.claude/settings.json`. Each profile sets the environment variables Claude Code reads at startup. The `profiles/` folder is extensible — add any `.json` file with the same `{"env": {...}}` structure.
+
+| Profile | Effect |
+|---------|--------|
+| `claude.json` | Empty `env` block — Claude Code uses its real Anthropic API key |
+| `fpt.json` | Sets `ANTHROPIC_BASE_URL` → `localhost:4000` — routes through LiteLLM proxy |
+
+Double-click `toggle-brain.bat` (Windows) to see usage, or pass an argument like `toggle-brain.bat proxy`.
+
 ## How it works
 
 - The script (`start-claude.ps1` / `start-claude.sh`) **regenerates** `config/litellm_config.yaml` on every run from your base URL / model. Don't edit that file by hand.
@@ -125,10 +158,16 @@ claude-code-anyllm/
 ├─ setup-litellm.sh           # install LiteLLM — macOS/Linux  (run once)
 ├─ start-claude.ps1           # start proxy + open VS Code — Windows
 ├─ start-claude.sh            # start proxy + open VS Code — macOS/Linux
+├─ toggle-brain.ps1           # persistent brain toggle — Windows
+├─ toggle-brain.bat           # double-click launcher for toggle-brain.ps1
+├─ toggle-brain.sh            # persistent brain toggle — macOS/Linux
 ├─ guideline.en.html          # detailed guide (English)
 ├─ guideline.vi.html          # detailed guide (Tiếng Việt)
 ├─ README.md                  # this file
 ├─ .gitattributes             # keeps .sh as LF, .ps1 as CRLF
+├─ profiles/
+│  ├─ claude.json             # profile: real Anthropic account
+│  └─ fpt.json                # profile: FPT/DeepSeek via proxy
 ├─ config/
 │  └─ litellm_config.yaml     # generated each run; committed as a working example
 └─ .venv/                     # LiteLLM environment (created by setup) — git-ignored

@@ -231,7 +231,7 @@ img { max-width: 100%; height: auto; }
 
 <header class="fpt-hero"><h1 class="fpt-hero__title">claude-code-anyllm</h1><p class="fpt-hero__subtitle">Dùng Claude Code trong VS Code nhưng "não" là BẤT KỲ LLM OpenAI-compatible nào (FPT Cloud, OpenAI, OpenRouter, Groq, DeepSeek, Ollama...) - nối qua LiteLLM proxy chạy local.</p></header>
 <div style="text-align:right;margin:6px 0 0;font-size:14px;color:var(--fpt-muted)"><a href="guideline.en.html">English</a> &middot; <strong>Tiếng Việt</strong></div>
-<nav class="guide-toc"><a href="#overview">1. Tổng quan</a><a href="#requirements">2. Yêu cầu</a><a href="#install">3. Cài đặt (1 lần)</a><a href="#run">4. Chạy</a><a href="#change-key">5. ★ Đổi KEY</a><a href="#change-model">6. ★ Đổi MODEL</a><a href="#cheatsheet">7. Bảng tra nhanh</a><a href="#how">8. Cơ chế</a><a href="#troubleshooting">9. Xử lý sự cố</a><a href="#structure">10. Cấu trúc</a></nav>
+<nav class="guide-toc"><a href="#overview">1. Tổng quan</a><a href="#requirements">2. Yêu cầu</a><a href="#install">3. Cài đặt (1 lần)</a><a href="#run">4. Chạy</a><a href="#change-key">5. ★ Đổi KEY</a><a href="#change-model">6. ★ Đổi MODEL</a><a href="#toggle">7. ★ Brain Toggle</a><a href="#cheatsheet">8. Bảng tra nhanh</a><a href="#how">9. Cơ chế</a><a href="#troubleshooting">10. Xử lý sự cố</a><a href="#structure">11. Cấu trúc</a></nav>
 <section class="fpt-section" id="overview">
 <h2 class="fpt-section__title">1. Tổng quan</h2>
 <p class="fpt-p">Bộ công cụ này cho phép bạn <strong>dùng Claude Code trong VS Code như bình thường</strong>, nhưng phần "não" trả lời lại là <strong>bất kỳ LLM OpenAI-compatible nào</strong> &mdash; FPT Cloud, OpenAI, OpenRouter, Groq, DeepSeek, Ollama chạy local, v.v. Cầu nối là <strong>LiteLLM</strong>, một proxy nhỏ chạy ngay trên máy bạn, dịch qua lại giữa Anthropic API và provider của bạn.</p>
@@ -317,8 +317,47 @@ $Key     = ""                                  <span class="cm"># để trống 
 <div class="fpt-callout" style="--callout-accent:#6B7280"><span class="fpt-callout__icon" aria-hidden="true">&#8505;</span><div class="fpt-callout__body">Muốn đổi hẳn <strong>provider</strong>, sửa thêm <code>$BaseUrl</code> (hoặc truyền <code>-BaseUrl</code>). Không cần đụng <code>$ClaudeAlias</code> hay file YAML &mdash; script tự khớp.</div></div>
 </section>
 
+<section class="fpt-section" id="toggle">
+<h2 class="fpt-section__title">7. ★ Brain Toggle — chuyển não vĩnh viễn</h2>
+<p class="fpt-p">Khác với <code>start-claude.ps1</code> chỉ set biến môi trường tạm thời, <strong>toggle-brain.ps1</strong> ghi <strong>profile vĩnh viễn</strong> vào <code>~/.claude/settings.json</code>. Thay đổi tồn tại qua cả restart VS Code, đóng/mở tab Code, và reboot máy.</p>
+
+<div class="fpt-callout" style="--callout-accent:#005BA6"><span class="fpt-callout__icon" aria-hidden="true">&#10148;</span><div class="fpt-callout__body"><strong>Một script, cả hai chiều.</strong> Không cần quản lý hai file riêng. <code>toggle-brain.ps1</code> xử lý chuyển sang Claude, chuyển sang proxy, kiểm tra trạng thái, quản lý proxy, và nhập key — tất cả trong một chỗ.</div></div>
+
+<div class="fpt-table-wrap"><table class="fpt-table fpt-table--zebra"><caption>Lệnh toggle-brain</caption>
+<thead><tr><th>Tôi muốn</th><th>Windows</th><th>macOS / Linux</th></tr></thead>
+<tbody>
+<tr><td>Xem não đang dùng</td><td><code>.\toggle-brain.ps1 -Status</code></td><td><code>./toggle-brain.sh status</code></td></tr>
+<tr><td>Chuyển về Anthropic thật</td><td><code>.\toggle-brain.ps1 -Mode claude</code></td><td><code>./toggle-brain.sh claude</code></td></tr>
+<tr><td>Chuyển sang proxy LLM</td><td><code>.\toggle-brain.ps1 -Mode proxy</code></td><td><code>./toggle-brain.sh proxy</code></td></tr>
+<tr><td>Chuyển + tự bật proxy</td><td><code>.\toggle-brain.ps1 -Mode proxy -StartProxy</code></td><td><code>./toggle-brain.sh proxy --start</code></td></tr>
+<tr><td>Chuyển + bật + nhập key</td><td><code>.\toggle-brain.ps1 -Mode proxy -StartProxy -Key "sk-..."</code></td><td><code>./toggle-brain.sh proxy --start --key "sk-..."</code></td></tr>
+<tr><td>Tắt proxy</td><td><code>.\toggle-brain.ps1 -StopProxy</code></td><td><code>./toggle-brain.sh stop</code></td></tr>
+<tr><td>Xem danh sách profile</td><td><code>.\toggle-brain.ps1 -ListProfiles</code></td><td><code>./toggle-brain.sh profiles</code></td></tr>
+</tbody></table></div>
+
+<h3>Cơ chế profile</h3>
+<p class="fpt-p">Mỗi file trong thư mục <code>profiles/</code> là một JSON chứa biến môi trường cho Claude Code. Chuyển não = copy profile được chọn đè lên <code>~/.claude/settings.json</code>.</p>
+
+<pre class="guide-code"><span class="cm"># profiles/claude.json — env rỗng = Anthropic thật</span>
+{<span class="k">"env"</span>: {}}
+
+<span class="cm"># profiles/fpt.json — route qua LiteLLM proxy</span>
+{<span class="k">"env"</span>: {
+  <span class="k">"ANTHROPIC_BASE_URL"</span>: <span class="s">"http://localhost:4000"</span>,
+  <span class="k">"ANTHROPIC_AUTH_TOKEN"</span>: <span class="s">"litellm-proxy"</span>,
+  <span class="k">"ANTHROPIC_MODEL"</span>: <span class="s">"claude-sonnet-4-6"</span>,
+  <span class="k">"ANTHROPIC_DEFAULT_HAIKU_MODEL"</span>: <span class="s">"claude-sonnet-4-6"</span>,
+  <span class="k">"ANTHROPIC_DEFAULT_SONNET_MODEL"</span>: <span class="s">"claude-sonnet-4-6"</span>,
+  <span class="k">"ANTHROPIC_DEFAULT_OPUS_MODEL"</span>: <span class="s">"claude-sonnet-4-6"</span>
+}}</pre>
+
+<p class="fpt-p">Thư mục <code>profiles/</code> có thể <strong>mở rộng</strong> — thêm file <code>.json</code> với cấu trúc tương tự để tạo preset provider mới. Script tự động phát hiện.</p>
+
+<div class="fpt-callout fpt-callout--warning" style="--callout-accent:#F58A07"><span class="fpt-callout__icon" aria-hidden="true">&#9888;</span><div class="fpt-callout__body"><strong>Nhớ restart</strong> Claude Code (đóng tab / New session) sau khi chuyển. Profile chỉ được đọc khi khởi động.</div></div>
+</section>
+
 <section class="fpt-section" id="cheatsheet">
-<h2 class="fpt-section__title">7. Bảng tra nhanh</h2>
+<h2 class="fpt-section__title">8. Bảng tra nhanh</h2>
 <div class="fpt-table-wrap"><table class="fpt-table fpt-table--zebra"><caption>Tôi muốn&hellip;</caption>
 <thead><tr><th>Tôi muốn</th><th>Làm gì</th></tr></thead>
 <tbody>
@@ -338,7 +377,7 @@ $Key     = ""                                  <span class="cm"># để trống 
 </section>
 
 <section class="fpt-section" id="how">
-<h2 class="fpt-section__title">8. Cơ chế hoạt động</h2>
+<h2 class="fpt-section__title">9. Cơ chế hoạt động</h2>
 <p class="fpt-p">Hữu ích khi debug &mdash; bình thường không cần đụng tới.</p>
 <ul class="fpt-list">
   <li><strong>Config tự sinh:</strong> mỗi lần chạy ghi lại <code>config/litellm_config.yaml</code> từ <code>$ClaudeAlias</code>, <code>$Model</code>, <code>$BaseUrl</code> (UTF-8, không BOM). Vì vậy <em>đừng sửa tay file này</em>.</li>
@@ -350,7 +389,7 @@ $Key     = ""                                  <span class="cm"># để trống 
 </section>
 
 <section class="fpt-section" id="troubleshooting">
-<h2 class="fpt-section__title">9. Xử lý sự cố</h2>
+<h2 class="fpt-section__title">10. Xử lý sự cố</h2>
 <div class="fpt-table-wrap"><table class="fpt-table fpt-table--zebra"><caption>Triệu chứng &rarr; cách xử lý</caption>
 <thead><tr><th>Triệu chứng</th><th>Cách xử lý</th></tr></thead>
 <tbody>
@@ -366,13 +405,18 @@ $Key     = ""                                  <span class="cm"># để trống 
 </section>
 
 <section class="fpt-section" id="structure">
-<h2 class="fpt-section__title">10. Cấu trúc thư mục</h2>
+<h2 class="fpt-section__title">11. Cấu trúc thư mục</h2>
 <pre class="guide-code">claude-code-anyllm\
 +-- setup-litellm.ps1 / .sh   <span class="cm"># cài LiteLLM (Windows / macOS-Linux) - chạy 1 lần</span>
 +-- start-claude.ps1 / .sh    <span class="cm"># bật proxy + mở editor (Windows / macOS-Linux)</span>
++-- toggle-brain.ps1 / .sh    <span class="cm"># chuyển não vĩnh viễn (Windows / macOS-Linux)</span>
++-- toggle-brain.bat          <span class="cm"># double-click launcher cho toggle-brain.ps1</span>
 +-- guideline.en.html         <span class="cm"># hướng dẫn (English)</span>
 +-- guideline.vi.html         <span class="cm"># hướng dẫn (Tiếng Việt)</span>
 +-- README.md                 <span class="cm"># tham khảo nhanh</span>
++-- profiles\
+|   +-- claude.json           <span class="cm"># profile: Anthropic thật</span>
+|   +-- fpt.json              <span class="cm"># profile: FPT/DeepSeek qua proxy</span>
 +-- config\
 |   +-- litellm_config.yaml   <span class="cm"># TỰ SINH mỗi lần chạy - đừng sửa</span>
 +-- .venv\                    <span class="cm"># môi trường LiteLLM (do setup tạo)</span></pre>
