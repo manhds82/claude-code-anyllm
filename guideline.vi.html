@@ -266,6 +266,7 @@ chmod +x *.sh
 <p class="fpt-p">Script tự tìm Python, tạo <code>.venv</code> ngay trong project, cài <code>litellm[proxy]</code> rồi kiểm tra. Cài lại từ đầu khi cần: <code>.\setup-litellm.ps1 -Force</code> (hoặc <code>./setup-litellm.sh --force</code>).</p>
 <div class="fpt-callout" style="--callout-accent:#10B981"><span class="fpt-callout__icon" aria-hidden="true">&#10003;</span><div class="fpt-callout__body">Vì <code>.venv</code> nằm trong project nên <strong>không phụ thuộc tên user</strong> &mdash; chép cả thư mục sang máy khác vẫn chạy.</div></div>
 <div class="fpt-callout fpt-callout--warning" style="--callout-accent:#F58A07"><span class="fpt-callout__icon" aria-hidden="true">&#9888;</span><div class="fpt-callout__body">Nếu PowerShell chặn chạy script (<em>execution policy</em>): chạy <code>Set-ExecutionPolicy -Scope Process Bypass</code> rồi thử lại.</div></div>
+<div class="fpt-callout" style="--callout-accent:#7C5CFC"><span class="fpt-callout__icon" aria-hidden="true">&#128204;</span><div class="fpt-callout__body"><strong>Claude Code bản ổn định:</strong> setup còn chạy <code>claude install stable</code> một lần (khi có <code>claude</code> CLI trong PATH) để ghim Claude Code vào kênh stable &mdash; bản mới đôi khi lỗi khi chạy qua proxy. Ghim này giữ nguyên qua các lần auto-update; chạy lại bất cứ lúc nào. Lệnh giống nhau trên mọi OS. Cần bản CLI standalone (extension VS Code không tự có).</div></div>
 </section>
 
 <section class="fpt-section" id="run">

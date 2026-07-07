@@ -266,6 +266,7 @@ chmod +x *.sh
 <p class="fpt-p">It finds Python, creates a <code>.venv</code> inside the project, installs <code>litellm[proxy]</code>, and verifies it. Reinstall from scratch any time with <code>.\setup-litellm.ps1 -Force</code> (or <code>./setup-litellm.sh --force</code>).</p>
 <div class="fpt-callout" style="--callout-accent:#10B981"><span class="fpt-callout__icon" aria-hidden="true">&#10003;</span><div class="fpt-callout__body">Because <code>.venv</code> lives in the project, it does <strong>not depend on your username</strong> &mdash; copy the whole folder to another machine and it still works.</div></div>
 <div class="fpt-callout fpt-callout--warning" style="--callout-accent:#F58A07"><span class="fpt-callout__icon" aria-hidden="true">&#9888;</span><div class="fpt-callout__body">If PowerShell blocks the script (<em>execution policy</em>): run <code>Set-ExecutionPolicy -Scope Process Bypass</code> and try again.</div></div>
+<div class="fpt-callout" style="--callout-accent:#7C5CFC"><span class="fpt-callout__icon" aria-hidden="true">&#128204;</span><div class="fpt-callout__body"><strong>Stable Claude Code:</strong> setup also runs <code>claude install stable</code> once (when the <code>claude</code> CLI is on your PATH) to pin Claude Code to the stable channel &mdash; newer builds sometimes misbehave behind a proxy. The pin sticks across auto-updates; re-run it any time. Same command on every OS. Needs the standalone CLI (the VS Code extension alone won't have it).</div></div>
 </section>
 
 <section class="fpt-section" id="run">

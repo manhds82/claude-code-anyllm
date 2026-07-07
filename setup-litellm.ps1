@@ -114,6 +114,21 @@ if (-not (Test-Path $LitellmExe)) {
 $llVer = (& $VenvPy -m litellm --version) 2>&1
 Write-Ok "LiteLLM is ready. $llVer"
 
+# ---------- 7. Pin Claude Code CLI to the stable build ----------
+# Newer Claude Code builds sometimes misbehave behind a proxy; pin the stable one.
+Write-Step "Pinning Claude Code CLI to the stable build..."
+if (Get-Command claude -ErrorAction SilentlyContinue) {
+    claude install stable
+    if ($LASTEXITCODE -eq 0) {
+        Write-Ok "Claude Code CLI pinned to stable."
+    } else {
+        Write-Warn2 "'claude install stable' returned an error (continuing anyway)."
+    }
+} else {
+    Write-Warn2 "'claude' CLI not found on PATH - skipping this step."
+    Write-Warn2 "If you use Claude Code, run 'claude install stable' once yourself to pin a stable version."
+}
+
 Write-Host "`n=================================================================" -ForegroundColor Green
 Write-Host " DONE. LiteLLM installed at: $VenvPath" -ForegroundColor Green
 Write-Host "=================================================================" -ForegroundColor Green

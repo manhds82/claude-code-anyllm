@@ -101,6 +101,20 @@ if [ ! -x "$LITELLM" ]; then
 fi
 ok "LiteLLM is ready. $("$VENV_PY" -m litellm --version 2>&1 || true)"
 
+# ---------- 7. Pin Claude Code CLI to the stable build ----------
+# Newer Claude Code builds sometimes misbehave behind a proxy; pin the stable one.
+step "Pinning Claude Code CLI to the stable build ..."
+if command -v claude >/dev/null 2>&1; then
+  if claude install stable; then
+    ok "Claude Code CLI pinned to stable."
+  else
+    warn "'claude install stable' returned an error (continuing anyway)."
+  fi
+else
+  warn "'claude' CLI not found on PATH - skipping this step."
+  warn "If you use Claude Code, run 'claude install stable' once yourself to pin a stable version."
+fi
+
 printf '\n%s=================================================================%s\n' "$c_green" "$c_reset"
 printf '%s DONE. LiteLLM installed at: %s%s\n' "$c_green" "$VENV_PATH" "$c_reset"
 printf '%s=================================================================%s\n' "$c_green" "$c_reset"

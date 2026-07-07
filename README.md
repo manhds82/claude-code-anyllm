@@ -79,6 +79,24 @@ Examples — pick a model that **supports tool / function calling** (otherwise C
 
 Not sure what models exist? Ask the endpoint — `.\start-claude.ps1 -List` (Windows) or `./start-claude.sh --list` (macOS/Linux).
 
+## Pin a stable Claude Code CLI
+
+Newer Claude Code builds occasionally misbehave behind a proxy, so `setup-litellm.ps1` / `setup-litellm.sh` run **`claude install stable`** once — pinning Claude Code to the **stable** channel. The pin **sticks** across auto-updates, so it's a one-time step (re-run `claude install stable` any time a bad version slips in). The command is identical on Windows, macOS, and Linux.
+
+This step needs the **standalone `claude` CLI** on your PATH (the VS Code extension alone doesn't provide it). If setup reports it was skipped, install the CLI first:
+
+```bash
+# macOS / Linux
+curl -fsSL https://claude.ai/install.sh | bash -s stable
+```
+
+```powershell
+# Windows PowerShell
+& ([scriptblock]::Create((irm https://claude.ai/install.ps1))) stable
+```
+
+Want to freeze updates entirely? Add `"env": { "DISABLE_AUTOUPDATER": "1" }` to your Claude Code `settings.json`.
+
 ## Commands
 
 | I want to…                  | Windows (PowerShell)                       | macOS / Linux (bash)                          |
