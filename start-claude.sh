@@ -24,7 +24,8 @@ BASE_URL="https://mkp-api.fptcloud.com/v1"
 # Pick one that supports tool/function calling so Claude Code can edit files.
 MODEL="DeepSeek-V4-Flash"
 
-# API key. Leave empty to be asked at runtime (hidden input, never written to disk).
+# API key. Leave empty to read $LLM_API_KEY, else you'll be asked at runtime (hidden
+# input). Recommended: don't hard-code it here -- export LLM_API_KEY instead.
 KEY=""
 # =============================================================
 
@@ -79,9 +80,10 @@ USER_VENV="$HOME/litellm-env"
 if [ -x "$LOCAL_VENV/bin/litellm" ]; then VENV_PATH="$LOCAL_VENV"; else VENV_PATH="$USER_VENV"; fi
 LITELLM="$VENV_PATH/bin/litellm"
 
-# Return the configured key, or prompt for it (hidden input) if empty.
+# Return the configured key: inline -> $LLM_API_KEY -> prompt (hidden input).
 resolve_key() {
   if [ -n "$KEY" ]; then printf '%s' "$KEY"; return 0; fi
+  if [ -n "${LLM_API_KEY:-}" ]; then printf '%s' "$LLM_API_KEY"; return 0; fi
   local k=""
   if [ -r /dev/tty ]; then
     read -r -s -p "Enter API key: " k </dev/tty || true

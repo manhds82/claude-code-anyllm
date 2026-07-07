@@ -56,15 +56,21 @@ Open the launcher for your OS and edit the block marked `EDIT THESE FOR YOUR PRO
 # start-claude.ps1  (Windows)
 [string]$BaseUrl = "https://mkp-api.fptcloud.com/v1"   # OpenAI-compatible /v1 endpoint
 [string]$Model   = "DeepSeek-V4-Flash"                 # model name (see -List)
-[string]$Key     = ""                                  # blank = prompt at runtime (not stored)
+[string]$Key     = ""                                  # blank = read $env:LLM_API_KEY, else prompt
 ```
 
 ```bash
 # start-claude.sh  (macOS / Linux)
 BASE_URL="https://mkp-api.fptcloud.com/v1"   # OpenAI-compatible /v1 endpoint
 MODEL="DeepSeek-V4-Flash"                     # model name (see --list)
-KEY=""                                        # blank = prompt at runtime (not stored)
+KEY=""                                        # blank = read $LLM_API_KEY, else prompt
 ```
+
+> **Recommended — keep your key out of the file.** Leave `$Key` / `KEY` blank and set the key once as an environment variable named `LLM_API_KEY`; the script reads it automatically, so the key never lives in a tracked file:
+>
+> - **Windows (persistent):** `setx LLM_API_KEY "your-key"` — then open a new terminal
+> - **Windows (this session only):** `$env:LLM_API_KEY = "your-key"`
+> - **macOS / Linux:** add `export LLM_API_KEY="your-key"` to `~/.zshrc` or `~/.bashrc`
 
 Examples — pick a model that **supports tool / function calling** (otherwise Claude Code can only reply with text, not edit files):
 

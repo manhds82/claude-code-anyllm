@@ -297,11 +297,11 @@ chmod +x *.sh
 <h2 class="fpt-section__title">5. &#9733; Where to change the API KEY</h2>
 <p class="fpt-p">Three ways &mdash; pick one:</p>
 <div class="fpt-cards">
-  <div class="fpt-card" style="--card-accent:#005BA6"><div class="fpt-card__icon" style="background:#D6E4F0">&#128204;</div><h3 class="fpt-card__title">Option 1 &mdash; Permanent</h3><p class="fpt-card__body">Open <code>start-claude.ps1</code> and set:<br><code>$Key = "your-key"</code></p></div>
-  <div class="fpt-card" style="--card-accent:#0096D6"><div class="fpt-card__icon" style="background:#D6E4F0">&#9889;</div><h3 class="fpt-card__title">Option 2 &mdash; One run</h3><p class="fpt-card__body">No file edit, pass it at runtime:<br><code>.\start-claude.ps1 -Key "your-key"</code></p></div>
-  <div class="fpt-card" style="--card-accent:#10B981"><div class="fpt-card__icon" style="background:#D1FAE5">&#128274;</div><h3 class="fpt-card__title">Option 3 &mdash; Safest</h3><p class="fpt-card__body">Leave <code>$Key = ""</code>. Each run the script <strong>asks for the key</strong> (hidden input, never written to disk).</p></div>
+  <div class="fpt-card" style="--card-accent:#10B981"><div class="fpt-card__icon" style="background:#D1FAE5">&#11088;</div><h3 class="fpt-card__title">Recommended &mdash; env var</h3><p class="fpt-card__body">Leave <code>$Key = ""</code> and set <code>LLM_API_KEY</code> in your environment; the script reads it, so the key never sits in a file.<br><code>setx LLM_API_KEY "your-key"</code> (Windows)<br><code>export LLM_API_KEY="your-key"</code> (macOS/Linux)</p></div>
+  <div class="fpt-card" style="--card-accent:#0096D6"><div class="fpt-card__icon" style="background:#D6E4F0">&#9889;</div><h3 class="fpt-card__title">One run</h3><p class="fpt-card__body">Pass it at runtime:<br><code>.\start-claude.ps1 -Key "..."</code><br><code>./start-claude.sh --key "..."</code></p></div>
+  <div class="fpt-card" style="--card-accent:#7C5CFC"><div class="fpt-card__icon" style="background:#E9E3FF">&#128274;</div><h3 class="fpt-card__title">Prompt each run</h3><p class="fpt-card__body">Leave <code>$Key = ""</code> and set no env var &mdash; the script <strong>asks</strong> for the key (hidden input, not stored).</p></div>
 </div>
-<div class="fpt-callout fpt-callout--warning" style="--callout-accent:#F58A07"><span class="fpt-callout__icon" aria-hidden="true">&#9888;</span><div class="fpt-callout__body"><strong>Don't</strong> paste the key into <code>config/litellm_config.yaml</code>. That file is regenerated every run; the real key is loaded via the <code>LLM_API_KEY</code> environment variable the script sets.</div></div>
+<div class="fpt-callout fpt-callout--warning" style="--callout-accent:#E04F5F"><span class="fpt-callout__icon" aria-hidden="true">&#9888;</span><div class="fpt-callout__body"><strong>Never hard-code the key</strong> into <code>start-claude.ps1</code>/<code>.sh</code> or <code>config/litellm_config.yaml</code> &mdash; those are tracked by git, so a real key there can leak to GitHub. Use the env var above.</div></div>
 </section>
 
 <section class="fpt-section" id="change-model">

@@ -297,11 +297,11 @@ chmod +x *.sh
 <h2 class="fpt-section__title">5. ★ Đổi API KEY ở đâu</h2>
 <p class="fpt-p">Có 3 cách, chọn 1:</p>
 <div class="fpt-cards">
-  <div class="fpt-card" style="--card-accent:#005BA6"><div class="fpt-card__icon" style="background:#D6E4F0">&#128204;</div><h3 class="fpt-card__title">Cách 1 &mdash; Vĩnh viễn</h3><p class="fpt-card__body">Mở <code>start-claude.ps1</code> và đặt:<br><code>$Key = "key-cua-ban"</code></p></div>
-  <div class="fpt-card" style="--card-accent:#0096D6"><div class="fpt-card__icon" style="background:#D6E4F0">&#9889;</div><h3 class="fpt-card__title">Cách 2 &mdash; Một lần</h3><p class="fpt-card__body">Không sửa file, truyền khi chạy:<br><code>.\start-claude.ps1 -Key "key-cua-ban"</code></p></div>
-  <div class="fpt-card" style="--card-accent:#10B981"><div class="fpt-card__icon" style="background:#D1FAE5">&#128274;</div><h3 class="fpt-card__title">Cách 3 &mdash; An toàn nhất</h3><p class="fpt-card__body">Để <code>$Key = ""</code>. Mỗi lần chạy script <strong>hỏi key</strong> (gõ ẩn, không ghi ra đĩa).</p></div>
+  <div class="fpt-card" style="--card-accent:#10B981"><div class="fpt-card__icon" style="background:#D1FAE5">&#11088;</div><h3 class="fpt-card__title">Khuyến nghị &mdash; biến môi trường</h3><p class="fpt-card__body">Để <code>$Key = ""</code> và đặt <code>LLM_API_KEY</code> trong môi trường; script tự đọc, key không nằm trong file nào.<br><code>setx LLM_API_KEY "key-cua-ban"</code> (Windows)<br><code>export LLM_API_KEY="key-cua-ban"</code> (macOS/Linux)</p></div>
+  <div class="fpt-card" style="--card-accent:#0096D6"><div class="fpt-card__icon" style="background:#D6E4F0">&#9889;</div><h3 class="fpt-card__title">Một lần</h3><p class="fpt-card__body">Truyền khi chạy:<br><code>.\start-claude.ps1 -Key "..."</code><br><code>./start-claude.sh --key "..."</code></p></div>
+  <div class="fpt-card" style="--card-accent:#7C5CFC"><div class="fpt-card__icon" style="background:#E9E3FF">&#128274;</div><h3 class="fpt-card__title">Hỏi mỗi lần</h3><p class="fpt-card__body">Để <code>$Key = ""</code> và không đặt env var &mdash; script <strong>hỏi key</strong> mỗi lần (gõ ẩn, không lưu).</p></div>
 </div>
-<div class="fpt-callout fpt-callout--warning" style="--callout-accent:#F58A07"><span class="fpt-callout__icon" aria-hidden="true">&#9888;</span><div class="fpt-callout__body"><strong>Đừng</strong> dán key vào <code>config/litellm_config.yaml</code>. File đó tự sinh lại mỗi lần chạy; key thật được nạp qua biến môi trường <code>LLM_API_KEY</code> mà script tự đặt.</div></div>
+<div class="fpt-callout fpt-callout--warning" style="--callout-accent:#E04F5F"><span class="fpt-callout__icon" aria-hidden="true">&#9888;</span><div class="fpt-callout__body"><strong>Đừng bao giờ hard-code key</strong> vào <code>start-claude.ps1</code>/<code>.sh</code> hay <code>config/litellm_config.yaml</code> &mdash; các file này được git track, key thật ở đó có thể lộ lên GitHub. Hãy dùng biến môi trường ở trên.</div></div>
 </section>
 
 <section class="fpt-section" id="change-model">

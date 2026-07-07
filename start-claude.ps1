@@ -42,7 +42,8 @@ param(
     # Pick one that supports tool / function calling so Claude Code can edit files.
     [string]$Model   = "DeepSeek-V4-Flash",
 
-    # API key. Leave "" to be asked at runtime (hidden input, never written to disk).
+    # API key. Leave "" to read $env:LLM_API_KEY, else you'll be asked at runtime
+    # (hidden input). Recommended: don't hard-code it here -- set LLM_API_KEY instead.
     [string]$Key     = "",
     # =============================================================
 
@@ -65,9 +66,10 @@ function Write-Ok($msg)   { Write-Host "    [OK] $msg" -ForegroundColor Green }
 function Write-Warn2($msg){ Write-Host "    [!] $msg"  -ForegroundColor Yellow }
 function Write-Err2($msg) { Write-Host "    [X] $msg"  -ForegroundColor Red }
 
-# Return the configured key, or prompt for it (hidden input) if empty.
+# Return the configured key: inline -> $env:LLM_API_KEY -> prompt (hidden input).
 function Resolve-Key([string]$current) {
     if (-not [string]::IsNullOrWhiteSpace($current)) { return $current }
+    if (-not [string]::IsNullOrWhiteSpace($env:LLM_API_KEY)) { return $env:LLM_API_KEY }
     $secure = Read-Host "Enter API key" -AsSecureString
     $bstr   = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure)
     $key    = [Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
