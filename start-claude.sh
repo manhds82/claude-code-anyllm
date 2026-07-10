@@ -33,9 +33,11 @@ KEY=""
 CLAUDE_ALIAS="claude-sonnet-4-6"
 PORT=4000
 
-DO_LIST=0; DO_STOP=0; NO_VSCODE=0
+DO_LIST=0; DO_STOP=0; NO_VSCODE=0; DO_LIST_PROVIDERS=0
+PROVIDER=""; BASE_URL_SET=0; MODEL_SET=0
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROVIDERS_FILE="$SCRIPT_DIR/config/providers.conf"
 
 c_cyan=$'\033[36m'; c_green=$'\033[32m'; c_yellow=$'\033[33m'; c_red=$'\033[31m'; c_reset=$'\033[0m'
 step() { printf '\n%s==> %s%s\n' "$c_cyan" "$1" "$c_reset"; }
@@ -46,24 +48,29 @@ err()  { printf '    %s[X]%s %s\n'  "$c_red" "$c_reset" "$1"; }
 usage() {
   cat <<'EOF'
 start-claude.sh - run Claude Code on any OpenAI-compatible LLM via LiteLLM
-  ./start-claude.sh                 start proxy + open VS Code
-  ./start-claude.sh --model NAME    use a different model for this run
-  ./start-claude.sh --key KEY       use a different key for this run
-  ./start-claude.sh --base-url URL  use a different endpoint for this run
-  ./start-claude.sh --list          list models the endpoint exposes, then exit
-  ./start-claude.sh --port N        proxy port (default 4000)
-  ./start-claude.sh --stop          stop a running proxy on that port
-  ./start-claude.sh --no-vscode     only start the proxy
+  ./start-claude.sh                    no flags -> interactive provider menu
+                                        (built from config/providers.conf)
+  ./start-claude.sh --provider nvidia  skip the menu, use this provider's id
+  ./start-claude.sh --list-providers   list providers.conf and key status
+  ./start-claude.sh --model NAME       use a different model for this run
+  ./start-claude.sh --key KEY          use a different key for this run
+  ./start-claude.sh --base-url URL     use a different endpoint for this run
+  ./start-claude.sh --list             list models the endpoint exposes, then exit
+  ./start-claude.sh --port N           proxy port (default 4000)
+  ./start-claude.sh --stop             stop a running proxy on that port
+  ./start-claude.sh --no-vscode        only start the proxy
 EOF
 }
 
 while [ $# -gt 0 ]; do
   case "$1" in
-    --model)     MODEL="$2"; shift 2 ;;
+    --provider)  PROVIDER="$2"; shift 2 ;;
+    --model)     MODEL="$2"; MODEL_SET=1; shift 2 ;;
     --key)       KEY="$2"; shift 2 ;;
-    --base-url)  BASE_URL="$2"; shift 2 ;;
+    --base-url)  BASE_URL="$2"; BASE_URL_SET=1; shift 2 ;;
     --port)      PORT="$2"; shift 2 ;;
     --list)      DO_LIST=1; shift ;;
+    --list-providers) DO_LIST_PROVIDERS=1; shift ;;
     --stop)      DO_STOP=1; shift ;;
     --no-vscode) NO_VSCODE=1; shift ;;
     -h|--help)   usage; exit 0 ;;
@@ -92,6 +99,65 @@ resolve_key() {
   printf '%s' "$k"
 }
 
+# Print providers.conf entries with [key set]/[no key] status.
+list_providers() {
+  step "Providers in config/providers.conf"
+  [ -f "$PROVIDERS_FILE" ] || { err "providers.conf not found."; return 1; }
+  while IFS='|' read -r id label baseurl model keyenv; do
+    case "$id" in ''|\#*) continue ;; esac
+    id="$(echo "$id" | xargs)"; label="$(echo "$label" | xargs)"; keyenv="$(echo "$keyenv" | xargs)"
+    if [ -n "${!keyenv:-}" ]; then tag="[key set]"; else tag="[no key]"; fi
+    printf '  %-8s %-38s %s   (env: %s)\n' "$id" "$label" "$tag" "$keyenv"
+  done < "$PROVIDERS_FILE"
+  printf '\nSet a key once:  export <KEY_ENV_NAME>="sk-..."   (add to ~/.zshrc or ~/.bashrc)\n'
+  printf 'Use directly:    ./start-claude.sh --provider <id>\n'
+}
+
+# Resolve a provider into SELECTED_BASE_URL / SELECTED_MODEL / SELECTED_KEYENV /
+# SELECTED_LABEL. Pass an id to look it up directly, or "" for an interactive menu.
+select_provider() {
+  local want_id="$1"
+  [ -f "$PROVIDERS_FILE" ] || return 1
+
+  if [ -n "$want_id" ]; then
+    while IFS='|' read -r id label baseurl model keyenv; do
+      case "$id" in ''|\#*) continue ;; esac
+      id="$(echo "$id" | xargs)"
+      if [ "$id" = "$want_id" ]; then
+        SELECTED_BASE_URL="$(echo "$baseurl" | xargs)"
+        SELECTED_MODEL="$(echo "$model" | xargs)"
+        SELECTED_KEYENV="$(echo "$keyenv" | xargs)"
+        SELECTED_LABEL="$(echo "$label" | xargs)"
+        return 0
+      fi
+    done < "$PROVIDERS_FILE"
+    return 1
+  fi
+
+  step "Choose a provider (config/providers.conf)"
+  local ids=() labels=() urls=() models=() keyenvs=() i=0
+  while IFS='|' read -r id label baseurl model keyenv; do
+    case "$id" in ''|\#*) continue ;; esac
+    id="$(echo "$id" | xargs)"; label="$(echo "$label" | xargs)"
+    baseurl="$(echo "$baseurl" | xargs)"; model="$(echo "$model" | xargs)"; keyenv="$(echo "$keyenv" | xargs)"
+    ids+=("$id"); labels+=("$label"); urls+=("$baseurl"); models+=("$model"); keyenvs+=("$keyenv")
+    i=$((i + 1))
+    if [ -n "${!keyenv:-}" ]; then tag="[key set]"; else tag="[no key]"; fi
+    printf '  %d. %-38s %s\n' "$i" "$label" "$tag"
+  done < "$PROVIDERS_FILE"
+  [ "$i" -eq 0 ] && return 1
+
+  choice=""
+  if [ -r /dev/tty ]; then read -r -p $'\nPick a number (Enter = 1): ' choice </dev/tty || true; fi
+  [ -z "$choice" ] && choice=1
+  idx=$((choice - 1))
+  if [ "$idx" -lt 0 ] || [ "$idx" -ge "$i" ]; then return 1; fi
+  SELECTED_BASE_URL="${urls[$idx]}"
+  SELECTED_MODEL="${models[$idx]}"
+  SELECTED_KEYENV="${keyenvs[$idx]}"
+  SELECTED_LABEL="${labels[$idx]}"
+}
+
 # Is something listening on the given TCP port?
 port_in_use() {
   if command -v lsof >/dev/null 2>&1; then
@@ -100,6 +166,12 @@ port_in_use() {
     (exec 3<>"/dev/tcp/127.0.0.1/$1") >/dev/null 2>&1 && { exec 3>&- 3<&-; return 0; } || return 1
   fi
 }
+
+# ---------- Mode --list-providers ----------
+if [ "$DO_LIST_PROVIDERS" -eq 1 ]; then
+  list_providers
+  exit 0
+fi
 
 # ---------- Mode --list ----------
 if [ "$DO_LIST" -eq 1 ]; then
@@ -133,6 +205,29 @@ if [ "$DO_STOP" -eq 1 ]; then
     done
   fi
   exit 0
+fi
+
+# ---------- 0. Resolve provider (--provider, or an interactive menu) ----------
+# Skipped entirely if the caller passed --base-url and/or --model explicitly --
+# those always win over providers.conf.
+if [ -n "$PROVIDER" ]; then
+  if ! select_provider "$PROVIDER"; then
+    err "Provider '$PROVIDER' not found. Run --list-providers to see valid ids."
+    exit 1
+  fi
+  [ "$BASE_URL_SET" -eq 0 ] && BASE_URL="$SELECTED_BASE_URL"
+  [ "$MODEL_SET" -eq 0 ] && MODEL="$SELECTED_MODEL"
+  [ -z "$KEY" ] && KEY="${!SELECTED_KEYENV:-}"
+  ok "Provider: $SELECTED_LABEL"
+elif [ "$BASE_URL_SET" -eq 0 ] && [ "$MODEL_SET" -eq 0 ] && [ -f "$PROVIDERS_FILE" ]; then
+  if ! select_provider ""; then
+    err "Invalid choice."
+    exit 1
+  fi
+  BASE_URL="$SELECTED_BASE_URL"
+  MODEL="$SELECTED_MODEL"
+  [ -z "$KEY" ] && KEY="${!SELECTED_KEYENV:-}"
+  ok "Provider: $SELECTED_LABEL"
 fi
 
 # ---------- 1. Check the venv (auto-install if missing) ----------

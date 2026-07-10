@@ -48,6 +48,46 @@ The script installs the proxy if needed, starts it, waits until it's ready, then
 > **Windows:** if PowerShell blocks the script, run `Set-ExecutionPolicy -Scope Process Bypass`.
 > **macOS/Linux:** if you get *permission denied*, run `chmod +x *.sh` (or `bash start-claude.sh`).
 
+## Pick a provider at start time (multiple keys, one script)
+
+Have keys for more than one provider — FPT, NVIDIA, Gemini, GitHub, Groq...? `config/providers.conf` lists them all; run the launcher with no arguments and pick one from a menu, or jump straight to one with `-Provider`/`--provider`:
+
+```powershell
+.\start-claude.ps1                # interactive menu (shows which providers have a key set)
+.\start-claude.ps1 -Provider nvidia
+.\start-claude.ps1 -ListProviders  # see every provider id + which env var it reads
+```
+
+```bash
+./start-claude.sh                 # interactive menu
+./start-claude.sh --provider nvidia
+./start-claude.sh --list-providers
+```
+
+Each line in `config/providers.conf` is `id|label|base_url|model|key_env` — each provider reads its key from its **own** env var, so you only set the ones you actually have:
+
+| id       | Provider                    | Model                          | Set the key with |
+|----------|------------------------------|--------------------------------|-------------------|
+| `fpt`    | FPT Cloud                    | `DeepSeek-V4-Flash`            | `LLM_API_KEY_FPT` |
+| `nvidia` | NVIDIA NIM                   | `qwen/qwen2.5-coder-32b-instruct` | `LLM_API_KEY_NVIDIA` |
+| `gemini` | Google Gemini                | `gemini-2.5-flash`             | `LLM_API_KEY_GEMINI` |
+| `github` | GitHub Models                 | `gpt-4o-mini`                  | `LLM_API_KEY_GITHUB` |
+| `groq`   | Groq                          | `llama-3.3-70b-versatile`      | `LLM_API_KEY_GROQ` |
+
+```powershell
+# Windows — set whichever ones you have, then open a new terminal
+setx LLM_API_KEY_NVIDIA "nvapi-..."
+setx LLM_API_KEY_GEMINI "AIza..."
+```
+
+```bash
+# macOS / Linux — add whichever ones you have to ~/.zshrc or ~/.bashrc
+export LLM_API_KEY_NVIDIA="nvapi-..."
+export LLM_API_KEY_GEMINI="AIza..."
+```
+
+Add your own provider by adding one line to `config/providers.conf` — no code changes needed. `-BaseUrl`/`-Model`/`-Key` (or `--base-url`/`--model`/`--key`) still work exactly as before and always override the selected provider, so nothing below changes.
+
 ## Configure it for your provider
 
 Open the launcher for your OS and edit the block marked `EDIT THESE FOR YOUR PROVIDER`:
@@ -108,7 +148,9 @@ Want to freeze updates entirely? Add `"env": { "DISABLE_AUTOUPDATER": "1" }` to 
 | I want to…                  | Windows (PowerShell)                       | macOS / Linux (bash)                          |
 |-----------------------------|-------------------------------------------|-----------------------------------------------|
 | Install (once)              | `.\setup-litellm.ps1`                     | `./setup-litellm.sh`                          |
-| Run                         | `.\start-claude.ps1`                      | `./start-claude.sh`                           |
+| Run (interactive menu)      | `.\start-claude.ps1`                      | `./start-claude.sh`                           |
+| Run — pick a provider by id | `-Provider nvidia`                        | `--provider nvidia`                           |
+| List providers + key status | `-ListProviders`                          | `--list-providers`                            |
 | Change key/model — permanent| Edit `$Key` / `$Model` in `start-claude.ps1` | Edit `KEY` / `MODEL` in `start-claude.sh` |
 | Change model — one run      | `-Model "..."`                            | `--model "..."`                               |
 | Change key — one run        | `-Key "..."`                              | `--key "..."`                                 |

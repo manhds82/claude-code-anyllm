@@ -7,17 +7,25 @@
   Flow:  VS Code (Claude Code) -> LiteLLM :4000 -> your provider's /v1 endpoint
 
   USAGE:
-    1. Edit the 3 lines under "EDIT THESE FOR YOUR PROVIDER" below
-       (BaseUrl / Model / Key) -- or pass them at runtime with -BaseUrl / -Model / -Key.
-    2. Run:  .\start-claude.ps1
-    3. The script starts the proxy (in its own window), waits until it is ready,
+    1. Run:  .\start-claude.ps1
+       With no -Provider/-BaseUrl given, you get an interactive menu built
+       from config\providers.conf -- pick FPT, NVIDIA, Gemini, GitHub, Groq...
+       Each provider reads its key from its own env var (see -ListProviders),
+       so you just set the key for whichever provider you actually have.
+    2. Or skip the menu:  .\start-claude.ps1 -Provider nvidia
+    3. Or bypass providers.conf entirely with -BaseUrl / -Model / -Key.
+    4. The script starts the proxy (in its own window), waits until it is ready,
        then opens VS Code already pointed at the proxy.
-    4. Stop the proxy: close the LiteLLM window, or run  .\start-claude.ps1 -Stop
+    5. Stop the proxy: close the LiteLLM window, or run  .\start-claude.ps1 -Stop
 
   PARAMETERS:
-    -BaseUrl <url> : OpenAI-compatible /v1 endpoint to use for this run.
-    -Model <name>  : Model name to use for this run (no need to edit the file).
-    -Key <key>     : API key to use for this run (not saved to disk).
+    -Provider <id> : Pick a provider by id from config\providers.conf.
+    -ListProviders : List providers.conf entries and which have a key set.
+    -BaseUrl <url> : OpenAI-compatible /v1 endpoint to use for this run
+                     (overrides the selected provider's base_url).
+    -Model <name>  : Model name to use for this run (overrides provider's model).
+    -Key <key>     : API key to use for this run (not saved to disk;
+                     overrides the provider's key_env).
     -List          : List the models the endpoint exposes (/v1/models), then exit.
     -Port <int>    : Proxy port (default 4000). Auto-finds a free port if busy.
     -Stop          : Stop a running proxy on that port.
@@ -47,9 +55,14 @@ param(
     [string]$Key     = "",
     # =============================================================
 
+    # Pick a provider by id from config\providers.conf instead of -BaseUrl/-Model.
+    # Omit both -Provider and -BaseUrl to get an interactive menu instead.
+    [string]$Provider = "",
+
     [switch]$List,
     [switch]$Stop,
     [switch]$NoVSCode,
+    [switch]$ListProviders,
     [int]$Port = 4000
 )
 
@@ -97,6 +110,45 @@ $ConfigPath = Join-Path $ScriptDir "config\litellm_config.yaml"
 # Folder VS Code opens (default: the script's own folder).
 $ProjectDir = $ScriptDir
 
+# Provider list: config\providers.conf, pipe-delimited "id|label|base_url|model|key_env".
+# Add a line there to add a provider -- no code changes needed.
+function Get-Providers {
+    $path = Join-Path $ScriptDir "config\providers.conf"
+    if (-not (Test-Path $path)) { return @() }
+    Get-Content $path | Where-Object { $_.Trim() -and -not $_.TrimStart().StartsWith("#") } | ForEach-Object {
+        $parts = $_ -split '\|'
+        if ($parts.Count -ge 5) {
+            [PSCustomObject]@{
+                Id      = $parts[0].Trim()
+                Label   = $parts[1].Trim()
+                BaseUrl = $parts[2].Trim()
+                Model   = $parts[3].Trim()
+                KeyEnv  = $parts[4].Trim()
+            }
+        }
+    }
+}
+
+# Interactive menu: pick a provider, show which ones already have a key set
+# (via their key_env from providers.conf).
+function Select-ProviderInteractive([array]$providers) {
+    Write-Step "Choose a provider (config\providers.conf)"
+    for ($i = 0; $i -lt $providers.Count; $i++) {
+        $p = $providers[$i]
+        $hasKey = -not [string]::IsNullOrWhiteSpace([Environment]::GetEnvironmentVariable($p.KeyEnv))
+        $tag = if ($hasKey) { "[key set]" } else { "[no key]" }
+        Write-Host ("  {0}. {1,-38} {2}" -f ($i + 1), $p.Label, $tag)
+    }
+    $choice = Read-Host "`nPick a number (Enter = 1)"
+    if ([string]::IsNullOrWhiteSpace($choice)) { $choice = "1" }
+    $idx = [int]$choice - 1
+    if ($idx -lt 0 -or $idx -ge $providers.Count) {
+        Write-Err2 "Invalid choice."
+        return $null
+    }
+    return $providers[$idx]
+}
+
 
 # ---------- Mode -Stop: kill the proxy and exit ----------
 if ($Stop) {
@@ -115,6 +167,25 @@ if ($Stop) {
             }
         }
     }
+    return
+}
+
+
+# ---------- Mode -ListProviders: show config\providers.conf then exit ----------
+if ($ListProviders) {
+    $providers = Get-Providers
+    if (-not $providers) {
+        Write-Err2 "No providers found in config\providers.conf"
+        return
+    }
+    Write-Step "Providers in config\providers.conf"
+    foreach ($p in $providers) {
+        $hasKey = -not [string]::IsNullOrWhiteSpace([Environment]::GetEnvironmentVariable($p.KeyEnv))
+        $tag = if ($hasKey) { "[key set]" } else { "[no key]" }
+        Write-Host ("  {0,-8} {1,-38} {2}   (env: {3})" -f $p.Id, $p.Label, $tag, $p.KeyEnv)
+    }
+    Write-Host "`nSet a key once:  setx <KEY_ENV_NAME> `"sk-...`"   (open a new terminal after)"
+    Write-Host "Use directly:    .\start-claude.ps1 -Provider <id>"
     return
 }
 
@@ -138,6 +209,30 @@ if ($List) {
         Write-Warn2 "Check the key, the base URL, and your network."
     }
     return
+}
+
+
+# ---------- 0. Resolve provider (-Provider, or an interactive menu) ----------
+# Skipped entirely if the caller passed -BaseUrl and/or -Model explicitly --
+# those always win over providers.conf.
+$providers = Get-Providers
+if ($Provider) {
+    $selected = $providers | Where-Object { $_.Id -eq $Provider }
+    if (-not $selected) {
+        Write-Err2 "Provider '$Provider' not found. Run -ListProviders to see valid ids."
+        return
+    }
+    if (-not $PSBoundParameters.ContainsKey('BaseUrl')) { $BaseUrl = $selected.BaseUrl }
+    if (-not $PSBoundParameters.ContainsKey('Model'))   { $Model   = $selected.Model }
+    if ([string]::IsNullOrWhiteSpace($Key)) { $Key = [Environment]::GetEnvironmentVariable($selected.KeyEnv) }
+    Write-Ok "Provider: $($selected.Label)"
+} elseif (-not $PSBoundParameters.ContainsKey('BaseUrl') -and -not $PSBoundParameters.ContainsKey('Model') -and $providers.Count -gt 0) {
+    $selected = Select-ProviderInteractive $providers
+    if (-not $selected) { return }
+    $BaseUrl = $selected.BaseUrl
+    $Model   = $selected.Model
+    if ([string]::IsNullOrWhiteSpace($Key)) { $Key = [Environment]::GetEnvironmentVariable($selected.KeyEnv) }
+    Write-Ok "Provider: $($selected.Label)"
 }
 
 
