@@ -231,7 +231,7 @@ img { max-width: 100%; height: auto; }
 
 <header class="fpt-hero"><h1 class="fpt-hero__title">claude-code-anyllm</h1><p class="fpt-hero__subtitle">Use Claude Code in VS Code, powered by ANY OpenAI-compatible LLM (FPT Cloud, OpenAI, OpenRouter, Groq, DeepSeek, Ollama...) - bridged through a local LiteLLM proxy.</p></header>
 <div style="text-align:right;margin:6px 0 0;font-size:14px;color:var(--fpt-muted)"><strong>English</strong> &middot; <a href="guideline.vi.html">Ti&#7871;ng Vi&#7879;t</a></div>
-<nav class="guide-toc"><a href="#overview">1. Overview</a><a href="#requirements">2. Requirements</a><a href="#install">3. Install (once)</a><a href="#run">4. Run</a><a href="#change-key">5. &#9733; Change KEY</a><a href="#change-model">6. &#9733; Change MODEL</a><a href="#toggle">7. &#9733; Brain Toggle</a><a href="#cheatsheet">8. Cheat sheet</a><a href="#how">9. How it works</a><a href="#troubleshooting">10. Troubleshooting</a><a href="#structure">11. Structure</a></nav>
+<nav class="guide-toc"><a href="#overview">1. Overview</a><a href="#requirements">2. Requirements</a><a href="#install">3. Install (once)</a><a href="#run">4. Run</a><a href="#multi-provider">4b. &#9733; Multiple providers</a><a href="#change-key">5. &#9733; Change KEY</a><a href="#change-model">6. &#9733; Change MODEL</a><a href="#toggle">7. &#9733; Brain Toggle</a><a href="#cheatsheet">8. Cheat sheet</a><a href="#how">9. How it works</a><a href="#troubleshooting">10. Troubleshooting</a><a href="#structure">11. Structure</a></nav>
 <section class="fpt-section" id="overview">
 <h2 class="fpt-section__title">1. Overview</h2>
 <p class="fpt-p">This toolkit lets you <strong>use Claude Code in VS Code as usual</strong>, while the actual "brain" answering you is <strong>any OpenAI-compatible LLM</strong> &mdash; FPT Cloud, OpenAI, OpenRouter, Groq, DeepSeek, a local Ollama, etc. The bridge is <strong>LiteLLM</strong>, a tiny proxy running on your own machine that translates between the Anthropic API and your provider.</p>
@@ -291,6 +291,37 @@ chmod +x *.sh
 <tr><td><code>-NoVSCode</code></td><td>Only start the proxy; print env commands so you can open VS Code yourself.</td></tr>
 </tbody></table></div>
 <div class="fpt-callout" style="--callout-accent:#005BA6"><span class="fpt-callout__icon" aria-hidden="true">&#8505;</span><div class="fpt-callout__body">On the first run, if <strong>LiteLLM isn't installed</strong>, the script auto-runs <code>setup-litellm.ps1</code> for you &mdash; so you really only need to remember <code>start-claude.ps1</code>.</div></div>
+</section>
+
+<section class="fpt-section" id="multi-provider">
+<h2 class="fpt-section__title">4b. &#9733; Multiple keys (FPT, NVIDIA, Gemini, GitHub...) &mdash; pick a provider at start time</h2>
+<p class="fpt-p">Got keys for more than one provider? <code>config/providers.conf</code> lists them all &mdash; run the launcher with <strong>no arguments</strong> to get a picker menu, or jump straight to one with <code>-Provider</code>/<code>--provider</code>. Each provider reads its key from its <strong>own</strong> environment variable, so you only need to set the ones you actually have.</p>
+<pre class="guide-code"><span class="cm"># Windows (PowerShell)</span>
+.\start-claude.ps1                 <span class="cm"># interactive menu, marks [key set]/[no key]</span>
+.\start-claude.ps1 -Provider nvidia
+.\start-claude.ps1 -ListProviders   <span class="cm"># see every id + its env var</span>
+
+<span class="cm"># macOS / Linux (bash)</span>
+./start-claude.sh
+./start-claude.sh --provider nvidia
+./start-claude.sh --list-providers</pre>
+<div class="fpt-table-wrap"><table class="fpt-table fpt-table--zebra"><caption>The 5 providers shipped in <code>config/providers.conf</code></caption>
+<thead><tr><th>id</th><th>Provider</th><th>Model</th><th>Set the key with</th></tr></thead>
+<tbody>
+<tr><td><code>fpt</code></td><td>FPT Cloud</td><td><code>DeepSeek-V4-Flash</code></td><td><code>LLM_API_KEY_FPT</code></td></tr>
+<tr><td><code>nvidia</code></td><td>NVIDIA NIM</td><td><code>qwen/qwen2.5-coder-32b-instruct</code></td><td><code>LLM_API_KEY_NVIDIA</code></td></tr>
+<tr><td><code>gemini</code></td><td>Google Gemini</td><td><code>gemini-2.5-flash</code></td><td><code>LLM_API_KEY_GEMINI</code></td></tr>
+<tr><td><code>github</code></td><td>GitHub Models</td><td><code>gpt-4o-mini</code></td><td><code>LLM_API_KEY_GITHUB</code></td></tr>
+<tr><td><code>groq</code></td><td>Groq</td><td><code>llama-3.3-70b-versatile</code></td><td><code>LLM_API_KEY_GROQ</code></td></tr>
+</tbody></table></div>
+<pre class="guide-code"><span class="cm"># Windows &mdash; set whichever ones you have, then open a new terminal</span>
+setx LLM_API_KEY_NVIDIA "nvapi-..."
+setx LLM_API_KEY_GEMINI "AIza..."
+
+<span class="cm"># macOS / Linux &mdash; add to ~/.zshrc or ~/.bashrc</span>
+export LLM_API_KEY_NVIDIA="nvapi-..."
+export LLM_API_KEY_GEMINI="AIza..."</pre>
+<div class="fpt-callout" style="--callout-accent:#10B981"><span class="fpt-callout__icon" aria-hidden="true">&#10003;</span><div class="fpt-callout__body">Add your own provider by adding <strong>one line</strong> to <code>config/providers.conf</code> (<code>id|label|base_url|model|key_env</code>) &mdash; no code changes needed. <code>-BaseUrl</code>/<code>-Model</code>/<code>-Key</code> still override the selected provider exactly as before, so nothing else changes.</div></div>
 </section>
 
 <section class="fpt-section" id="change-key">

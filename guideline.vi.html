@@ -231,7 +231,7 @@ img { max-width: 100%; height: auto; }
 
 <header class="fpt-hero"><h1 class="fpt-hero__title">claude-code-anyllm</h1><p class="fpt-hero__subtitle">Dùng Claude Code trong VS Code nhưng "não" là BẤT KỲ LLM OpenAI-compatible nào (FPT Cloud, OpenAI, OpenRouter, Groq, DeepSeek, Ollama...) - nối qua LiteLLM proxy chạy local.</p></header>
 <div style="text-align:right;margin:6px 0 0;font-size:14px;color:var(--fpt-muted)"><a href="guideline.en.html">English</a> &middot; <strong>Tiếng Việt</strong></div>
-<nav class="guide-toc"><a href="#overview">1. Tổng quan</a><a href="#requirements">2. Yêu cầu</a><a href="#install">3. Cài đặt (1 lần)</a><a href="#run">4. Chạy</a><a href="#change-key">5. ★ Đổi KEY</a><a href="#change-model">6. ★ Đổi MODEL</a><a href="#toggle">7. ★ Brain Toggle</a><a href="#cheatsheet">8. Bảng tra nhanh</a><a href="#how">9. Cơ chế</a><a href="#troubleshooting">10. Xử lý sự cố</a><a href="#structure">11. Cấu trúc</a></nav>
+<nav class="guide-toc"><a href="#overview">1. Tổng quan</a><a href="#requirements">2. Yêu cầu</a><a href="#install">3. Cài đặt (1 lần)</a><a href="#run">4. Chạy</a><a href="#multi-provider">4b. ★ Nhiều Provider</a><a href="#change-key">5. ★ Đổi KEY</a><a href="#change-model">6. ★ Đổi MODEL</a><a href="#toggle">7. ★ Brain Toggle</a><a href="#cheatsheet">8. Bảng tra nhanh</a><a href="#how">9. Cơ chế</a><a href="#troubleshooting">10. Xử lý sự cố</a><a href="#structure">11. Cấu trúc</a></nav>
 <section class="fpt-section" id="overview">
 <h2 class="fpt-section__title">1. Tổng quan</h2>
 <p class="fpt-p">Bộ công cụ này cho phép bạn <strong>dùng Claude Code trong VS Code như bình thường</strong>, nhưng phần "não" trả lời lại là <strong>bất kỳ LLM OpenAI-compatible nào</strong> &mdash; FPT Cloud, OpenAI, OpenRouter, Groq, DeepSeek, Ollama chạy local, v.v. Cầu nối là <strong>LiteLLM</strong>, một proxy nhỏ chạy ngay trên máy bạn, dịch qua lại giữa Anthropic API và provider của bạn.</p>
@@ -291,6 +291,37 @@ chmod +x *.sh
 <tr><td><code>-NoVSCode</code></td><td>Chỉ bật proxy; in sẵn lệnh env để bạn tự mở VS Code.</td></tr>
 </tbody></table></div>
 <div class="fpt-callout" style="--callout-accent:#005BA6"><span class="fpt-callout__icon" aria-hidden="true">&#8505;</span><div class="fpt-callout__body">Lần đầu chạy mà <strong>chưa cài LiteLLM</strong>, script tự gọi <code>setup-litellm.ps1</code> giúp bạn &mdash; nên thực ra chỉ cần nhớ <code>start-claude.ps1</code>.</div></div>
+</section>
+
+<section class="fpt-section" id="multi-provider">
+<h2 class="fpt-section__title">4b. ★ Có nhiều key (FPT, NVIDIA, Gemini, GitHub...) &mdash; chọn provider khi chạy</h2>
+<p class="fpt-p">Có key của nhiều nhà cung cấp cùng lúc? <code>config/providers.conf</code> liệt kê tất cả &mdash; chạy script <strong>không kèm tham số</strong> để hiện menu chọn, hoặc chỉ thẳng provider bằng <code>-Provider</code>/<code>--provider</code>. Mỗi provider đọc key từ <strong>biến môi trường riêng của nó</strong>, nên bạn chỉ cần đặt key cho cái nào bạn thực sự có.</p>
+<pre class="guide-code"><span class="cm"># Windows (PowerShell)</span>
+.\start-claude.ps1                 <span class="cm"># menu chọn, đánh dấu [key set]/[no key]</span>
+.\start-claude.ps1 -Provider nvidia
+.\start-claude.ps1 -ListProviders   <span class="cm"># xem hết id + biến môi trường tương ứng</span>
+
+<span class="cm"># macOS / Linux (bash)</span>
+./start-claude.sh
+./start-claude.sh --provider nvidia
+./start-claude.sh --list-providers</pre>
+<div class="fpt-table-wrap"><table class="fpt-table fpt-table--zebra"><caption>5 provider có sẵn trong <code>config/providers.conf</code></caption>
+<thead><tr><th>id</th><th>Provider</th><th>Model</th><th>Đặt key bằng</th></tr></thead>
+<tbody>
+<tr><td><code>fpt</code></td><td>FPT Cloud</td><td><code>DeepSeek-V4-Flash</code></td><td><code>LLM_API_KEY_FPT</code></td></tr>
+<tr><td><code>nvidia</code></td><td>NVIDIA NIM</td><td><code>qwen/qwen2.5-coder-32b-instruct</code></td><td><code>LLM_API_KEY_NVIDIA</code></td></tr>
+<tr><td><code>gemini</code></td><td>Google Gemini</td><td><code>gemini-2.5-flash</code></td><td><code>LLM_API_KEY_GEMINI</code></td></tr>
+<tr><td><code>github</code></td><td>GitHub Models</td><td><code>gpt-4o-mini</code></td><td><code>LLM_API_KEY_GITHUB</code></td></tr>
+<tr><td><code>groq</code></td><td>Groq</td><td><code>llama-3.3-70b-versatile</code></td><td><code>LLM_API_KEY_GROQ</code></td></tr>
+</tbody></table></div>
+<pre class="guide-code"><span class="cm"># Windows &mdash; đặt cái nào bạn có, rồi mở terminal mới</span>
+setx LLM_API_KEY_NVIDIA "nvapi-..."
+setx LLM_API_KEY_GEMINI "AIza..."
+
+<span class="cm"># macOS / Linux &mdash; thêm vào ~/.zshrc hoặc ~/.bashrc</span>
+export LLM_API_KEY_NVIDIA="nvapi-..."
+export LLM_API_KEY_GEMINI="AIza..."</pre>
+<div class="fpt-callout" style="--callout-accent:#10B981"><span class="fpt-callout__icon" aria-hidden="true">&#10003;</span><div class="fpt-callout__body">Thêm provider của riêng bạn: thêm <strong>1 dòng</strong> vào <code>config/providers.conf</code> (dạng <code>id|label|base_url|model|key_env</code>) &mdash; không cần sửa code. <code>-BaseUrl</code>/<code>-Model</code>/<code>-Key</code> vẫn override provider đã chọn như trước, không gì thay đổi.</div></div>
 </section>
 
 <section class="fpt-section" id="change-key">
