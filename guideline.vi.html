@@ -431,7 +431,7 @@ $Key     = ""                                  <span class="cm"># để trống 
 <tr><td>Proxy crash kèm <em>UnicodeDecodeError</em></td><td>Có file <code>.env</code> lỗi encoding &mdash; <code>Rename-Item config\.env config\.env.bak</code>.</td></tr>
 <tr><td>Lỗi liên quan đếm token</td><td>Trong cửa sổ chạy: <code>$env:CLAUDE_CODE_DISABLE_TOKEN_COUNTING = "1"</code> trước khi mở VS Code.</td></tr>
 <tr><td>Sau 30s chưa thấy "proxy ready"</td><td>Đọc cửa sổ LiteLLM để biết lỗi thật (sai key, sai tên model, mạng).</td></tr>
-<tr><td>"model not found" cho haiku/sonnet</td><td>Đảm bảo dùng bản script hiện tại (đã route model nền về cùng alias &mdash; mục 8).</td></tr>
+<tr><td>"model not found" cho haiku/sonnet</td><td>Đảm bảo dùng bản script hiện tại (đã route model nền về cùng alias &mdash; mục 9).</td></tr>
 <tr><td>Không tìm thấy LiteLLM</td><td>Chạy <code>.\setup-litellm.ps1</code> (hoặc <code>-Force</code> để cài lại).</td></tr>
 </tbody></table></div>
 </section>
@@ -450,6 +450,7 @@ $Key     = ""                                  <span class="cm"># để trống 
 |   +-- claude.json           <span class="cm"># profile: Anthropic thật</span>
 |   +-- fpt.json              <span class="cm"># profile: FPT/DeepSeek qua proxy</span>
 +-- config\
+|   +-- providers.conf        <span class="cm"># danh sách provider — thêm 1 dòng để thêm provider</span>
 |   +-- litellm_config.yaml   <span class="cm"># TỰ SINH mỗi lần chạy - đừng sửa</span>
 +-- .venv\                    <span class="cm"># môi trường LiteLLM (do setup tạo)</span></pre>
 </section>

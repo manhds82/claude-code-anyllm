@@ -431,7 +431,7 @@ $Key     = ""                                  <span class="cm"># blank = prompt
 <tr><td>Proxy crashes with <em>UnicodeDecodeError</em></td><td>A stray <code>.env</code> with bad encoding &mdash; <code>Rename-Item config\.env config\.env.bak</code>.</td></tr>
 <tr><td>Token-count errors</td><td>In the run window: <code>$env:CLAUDE_CODE_DISABLE_TOKEN_COUNTING = "1"</code> before opening VS Code.</td></tr>
 <tr><td>"Proxy ready" never appears after 30s</td><td>Read the LiteLLM window for the real error (bad key, wrong model name, network).</td></tr>
-<tr><td>"model not found" for haiku/sonnet</td><td>Make sure you're on the current script (it routes background models to the same alias &mdash; section 8).</td></tr>
+<tr><td>"model not found" for haiku/sonnet</td><td>Make sure you're on the current script (it routes background models to the same alias &mdash; section 9).</td></tr>
 <tr><td>LiteLLM not found</td><td>Run <code>.\setup-litellm.ps1</code> (or <code>-Force</code> to reinstall).</td></tr>
 </tbody></table></div>
 </section>
@@ -450,6 +450,7 @@ $Key     = ""                                  <span class="cm"># blank = prompt
 |   +-- claude.json           <span class="cm"># profile: real Anthropic account</span>
 |   +-- fpt.json              <span class="cm"># profile: FPT/DeepSeek via proxy</span>
 +-- config\
+|   +-- providers.conf        <span class="cm"># provider list — add a line here to add a provider</span>
 |   +-- litellm_config.yaml   <span class="cm"># AUTO-GENERATED each run - do not edit</span>
 +-- .venv\                    <span class="cm"># LiteLLM environment (created by setup)</span></pre>
 </section>

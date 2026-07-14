@@ -235,6 +235,7 @@ claude-code-anyllm/
 │  ├─ claude.json             # profile: real Anthropic account
 │  └─ fpt.json                # profile: FPT/DeepSeek via proxy
 ├─ config/
+│  ├─ providers.conf          # provider list (id|label|base_url|model|key_env)
 │  └─ litellm_config.yaml     # generated each run; committed as a working example
 └─ .venv/                     # LiteLLM environment (created by setup) — git-ignored
 ```
