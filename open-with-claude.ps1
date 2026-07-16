@@ -14,7 +14,7 @@
 #>
 
 # ---- EDIT THIS: path to your claude-code-anyllm installation ----
-$ClaudeSetup = Join-Path $env:USERPROFILE "claude-code-anyllm"
+$ClaudeSetup = "E:\SourceCode\claude-code-anyllm"
 # -----------------------------------------------------------------
 
 $launcher = Join-Path $ClaudeSetup "start-claude.ps1"
