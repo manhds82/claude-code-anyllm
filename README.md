@@ -151,6 +151,7 @@ Want to freeze updates entirely? Add `"env": { "DISABLE_AUTOUPDATER": "1" }` to 
 | Run (interactive menu)      | `.\start-claude.ps1`                      | `./start-claude.sh`                           |
 | Run — pick a provider by id | `-Provider nvidia`                        | `--provider nvidia`                           |
 | List providers + key status | `-ListProviders`                          | `--list-providers`                            |
+| Open a different project    | `-OpenDir "C:\MyProjects\myapp"`          | `--open-dir ~/myapp`                          |
 | Change key/model — permanent| Edit `$Key` / `$Model` in `start-claude.ps1` | Edit `KEY` / `MODEL` in `start-claude.sh` |
 | Change model — one run      | `-Model "..."`                            | `--model "..."`                               |
 | Change key — one run        | `-Key "..."`                              | `--key "..."`                                 |
@@ -159,6 +160,35 @@ Want to freeze updates entirely? Add `"env": { "DISABLE_AUTOUPDATER": "1" }` to 
 | Change the proxy port       | `-Port 4010`                              | `--port 4010`                                  |
 | Stop the proxy              | `-Stop`                                   | `--stop`                                        |
 | Proxy only (no VS Code)     | `-NoVSCode`                               | `--no-vscode`                                   |
+
+## Use with an existing project
+
+By default `start-claude.ps1` / `start-claude.sh` opens VS Code in its own folder. To open **your** project instead, pass `-OpenDir` / `--open-dir`:
+
+```powershell
+# Windows — open a different project for this run
+.\start-claude.ps1 -Provider fpt -OpenDir "C:\MyProjects\myapp"
+```
+
+```bash
+# macOS / Linux
+./start-claude.sh --provider fpt --open-dir ~/myprojects/myapp
+```
+
+**Even simpler — one tiny file per project:** copy `open-with-claude.ps1` (Windows) or `open-with-claude.sh` (macOS/Linux) from this repo into your project, edit the `$ClaudeSetup` / `CLAUDE_SETUP` path at the top once, and from then on just run:
+
+```powershell
+# from your project folder
+.\open-with-claude.ps1              # interactive provider menu
+.\open-with-claude.ps1 -Provider fpt
+```
+
+```bash
+./open-with-claude.sh
+./open-with-claude.sh --provider fpt
+```
+
+The proxy starts, VS Code opens in **your** project. No `.venv` duplication — everything still runs from the single central installation.
 
 ## 🧠 Brain toggle — persistent profile switching
 
@@ -227,6 +257,8 @@ claude-code-anyllm/
 ├─ toggle-brain.ps1           # persistent brain toggle — Windows
 ├─ toggle-brain.bat           # double-click launcher for toggle-brain.ps1
 ├─ toggle-brain.sh            # persistent brain toggle — macOS/Linux
+├─ open-with-claude.ps1       # per-project launcher template — Windows (copy to your project)
+├─ open-with-claude.sh        # per-project launcher template — macOS/Linux (copy to your project)
 ├─ guideline.en.html          # detailed guide (English)
 ├─ guideline.vi.html          # detailed guide (Tiếng Việt)
 ├─ README.md                  # this file
@@ -235,6 +267,7 @@ claude-code-anyllm/
 │  ├─ claude.json             # profile: real Anthropic account
 │  └─ fpt.json                # profile: FPT/DeepSeek via proxy
 ├─ config/
+│  ├─ providers.conf          # provider list (id|label|base_url|model|key_env)
 │  └─ litellm_config.yaml     # generated each run; committed as a working example
 └─ .venv/                     # LiteLLM environment (created by setup) — git-ignored
 ```

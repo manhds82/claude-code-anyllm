@@ -63,7 +63,12 @@ param(
     [switch]$Stop,
     [switch]$NoVSCode,
     [switch]$ListProviders,
-    [int]$Port = 4000
+    [int]$Port = 4000,
+
+    # Folder to open in VS Code. Default: the script's own folder (claude-code-anyllm).
+    # Set this to open a different project: -OpenDir "C:\MyProjects\myapp"
+    # Or drop open-with-claude.ps1 in each project to set this automatically.
+    [string]$OpenDir = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -107,8 +112,8 @@ if (Test-Path (Join-Path $LocalVenv "Scripts\litellm.exe")) {
 # Proxy config file lives inside the project. It is REGENERATED on every run.
 $ConfigPath = Join-Path $ScriptDir "config\litellm_config.yaml"
 
-# Folder VS Code opens (default: the script's own folder).
-$ProjectDir = $ScriptDir
+# Folder VS Code opens: -OpenDir wins, otherwise the script's own folder.
+$ProjectDir = if ([string]::IsNullOrWhiteSpace($OpenDir)) { $ScriptDir } else { (Resolve-Path $OpenDir).Path }
 
 # Provider list: config\providers.conf, pipe-delimited "id|label|base_url|model|key_env".
 # Add a line there to add a provider -- no code changes needed.

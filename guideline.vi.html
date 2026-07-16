@@ -231,7 +231,7 @@ img { max-width: 100%; height: auto; }
 
 <header class="fpt-hero"><h1 class="fpt-hero__title">claude-code-anyllm</h1><p class="fpt-hero__subtitle">Dùng Claude Code trong VS Code nhưng "não" là BẤT KỲ LLM OpenAI-compatible nào (FPT Cloud, OpenAI, OpenRouter, Groq, DeepSeek, Ollama...) - nối qua LiteLLM proxy chạy local.</p></header>
 <div style="text-align:right;margin:6px 0 0;font-size:14px;color:var(--fpt-muted)"><a href="guideline.en.html">English</a> &middot; <strong>Tiếng Việt</strong></div>
-<nav class="guide-toc"><a href="#overview">1. Tổng quan</a><a href="#requirements">2. Yêu cầu</a><a href="#install">3. Cài đặt (1 lần)</a><a href="#run">4. Chạy</a><a href="#multi-provider">4b. ★ Nhiều Provider</a><a href="#change-key">5. ★ Đổi KEY</a><a href="#change-model">6. ★ Đổi MODEL</a><a href="#toggle">7. ★ Brain Toggle</a><a href="#cheatsheet">8. Bảng tra nhanh</a><a href="#how">9. Cơ chế</a><a href="#troubleshooting">10. Xử lý sự cố</a><a href="#structure">11. Cấu trúc</a></nav>
+<nav class="guide-toc"><a href="#overview">1. Tổng quan</a><a href="#requirements">2. Yêu cầu</a><a href="#install">3. Cài đặt (1 lần)</a><a href="#run">4. Chạy</a><a href="#multi-provider">4b. ★ Nhiều Provider</a><a href="#open-project">4c. ★ Mở project riêng</a><a href="#change-key">5. ★ Đổi KEY</a><a href="#change-model">6. ★ Đổi MODEL</a><a href="#toggle">7. ★ Brain Toggle</a><a href="#cheatsheet">8. Bảng tra nhanh</a><a href="#how">9. Cơ chế</a><a href="#troubleshooting">10. Xử lý sự cố</a><a href="#structure">11. Cấu trúc</a></nav>
 <section class="fpt-section" id="overview">
 <h2 class="fpt-section__title">1. Tổng quan</h2>
 <p class="fpt-p">Bộ công cụ này cho phép bạn <strong>dùng Claude Code trong VS Code như bình thường</strong>, nhưng phần "não" trả lời lại là <strong>bất kỳ LLM OpenAI-compatible nào</strong> &mdash; FPT Cloud, OpenAI, OpenRouter, Groq, DeepSeek, Ollama chạy local, v.v. Cầu nối là <strong>LiteLLM</strong>, một proxy nhỏ chạy ngay trên máy bạn, dịch qua lại giữa Anthropic API và provider của bạn.</p>
@@ -322,6 +322,28 @@ setx LLM_API_KEY_GEMINI "AIza..."
 export LLM_API_KEY_NVIDIA="nvapi-..."
 export LLM_API_KEY_GEMINI="AIza..."</pre>
 <div class="fpt-callout" style="--callout-accent:#10B981"><span class="fpt-callout__icon" aria-hidden="true">&#10003;</span><div class="fpt-callout__body">Thêm provider của riêng bạn: thêm <strong>1 dòng</strong> vào <code>config/providers.conf</code> (dạng <code>id|label|base_url|model|key_env</code>) &mdash; không cần sửa code. <code>-BaseUrl</code>/<code>-Model</code>/<code>-Key</code> vẫn override provider đã chọn như trước, không gì thay đổi.</div></div>
+</section>
+
+<section class="fpt-section" id="open-project">
+<h2 class="fpt-section__title">4c. ★ Mở project của bạn (không phải folder cài đặt)</h2>
+<p class="fpt-p">Mặc định launcher mở VS Code tại folder chứa nó. Để mở <strong>project của bạn</strong>, dùng <code>-OpenDir</code> / <code>--open-dir</code>:</p>
+<pre class="guide-code"><span class="cm"># Windows — mở project cụ thể cho lần chạy này</span>
+.\start-claude.ps1 -Provider fpt -OpenDir "C:\MyProjects\myapp"
+
+<span class="cm"># macOS / Linux</span>
+./start-claude.sh --provider fpt --open-dir ~/myprojects/myapp</pre>
+
+<h3>Đơn giản hơn — thả 1 file nhỏ vào mỗi project</h3>
+<p class="fpt-p">Copy <code>open-with-claude.ps1</code> (Windows) hoặc <code>open-with-claude.sh</code> (macOS/Linux) từ repo này vào project của bạn. Sửa đường dẫn <code>$ClaudeSetup</code> / <code>CLAUDE_SETUP</code> ở đầu file <strong>một lần duy nhất</strong>. Sau đó, từ bất kỳ project nào chỉ cần chạy:</p>
+<pre class="guide-code"><span class="cm"># Windows (PowerShell) — từ folder project của bạn</span>
+.\open-with-claude.ps1
+.\open-with-claude.ps1 -Provider nvidia
+
+<span class="cm"># macOS / Linux — từ folder project của bạn</span>
+chmod +x open-with-claude.sh   <span class="cm"># lần đầu tiên</span>
+./open-with-claude.sh
+./open-with-claude.sh --provider nvidia</pre>
+<div class="fpt-callout" style="--callout-accent:#10B981"><span class="fpt-callout__icon" aria-hidden="true">&#10003;</span><div class="fpt-callout__body">Proxy vẫn chạy từ <strong>một bản cài đặt trung tâm duy nhất</strong> — không tốn thêm ~200MB <code>.venv</code> mỗi project, không cần setup riêng. Tất cả flag (<code>-Provider</code>, <code>-Key</code>, <code>-Model</code>, ...) đều được chuyển tiếp như thường.</div></div>
 </section>
 
 <section class="fpt-section" id="change-key">
@@ -431,7 +453,7 @@ $Key     = ""                                  <span class="cm"># để trống 
 <tr><td>Proxy crash kèm <em>UnicodeDecodeError</em></td><td>Có file <code>.env</code> lỗi encoding &mdash; <code>Rename-Item config\.env config\.env.bak</code>.</td></tr>
 <tr><td>Lỗi liên quan đếm token</td><td>Trong cửa sổ chạy: <code>$env:CLAUDE_CODE_DISABLE_TOKEN_COUNTING = "1"</code> trước khi mở VS Code.</td></tr>
 <tr><td>Sau 30s chưa thấy "proxy ready"</td><td>Đọc cửa sổ LiteLLM để biết lỗi thật (sai key, sai tên model, mạng).</td></tr>
-<tr><td>"model not found" cho haiku/sonnet</td><td>Đảm bảo dùng bản script hiện tại (đã route model nền về cùng alias &mdash; mục 8).</td></tr>
+<tr><td>"model not found" cho haiku/sonnet</td><td>Đảm bảo dùng bản script hiện tại (đã route model nền về cùng alias &mdash; mục 9).</td></tr>
 <tr><td>Không tìm thấy LiteLLM</td><td>Chạy <code>.\setup-litellm.ps1</code> (hoặc <code>-Force</code> để cài lại).</td></tr>
 </tbody></table></div>
 </section>
@@ -443,6 +465,8 @@ $Key     = ""                                  <span class="cm"># để trống 
 +-- start-claude.ps1 / .sh    <span class="cm"># bật proxy + mở editor (Windows / macOS-Linux)</span>
 +-- toggle-brain.ps1 / .sh    <span class="cm"># chuyển não vĩnh viễn (Windows / macOS-Linux)</span>
 +-- toggle-brain.bat          <span class="cm"># double-click launcher cho toggle-brain.ps1</span>
++-- open-with-claude.ps1      <span class="cm"># launcher mẫu mỗi project (Windows)  -- copy vào project của bạn</span>
++-- open-with-claude.sh       <span class="cm"># launcher mẫu mỗi project (macOS/Linux) -- copy vào project của bạn</span>
 +-- guideline.en.html         <span class="cm"># hướng dẫn (English)</span>
 +-- guideline.vi.html         <span class="cm"># hướng dẫn (Tiếng Việt)</span>
 +-- README.md                 <span class="cm"># tham khảo nhanh</span>
@@ -450,6 +474,7 @@ $Key     = ""                                  <span class="cm"># để trống 
 |   +-- claude.json           <span class="cm"># profile: Anthropic thật</span>
 |   +-- fpt.json              <span class="cm"># profile: FPT/DeepSeek qua proxy</span>
 +-- config\
+|   +-- providers.conf        <span class="cm"># danh sách provider — thêm 1 dòng để thêm provider</span>
 |   +-- litellm_config.yaml   <span class="cm"># TỰ SINH mỗi lần chạy - đừng sửa</span>
 +-- .venv\                    <span class="cm"># môi trường LiteLLM (do setup tạo)</span></pre>
 </section>
