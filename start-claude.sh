@@ -59,8 +59,12 @@ start-claude.sh - run Claude Code on any OpenAI-compatible LLM via LiteLLM
   ./start-claude.sh --port N           proxy port (default 4000)
   ./start-claude.sh --stop             stop a running proxy on that port
   ./start-claude.sh --no-vscode        only start the proxy
+  ./start-claude.sh --open-dir PATH    open VS Code in PATH instead of this folder
+                                        (or drop open-with-claude.sh in your project)
 EOF
 }
+
+OPEN_DIR=""
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -73,10 +77,13 @@ while [ $# -gt 0 ]; do
     --list-providers) DO_LIST_PROVIDERS=1; shift ;;
     --stop)      DO_STOP=1; shift ;;
     --no-vscode) NO_VSCODE=1; shift ;;
+    --open-dir)  OPEN_DIR="$2"; shift 2 ;;
     -h|--help)   usage; exit 0 ;;
     *) err "Unknown option: $1"; usage; exit 1 ;;
   esac
 done
+
+PROJECT_DIR="${OPEN_DIR:-$SCRIPT_DIR}"
 
 CONFIG_PATH="$SCRIPT_DIR/config/litellm_config.yaml"
 LOG_FILE="$SCRIPT_DIR/litellm-proxy.log"
@@ -317,8 +324,8 @@ fi
 # ---------- 8. Open VS Code (or hint for the CLI) ----------
 step "Opening the editor (Claude Code pointed at the proxy) ..."
 if command -v code >/dev/null 2>&1; then
-  code "$SCRIPT_DIR"
-  ok "Opened VS Code for: $SCRIPT_DIR"
+  code "$PROJECT_DIR"
+  ok "Opened VS Code for: $PROJECT_DIR"
   warn "If VS Code was already open, fully quit and reopen so it picks up the new settings."
 else
   warn "'code' command not found."
