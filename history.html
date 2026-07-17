@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>claude-code-anyllm — Deploy History</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0d1117; color: #c9d1d9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; font-size: 14px; line-height: 1.6; padding: 32px 16px 64px; }
+  h1 { font-size: 22px; font-weight: 700; color: #e6edf3; margin-bottom: 4px; }
+  .subtitle { color: #8b949e; font-size: 13px; margin-bottom: 32px; }
+  .subtitle a { color: #58a6ff; text-decoration: none; }
+  .subtitle a:hover { text-decoration: underline; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { background: #161b22; color: #8b949e; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; padding: 10px 14px; text-align: left; border-bottom: 1px solid #21262d; }
+  tbody tr { border-bottom: 1px solid #21262d; }
+  tbody tr:hover { background: #161b22; }
+  td { padding: 12px 14px; vertical-align: top; }
+  .hash { font-family: 'Courier New', Consolas, monospace; font-size: 12px; background: #21262d; color: #79c0ff; padding: 2px 7px; border-radius: 4px; white-space: nowrap; }
+  .date { color: #8b949e; white-space: nowrap; font-size: 12px; }
+  .msg { color: #e6edf3; font-weight: 500; margin-bottom: 4px; }
+  .detail { color: #8b949e; font-size: 12px; line-height: 1.55; }
+  .detail ul { padding-left: 18px; margin-top: 4px; }
+  .detail li { margin-bottom: 2px; }
+  .badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 1px 8px; border-radius: 10px; }
+  .badge-feat  { background: rgba(56,139,253,.15); color: #58a6ff; border: 1px solid rgba(56,139,253,.3); }
+  .badge-fix   { background: rgba(63,185,80,.15);  color: #3fb950; border: 1px solid rgba(63,185,80,.3); }
+  .badge-chore { background: rgba(139,148,158,.15); color: #8b949e; border: 1px solid rgba(139,148,158,.3); }
+  .badge-docs  { background: rgba(188,140,255,.15); color: #bc8cff; border: 1px solid rgba(188,140,255,.3); }
+  .status-ok  { color: #3fb950; font-weight: 600; }
+  code { font-family: 'Courier New', Consolas, monospace; background: #21262d; padding: 1px 5px; border-radius: 3px; font-size: 11px; color: #79c0ff; }
+</style>
+</head>
+<body>
+<h1>claude-code-anyllm — Deploy History</h1>
+<p class="subtitle">
+  GitHub: <a href="https://github.com/manhds82/claude-code-anyllm" target="_blank">manhds82/claude-code-anyllm</a>
+  &nbsp;·&nbsp; Branch: main
+</p>
+
+<table>
+<thead>
+  <tr>
+    <th style="width:105px">Ngày</th>
+    <th style="width:90px">Hash</th>
+    <th style="width:70px">Type</th>
+    <th>Thay đổi</th>
+    <th style="width:80px">Status</th>
+  </tr>
+</thead>
+<tbody>
+
+  <tr>
+    <td class="date">2026-07-18</td>
+    <td><code class="hash">181e029</code></td>
+    <td><span class="badge badge-feat">feat</span></td>
+    <td>
+      <div class="msg">Benchmark, Dashboard, Docker image, Cursor/Windsurf docs + gitattributes</div>
+      <div class="detail">
+        <ul>
+          <li><code>-Benchmark</code> / <code>--benchmark</code>: chạy 3 test prompt (ping, code gen, tool-call check) — báo latency + tool support</li>
+          <li><code>-Dashboard</code> / <code>--dashboard</code>: mở browser tới LiteLLM Swagger UI sau khi proxy start</li>
+          <li><code>Dockerfile</code> + <code>docker-compose.yml</code> + <code>docker-entrypoint.sh</code>: chạy proxy trong container, không cần cài Python</li>
+          <li>README: thêm Docker section, Cursor/Windsurf/Continue.dev section, cập nhật Commands table và project structure</li>
+          <li><code>.gitattributes</code>: thêm Dockerfile và .dockerignore với eol=lf</li>
+        </ul>
+      </div>
+    </td>
+    <td class="status-ok">✅ pushed</td>
+  </tr>
+
+  <tr>
+    <td class="date">2026-07-18</td>
+    <td><code class="hash">c3d37f0</code></td>
+    <td><span class="badge badge-feat">feat</span></td>
+    <td>
+      <div class="msg">10×/100× improvements — key validation, caching, usage log, better errors</div>
+      <div class="detail">
+        <ul>
+          <li><code>-CheckKeys</code> / <code>--check-keys</code>: test API key từng provider (GET /models) trước khi start proxy</li>
+          <li>Response caching: thêm <code>litellm_settings.cache: local, ttl=3600</code> vào generated config</li>
+          <li>Usage log: ghi <code>logs/usage.csv</code> mỗi session (date, provider, model, port)</li>
+          <li>Better error messages (bash): khi proxy timeout, đọc log file và detect 401/429/ImportError/connection</li>
+          <li>README: Cursor/Windsurf/Continue.dev config snippet</li>
+          <li><code>logs/</code> thêm vào <code>.gitignore</code></li>
+        </ul>
+      </div>
+    </td>
+    <td class="status-ok">✅ pushed</td>
+  </tr>
+
+  <tr>
+    <td class="date">2026-07-18</td>
+    <td><code class="hash">6b2d450</code></td>
+    <td><span class="badge badge-feat">feat</span></td>
+    <td>
+      <div class="msg">Multi-provider support, per-project launcher, doc fixes</div>
+      <div class="detail">
+        <ul>
+          <li><code>config/providers.conf</code>: 5 providers (FPT, NVIDIA, Gemini, GitHub, Groq)</li>
+          <li><code>-Provider</code> / <code>--provider</code> flag + interactive menu với key status</li>
+          <li><code>open-with-claude.ps1</code> / <code>open-with-claude.sh</code>: template launcher copy vào project</li>
+          <li><code>-OpenDir</code> / <code>--open-dir</code>: mở VS Code ở folder dự án thay vì folder setup</li>
+          <li>Docs: cập nhật guideline.en.html, guideline.vi.html, README</li>
+        </ul>
+      </div>
+    </td>
+    <td class="status-ok">✅ pushed</td>
+  </tr>
+
+  <tr>
+    <td class="date">2026-07-17</td>
+    <td><code class="hash">de1b07e</code></td>
+    <td><span class="badge badge-feat">feat</span></td>
+    <td>
+      <div class="msg">Open any project from per-project launcher</div>
+      <div class="detail">
+        Thêm <code>-OpenDir</code> / <code>--open-dir</code> để mở VS Code ở thư mục project tùy chọn; tạo template file <code>open-with-claude.ps1/.sh</code> để copy vào từng project.
+      </div>
+    </td>
+    <td class="status-ok">✅ pushed</td>
+  </tr>
+
+  <tr>
+    <td class="date">2026-07-17</td>
+    <td><code class="hash">20a872f</code></td>
+    <td><span class="badge badge-docs">docs</span></td>
+    <td>
+      <div class="msg">Sync project structure, fix section reference in troubleshooting</div>
+      <div class="detail">
+        Thêm <code>providers.conf</code> vào project structure trong 3 docs; sửa cross-reference "mục 8" → "mục 9" trong phần troubleshooting.
+      </div>
+    </td>
+    <td class="status-ok">✅ pushed</td>
+  </tr>
+
+</tbody>
+</table>
+</body>
+</html>

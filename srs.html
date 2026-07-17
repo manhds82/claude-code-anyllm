@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>claude-code-anyllm — SRS</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0d1117; color: #c9d1d9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; font-size: 14px; line-height: 1.7; padding: 32px 16px 80px; }
+  .wrap { max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 24px; font-weight: 700; color: #e6edf3; margin-bottom: 6px; }
+  .meta { color: #8b949e; font-size: 12px; margin-bottom: 40px; }
+  .meta span { color: #2196F3; font-weight: 600; }
+  h2 { font-size: 16px; font-weight: 700; color: #e6edf3; margin: 36px 0 14px; padding-bottom: 6px; border-bottom: 1px solid #21262d; }
+  h3 { font-size: 14px; font-weight: 600; color: #c9d1d9; margin: 20px 0 8px; }
+  p  { color: #8b949e; margin-bottom: 10px; }
+  ul { padding-left: 20px; color: #8b949e; margin-bottom: 12px; }
+  li { margin-bottom: 4px; }
+  code { font-family: 'Courier New', Consolas, monospace; background: #21262d; padding: 1px 6px; border-radius: 3px; font-size: 12px; color: #79c0ff; }
+  .new { color: #2196F3; font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+  thead th { background: #161b22; color: #8b949e; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; padding: 8px 12px; text-align: left; border-bottom: 1px solid #21262d; }
+  tbody td { padding: 9px 12px; border-bottom: 1px solid #21262d; vertical-align: top; color: #8b949e; }
+  tbody td:first-child { color: #e6edf3; font-weight: 500; white-space: nowrap; }
+  .toc { background: #161b22; border: 1px solid #21262d; border-radius: 6px; padding: 16px 20px; margin-bottom: 36px; display: inline-block; min-width: 260px; }
+  .toc h3 { margin: 0 0 10px; font-size: 13px; color: #8b949e; }
+  .toc a { color: #58a6ff; text-decoration: none; display: block; font-size: 13px; padding: 2px 0; }
+  .toc a:hover { text-decoration: underline; }
+  .toc .sub { padding-left: 14px; font-size: 12px; color: #8b949e; }
+  .badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 10px; margin-left: 6px; }
+  .badge-new { background: rgba(33,150,243,.15); color: #2196F3; border: 1px solid rgba(33,150,243,.3); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>claude-code-anyllm — Software Requirements Specification</h1>
+<p class="meta">
+  Version: 1.0 &nbsp;·&nbsp;
+  Last updated: <span>2026-07-18</span> &nbsp;·&nbsp;
+  Branch: main &nbsp;·&nbsp;
+  Tất cả nội dung đánh dấu <span>màu xanh</span> = mới trong version này
+</p>
+
+<div class="toc">
+  <h3>Mục lục</h3>
+  <a href="#overview">1. Tổng quan</a>
+  <a href="#flow">2. Luồng hoạt động</a>
+  <a href="#providers">3. Provider system</a>
+  <a href="#commands">4. Commands &amp; flags</a>
+  <a href="#scripts">5. Scripts</a>
+  <a href="#docker">6. Docker</a>
+  <a href="#files">7. Cấu trúc file</a>
+  <a href="#compat">8. Tương thích editor</a>
+</div>
+
+<!-- ═══════════════════════════════ 1. OVERVIEW ═══════════════════════════════ -->
+<h2 id="overview">1. Tổng quan</h2>
+<p>
+  <span class="new">claude-code-anyllm</span> là bridge giúp dùng Claude Code (VS Code extension) với bất kỳ
+  LLM nào hỗ trợ OpenAI API — FPT Cloud, NVIDIA, Gemini, Groq, GitHub Models, OpenRouter, Ollama, v.v.
+  Một local <strong>LiteLLM proxy</strong> dịch giữa Anthropic API (Claude Code) và OpenAI API (provider).
+</p>
+<pre style="background:#161b22;border:1px solid #21262d;border-radius:5px;padding:12px;color:#79c0ff;font-size:12px;overflow-x:auto;margin-bottom:12px;">
+VS Code (Claude Code)  ──►  LiteLLM proxy :4000  ──►  provider /v1 endpoint
+</pre>
+<ul>
+  <li class="new">Hỗ trợ Windows (PowerShell) và macOS/Linux (bash)</li>
+  <li class="new">Không cần real Anthropic API key</li>
+  <li class="new">Key không bao giờ lưu vào file — truyền qua env var</li>
+  <li class="new">Response caching tự động (in-memory, 1h TTL)</li>
+  <li class="new">Usage log mỗi session ghi vào <code>logs/usage.csv</code></li>
+</ul>
+
+<!-- ═══════════════════════════════ 2. FLOW ═══════════════════════════════ -->
+<h2 id="flow">2. Luồng hoạt động</h2>
+<ol style="padding-left:20px;color:#8b949e;margin-bottom:12px;">
+  <li>User chạy <code>.\start-claude.ps1</code> (hoặc <code>./start-claude.sh</code>)</li>
+  <li>Script đọc <code>config/providers.conf</code>, hiển thị menu chọn provider</li>
+  <li>Resolve API key từ env var (<code>LLM_API_KEY_FPT</code>, <code>LLM_API_KEY_GROQ</code>, v.v.)</li>
+  <li>Generate <code>config/litellm_config.yaml</code> (kèm cache settings)</li>
+  <li>Start LiteLLM proxy trong background / cửa sổ mới</li>
+  <li>Đợi proxy ready (max 30s), set env vars ANTHROPIC_*</li>
+  <li>Mở VS Code ở project dir; ghi entry vào <code>logs/usage.csv</code></li>
+</ol>
+
+<!-- ═══════════════════════════════ 3. PROVIDERS ═══════════════════════════════ -->
+<h2 id="providers">3. Provider system <span class="badge badge-new">mới</span></h2>
+<p>Cấu hình ở <code>config/providers.conf</code> — pipe-delimited: <code>id|label|base_url|model|key_env</code></p>
+<table>
+  <thead><tr><th>ID</th><th>Provider</th><th>Model mặc định</th><th>Env var key</th></tr></thead>
+  <tbody>
+    <tr><td>fpt</td><td class="new">FPT Cloud</td><td><code>DeepSeek-V4-Flash</code></td><td><code>LLM_API_KEY_FPT</code></td></tr>
+    <tr><td>nvidia</td><td class="new">NVIDIA NIM</td><td><code>qwen/qwen2.5-coder-32b-instruct</code></td><td><code>LLM_API_KEY_NVIDIA</code></td></tr>
+    <tr><td>gemini</td><td class="new">Google Gemini</td><td><code>gemini-2.5-flash</code></td><td><code>LLM_API_KEY_GEMINI</code></td></tr>
+    <tr><td>github</td><td class="new">GitHub Models</td><td><code>gpt-4o-mini</code></td><td><code>LLM_API_KEY_GITHUB</code></td></tr>
+    <tr><td>groq</td><td class="new">Groq</td><td><code>llama-3.3-70b-versatile</code></td><td><code>LLM_API_KEY_GROQ</code></td></tr>
+  </tbody>
+</table>
+<p>Thêm provider: thêm 1 dòng vào <code>providers.conf</code>, không cần sửa code.</p>
+
+<!-- ═══════════════════════════════ 4. COMMANDS ═══════════════════════════════ -->
+<h2 id="commands">4. Commands &amp; flags</h2>
+<table>
+  <thead><tr><th>Tính năng</th><th>Windows (PS1)</th><th>macOS/Linux (bash)</th></tr></thead>
+  <tbody>
+    <tr><td>Install (một lần)</td><td><code>.\setup-litellm.ps1</code></td><td><code>./setup-litellm.sh</code></td></tr>
+    <tr><td>Chạy — interactive menu</td><td><code>.\start-claude.ps1</code></td><td><code>./start-claude.sh</code></td></tr>
+    <tr><td>Chọn provider</td><td><code>-Provider nvidia</code></td><td><code>--provider nvidia</code></td></tr>
+    <tr><td>Liệt kê providers + key status</td><td><code>-ListProviders</code></td><td><code>--list-providers</code></td></tr>
+    <tr><td class="new">Test tất cả API keys</td><td><code class="new">-CheckKeys</code></td><td><code class="new">--check-keys</code></td></tr>
+    <tr><td class="new">Benchmark provider (latency + tool call)</td><td><code class="new">-Benchmark</code></td><td><code class="new">--benchmark</code></td></tr>
+    <tr><td class="new">Mở dashboard trong browser</td><td><code class="new">-Dashboard</code></td><td><code class="new">--dashboard</code></td></tr>
+    <tr><td>Mở project folder khác</td><td><code>-OpenDir "path"</code></td><td><code>--open-dir path</code></td></tr>
+    <tr><td>Proxy only (không VS Code)</td><td><code>-NoVSCode</code></td><td><code>--no-vscode</code></td></tr>
+    <tr><td>Đổi port</td><td><code>-Port 4010</code></td><td><code>--port 4010</code></td></tr>
+    <tr><td>Stop proxy</td><td><code>-Stop</code></td><td><code>--stop</code></td></tr>
+    <tr><td>Liệt kê models của endpoint</td><td><code>-List</code></td><td><code>--list</code></td></tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════════════════ 5. SCRIPTS ═══════════════════════════════ -->
+<h2 id="scripts">5. Scripts chính</h2>
+
+<h3>start-claude.ps1 / start-claude.sh</h3>
+<p>Main launcher. Các tính năng chính:</p>
+<ul>
+  <li>Provider resolution: flag <code>-Provider</code>, hoặc interactive menu từ <code>providers.conf</code></li>
+  <li>Key resolution: inline → env var → prompt hidden input</li>
+  <li class="new">Mode <code>-CheckKeys</code>: test GET /models với mỗi key, báo 200/401/429/404</li>
+  <li class="new">Mode <code>-Benchmark</code>: 3 test prompts — Ping / Code gen / Tool-call check</li>
+  <li class="new">Mode <code>-Dashboard</code>: mở browser tới <code>http://localhost:PORT/</code> sau khi proxy ready</li>
+  <li class="new">YAML gen bao gồm <code>litellm_settings.cache: local, ttl=3600</code></li>
+  <li class="new">Usage log: append <code>logs/usage.csv</code> sau mỗi session thành công</li>
+  <li class="new">Better errors (bash): khi proxy timeout → đọc log, detect 401/429/ImportError</li>
+</ul>
+
+<h3>open-with-claude.ps1 / open-with-claude.sh <span class="badge badge-new">mới</span></h3>
+<p>Template launcher copy vào project. Tự động set <code>-OpenDir $PSScriptRoot</code> và forward <code>@args</code>.</p>
+
+<h3>toggle-brain.ps1 / toggle-brain.sh</h3>
+<p>Chuyển Claude Code giữa real Anthropic và proxy mode bằng cách copy profile vào <code>~/.claude/settings.json</code>.</p>
+
+<h3>setup-litellm.ps1 / setup-litellm.sh</h3>
+<p>Tạo Python venv, cài LiteLLM, pin Claude Code CLI sang stable channel.</p>
+
+<!-- ═══════════════════════════════ 6. DOCKER ═══════════════════════════════ -->
+<h2 id="docker">6. Docker <span class="badge badge-new">mới</span></h2>
+<p class="new">Chạy proxy trong container — không cần cài Python trên máy host. Dùng cho team server, NAS, CI.</p>
+<ul>
+  <li class="new"><code>Dockerfile</code>: base <code>python:3.12-slim</code>, cài litellm, expose port 4000</li>
+  <li class="new"><code>docker-entrypoint.sh</code>: generate config từ env vars rồi start proxy</li>
+  <li class="new"><code>docker-compose.yml</code>: pre-configured cho Groq, có comment blocks cho FPT/Gemini/NVIDIA</li>
+</ul>
+<pre style="background:#161b22;border:1px solid #21262d;border-radius:5px;padding:12px;color:#79c0ff;font-size:12px;overflow-x:auto;">
+docker compose up -d
+# hoặc:
+docker run -d -p 4000:4000 -e LLM_API_KEY="..." -e BASE_URL="..." -e MODEL="..." claude-bridge
+</pre>
+<p>Env vars Docker: <code>LLM_API_KEY</code>, <code>BASE_URL</code>, <code>MODEL</code>, <code>PORT</code> (mặc định 4000).</p>
+
+<!-- ═══════════════════════════════ 7. FILES ═══════════════════════════════ -->
+<h2 id="files">7. Cấu trúc file quan trọng</h2>
+<table>
+  <thead><tr><th>File / Folder</th><th>Mô tả</th></tr></thead>
+  <tbody>
+    <tr><td><code>config/providers.conf</code></td><td>Danh sách provider, pipe-delimited. Thêm provider = thêm 1 dòng.</td></tr>
+    <tr><td><code>config/litellm_config.yaml</code></td><td>Generated mỗi run. Không sửa tay.</td></tr>
+    <tr><td><code class="new">logs/usage.csv</code></td><td class="new">Usage log tự động. Git-ignored. Columns: date, provider, model, port.</td></tr>
+    <tr><td><code>profiles/claude.json</code></td><td>Profile: real Anthropic (env rỗng).</td></tr>
+    <tr><td><code>profiles/fpt.json</code></td><td>Profile: FPT/proxy (set ANTHROPIC_BASE_URL → localhost:4000).</td></tr>
+    <tr><td><code class="new">Dockerfile</code></td><td class="new">Docker image definition. LF line endings.</td></tr>
+    <tr><td><code class="new">docker-compose.yml</code></td><td class="new">Compose file, configure provider qua env vars.</td></tr>
+    <tr><td><code class="new">docker-entrypoint.sh</code></td><td class="new">Entrypoint container: gen config + start litellm.</td></tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════════════════ 8. COMPAT ═══════════════════════════════ -->
+<h2 id="compat">8. Tương thích editor <span class="badge badge-new">mới</span></h2>
+<p class="new">Proxy nói OpenAI format — tương thích với bất kỳ editor nào hỗ trợ custom base URL:</p>
+<table>
+  <thead><tr><th>Editor</th><th>Cách config</th></tr></thead>
+  <tbody>
+    <tr><td class="new">VS Code + Claude Code</td><td class="new">Tự động qua <code>ANTHROPIC_BASE_URL</code> env var set bởi launcher</td></tr>
+    <tr><td class="new">Cursor</td><td class="new">Settings → <code>cursor.cpp.anthropicBaseUrl = http://localhost:4000</code></td></tr>
+    <tr><td class="new">Windsurf</td><td class="new">Cascade settings → custom Anthropic base URL</td></tr>
+    <tr><td class="new">Continue.dev</td><td class="new"><code>.continue/config.json</code>: provider anthropic, apiBase localhost:4000</td></tr>
+    <tr><td class="new">GitHub Actions CI</td><td class="new">Start proxy với <code>--no-vscode</code>, set <code>ANTHROPIC_BASE_URL</code> trong workflow</td></tr>
+  </tbody>
+</table>
+
+</div>
+</body>
+</html>
