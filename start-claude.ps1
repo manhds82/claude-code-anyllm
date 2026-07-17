@@ -22,6 +22,8 @@
     -Provider <id> : Pick a provider by id from config\providers.conf.
     -ListProviders : List providers.conf entries and which have a key set.
     -CheckKeys     : Test each configured provider's API key quickly (no proxy started).
+    -Benchmark     : Run 3 test prompts against the provider and report latency / tool support.
+    -Dashboard     : After the proxy starts, open the browser to the LiteLLM Swagger UI.
     -BaseUrl <url> : OpenAI-compatible /v1 endpoint to use for this run
                      (overrides the selected provider's base_url).
     -Model <name>  : Model name to use for this run (overrides provider's model).
@@ -65,6 +67,8 @@ param(
     [switch]$NoVSCode,
     [switch]$ListProviders,
     [switch]$CheckKeys,
+    [switch]$Benchmark,
+    [switch]$Dashboard,
     [int]$Port = 4000,
 
     # Folder to open in VS Code. Default: the script's own folder (claude-code-anyllm).
@@ -312,6 +316,48 @@ if ([string]::IsNullOrWhiteSpace($Key)) {
 }
 
 
+# ---------- Mode -Benchmark: run test prompts, report latency + tool support ----------
+if ($Benchmark) {
+    $provLabel = if ($null -ne $selected -and $selected -is [PSCustomObject]) { $selected.Label } else { $Model }
+    Write-Step "Benchmarking $provLabel ..."
+    Write-Host ("  {0,-22} {1,8}   {2,5}   {3}" -f "Test", "Time", "Toks", "Result")
+    Write-Host ("  " + ("-" * 58))
+
+    $hdrs = @{ Authorization = "Bearer $Key"; "Content-Type" = "application/json" }
+
+    function Run-BenchTest([string]$name, [string]$prompt, [int]$maxTok, [bool]$toolTest = $false) {
+        $body = @{ model = $Model; messages = @(@{ role = "user"; content = $prompt }); max_tokens = $maxTok }
+        if ($toolTest) {
+            $body["tools"] = @(@{ type = "function"; function = @{
+                name = "list_dir"; description = "List files in a directory"
+                parameters = @{ type = "object"; properties = @{ path = @{ type = "string" } } }
+            } })
+            $body["tool_choice"] = "auto"
+        }
+        $sw = [System.Diagnostics.Stopwatch]::StartNew()
+        try {
+            $resp = Invoke-RestMethod -Uri "$BaseUrl/chat/completions" -Method POST `
+                -Headers $hdrs -Body ($body | ConvertTo-Json -Depth 10 -Compress) -TimeoutSec 30 -ErrorAction Stop
+            $sw.Stop()
+            $toks = if ($resp.usage -and $resp.usage.completion_tokens) { $resp.usage.completion_tokens } else { "?" }
+            if ($toolTest) {
+                $hasTool = $resp.choices[0].message.tool_calls -and $resp.choices[0].message.tool_calls.Count -gt 0
+                $res = if ($hasTool) { "[OK] tool call" } else { "[!] text only (model may not edit files)" }
+            } else { $res = "[OK]" }
+            Write-Host ("  {0,-22} {1,5}ms   {2,5}   {3}" -f $name, $sw.ElapsedMilliseconds, $toks, $res)
+        } catch {
+            $sw.Stop()
+            $msg = $_.Exception.Message.Substring(0, [Math]::Min($_.Exception.Message.Length, 50))
+            Write-Host ("  {0,-22} FAIL         {1}" -f $name, $msg) -ForegroundColor Red
+        }
+    }
+
+    Run-BenchTest "Ping"      "Reply with the single word: PONG"                           5
+    Run-BenchTest "Code gen"  "Shortest Python one-liner to reverse a string."             60
+    Run-BenchTest "Tool call" "What files are in the current directory?"                   80  $true
+    return
+}
+
 # ---------- 3. Write the proxy config (UTF-8 WITHOUT BOM) ----------
 Write-Step "Writing config: $ConfigPath"
 $ConfigDir = Split-Path -Parent $ConfigPath
@@ -429,6 +475,11 @@ Remove-Item Env:\ANTHROPIC_API_KEY -ErrorAction SilentlyContinue
 
 code $ProjectDir
 Write-Ok "Opened VS Code for project: $ProjectDir"
+
+if ($Dashboard) {
+    Start-Process "http://localhost:$Port"
+    Write-Ok "Dashboard: http://localhost:$Port  (LiteLLM Swagger UI)"
+}
 
 # --- Usage log (logs/usage.csv) ---
 $logDir = Join-Path $ScriptDir "logs"
