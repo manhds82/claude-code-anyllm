@@ -1,0 +1,40 @@
+# claude-code-anyllm — docker-compose.yml
+#
+# Usage:
+#   docker compose up -d
+#   Then point Claude Code at: ANTHROPIC_BASE_URL=http://localhost:4000
+#
+# Set the API key for the provider you want in a .env file:
+#   LLM_API_KEY_GROQ=gsk_...
+#   (or LLM_API_KEY_FPT, LLM_API_KEY_GEMINI, etc.)
+
+services:
+  claude-bridge:
+    build: .
+    image: claude-bridge:local
+    ports:
+      - "${PORT:-4000}:4000"
+    environment:
+      # --- Pick a provider block below (uncomment one) ---
+
+      # Groq — free tier, fast
+      - LLM_API_KEY=${LLM_API_KEY_GROQ:-${LLM_API_KEY:-}}
+      - BASE_URL=https://api.groq.com/openai/v1
+      - MODEL=llama-3.3-70b-versatile
+
+      # Google Gemini Flash
+      # - LLM_API_KEY=${LLM_API_KEY_GEMINI:-}
+      # - BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/
+      # - MODEL=gemini-2.5-flash
+
+      # FPT Cloud - DeepSeek V4 Flash
+      # - LLM_API_KEY=${LLM_API_KEY_FPT:-}
+      # - BASE_URL=https://mkp-api.fptcloud.com/v1
+      # - MODEL=DeepSeek-V4-Flash
+
+      # NVIDIA NIM - Qwen2.5 Coder 32B
+      # - LLM_API_KEY=${LLM_API_KEY_NVIDIA:-}
+      # - BASE_URL=https://integrate.api.nvidia.com/v1
+      # - MODEL=qwen/qwen2.5-coder-32b-instruct
+
+    restart: unless-stopped

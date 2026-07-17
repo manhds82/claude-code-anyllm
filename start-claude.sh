@@ -33,7 +33,7 @@ KEY=""
 CLAUDE_ALIAS="claude-sonnet-4-6"
 PORT=4000
 
-DO_LIST=0; DO_STOP=0; NO_VSCODE=0; DO_LIST_PROVIDERS=0; DO_CHECK_KEYS=0
+DO_LIST=0; DO_STOP=0; NO_VSCODE=0; DO_LIST_PROVIDERS=0; DO_CHECK_KEYS=0; DO_BENCHMARK=0; DO_DASHBOARD=0
 PROVIDER=""; BASE_URL_SET=0; MODEL_SET=0
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -53,6 +53,8 @@ start-claude.sh - run Claude Code on any OpenAI-compatible LLM via LiteLLM
   ./start-claude.sh --provider nvidia  skip the menu, use this provider's id
   ./start-claude.sh --list-providers   list providers.conf and key status
   ./start-claude.sh --check-keys       test each provider's API key, then exit
+  ./start-claude.sh --benchmark        run 3 test prompts; report latency + tool support
+  ./start-claude.sh --dashboard        open browser to LiteLLM Swagger UI after proxy starts
   ./start-claude.sh --model NAME       use a different model for this run
   ./start-claude.sh --key KEY          use a different key for this run
   ./start-claude.sh --base-url URL     use a different endpoint for this run
@@ -77,6 +79,8 @@ while [ $# -gt 0 ]; do
     --list)      DO_LIST=1; shift ;;
     --list-providers) DO_LIST_PROVIDERS=1; shift ;;
     --check-keys) DO_CHECK_KEYS=1; shift ;;
+    --benchmark)  DO_BENCHMARK=1; shift ;;
+    --dashboard)  DO_DASHBOARD=1; shift ;;
     --stop)      DO_STOP=1; shift ;;
     --no-vscode) NO_VSCODE=1; shift ;;
     --open-dir)  OPEN_DIR="$2"; shift 2 ;;
@@ -156,6 +160,63 @@ check_keys() {
     fi
   done < "$PROVIDERS_FILE"
   printf '\nKết quả: %s OK, %s lỗi, %s chưa có key\n' "$ok_n" "$fail_n" "$skip_n"
+}
+
+# Run 3 test prompts against the configured endpoint; report latency + tool-call support.
+run_benchmark() {
+  local label="${SELECTED_LABEL:-$MODEL}"
+  step "Benchmarking $label ..."
+  printf '  %-22s %8s  %5s  %s\n' "Test" "Time" "Toks" "Result"
+  printf '  %s\n' "$(printf '%0.s-' {1..56})"
+
+  _bench() {
+    local name="$1" prompt="$2" max_tok="$3" tool_test="${4:-0}"
+    local body result http_code start_s end_s elapsed
+
+    body="$(printf '{"model":"%s","messages":[{"role":"user","content":"%s"}],"max_tokens":%s}' \
+      "$MODEL" "$prompt" "$max_tok")"
+
+    if [ "$tool_test" -eq 1 ]; then
+      body="$(printf '{"model":"%s","messages":[{"role":"user","content":"%s"}],"max_tokens":%s,"tools":[{"type":"function","function":{"name":"list_dir","description":"List files","parameters":{"type":"object","properties":{"path":{"type":"string"}}}}}],"tool_choice":"auto"}' \
+        "$MODEL" "$prompt" "$max_tok")"
+    fi
+
+    start_s="$(date +%s)"
+    result="$(curl -s -w '\n%{http_code}' -X POST \
+      -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" \
+      -d "$body" --max-time 30 "$BASE_URL/chat/completions" 2>/dev/null)"
+    end_s="$(date +%s)"
+    elapsed=$((end_s - start_s))
+    http_code="$(printf '%s' "$result" | tail -1)"
+
+    if [ "$http_code" = "200" ]; then
+      local toks=""
+      if command -v jq >/dev/null 2>&1; then
+        toks="$(printf '%s' "$result" | head -1 | jq -r '.usage.completion_tokens // "?"' 2>/dev/null)"
+      fi
+      if [ "$tool_test" -eq 1 ]; then
+        local has_tool=0
+        if command -v jq >/dev/null 2>&1; then
+          has_tool="$(printf '%s' "$result" | head -1 | jq -r '.choices[0].message.tool_calls // [] | length' 2>/dev/null || echo 0)"
+        else
+          has_tool="$(printf '%s' "$result" | head -1 | grep -c '"tool_calls"' 2>/dev/null || echo 0)"
+        fi
+        if [ "${has_tool:-0}" -gt 0 ]; then
+          printf '  %-22s %6ds  %5s  %s[OK]%s tool call\n' "$name" "$elapsed" "${toks:-?}" "$c_green" "$c_reset"
+        else
+          printf '  %-22s %6ds  %5s  %s[!]%s text only — model may not edit files\n' "$name" "$elapsed" "${toks:-?}" "$c_yellow" "$c_reset"
+        fi
+      else
+        printf '  %-22s %6ds  %5s  %s[OK]%s\n' "$name" "$elapsed" "${toks:-?}" "$c_green" "$c_reset"
+      fi
+    else
+      printf '  %-22s FAIL        HTTP %s\n' "$name" "$http_code"
+    fi
+  }
+
+  _bench "Ping"      "Reply with the single word: PONG"                       5  0
+  _bench "Code gen"  "Shortest Python one-liner to reverse a string."         60 0
+  _bench "Tool call" "What files are in the current directory?"               80 1
 }
 
 # Resolve a provider into SELECTED_BASE_URL / SELECTED_MODEL / SELECTED_KEYENV /
@@ -299,6 +360,12 @@ ok "LiteLLM found."
 KEY="$(resolve_key)"
 [ -z "$KEY" ] && { err "No API key. Aborting."; exit 1; }
 
+# ---------- Mode --benchmark: run test prompts against the provider, then exit ----------
+if [ "$DO_BENCHMARK" -eq 1 ]; then
+  run_benchmark
+  exit 0
+fi
+
 # ---------- 3. Write the proxy config ----------
 step "Writing config: $CONFIG_PATH"
 mkdir -p "$(dirname "$CONFIG_PATH")"
@@ -393,6 +460,12 @@ if command -v code >/dev/null 2>&1; then
 else
   warn "'code' command not found."
   warn "This shell now has the env vars set -- run 'claude' here, or open VS Code from this shell."
+fi
+
+if [ "$DO_DASHBOARD" -eq 1 ]; then
+  open "http://localhost:$PORT" 2>/dev/null || \
+  xdg-open "http://localhost:$PORT" 2>/dev/null || \
+  ok "Dashboard: http://localhost:$PORT  (open this URL in your browser)"
 fi
 
 # --- Usage log (logs/usage.csv) ---

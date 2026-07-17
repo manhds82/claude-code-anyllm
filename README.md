@@ -152,6 +152,8 @@ Want to freeze updates entirely? Add `"env": { "DISABLE_AUTOUPDATER": "1" }` to 
 | Run — pick a provider by id | `-Provider nvidia`                        | `--provider nvidia`                           |
 | List providers + key status | `-ListProviders`                          | `--list-providers`                            |
 | Test all provider keys      | `-CheckKeys`                              | `--check-keys`                                |
+| Benchmark provider (latency + tool call) | `-Benchmark`             | `--benchmark`                                 |
+| Open dashboard in browser   | `-Dashboard`                              | `--dashboard`                                 |
 | Open a different project    | `-OpenDir "C:\MyProjects\myapp"`          | `--open-dir ~/myapp`                          |
 | Change key/model — permanent| Edit `$Key` / `$Model` in `start-claude.ps1` | Edit `KEY` / `MODEL` in `start-claude.sh` |
 | Change model — one run      | `-Model "..."`                            | `--model "..."`                               |
@@ -285,6 +287,32 @@ Double-click `toggle-brain.bat` (Windows) to see usage, or pass an argument like
 
 See the full, illustrated guide: **[English](guideline.en.html)** · **[Tiếng Việt](guideline.vi.html)**.
 
+## Docker — one command, no Python required
+
+Run the proxy in a container — useful for team servers, NAS boxes, or any machine where you don't want to install Python:
+
+```bash
+# Build and start (Groq by default)
+LLM_API_KEY_GROQ="gsk_..." docker compose up -d
+
+# Point Claude Code at the proxy (from your dev machine):
+export ANTHROPIC_BASE_URL="http://server-ip:4000"
+export ANTHROPIC_AUTH_TOKEN="dummy"
+```
+
+Or build and run directly:
+
+```bash
+docker build -t claude-bridge .
+docker run -d -p 4000:4000 \
+  -e LLM_API_KEY="your-key" \
+  -e BASE_URL="https://api.groq.com/openai/v1" \
+  -e MODEL="llama-3.3-70b-versatile" \
+  claude-bridge
+```
+
+Edit `docker-compose.yml` to switch providers — uncomment a different `BASE_URL`/`MODEL`/`LLM_API_KEY` block.
+
 ## Project structure
 
 ```
@@ -298,6 +326,9 @@ claude-code-anyllm/
 ├─ toggle-brain.sh            # persistent brain toggle — macOS/Linux
 ├─ open-with-claude.ps1       # per-project launcher template — Windows (copy to your project)
 ├─ open-with-claude.sh        # per-project launcher template — macOS/Linux (copy to your project)
+├─ Dockerfile                 # Docker image (proxy only, no Python install needed)
+├─ docker-compose.yml         # docker compose up -d  — picks provider from env
+├─ docker-entrypoint.sh       # generates config + starts proxy inside container
 ├─ guideline.en.html          # detailed guide (English)
 ├─ guideline.vi.html          # detailed guide (Tiếng Việt)
 ├─ README.md                  # this file
@@ -308,6 +339,7 @@ claude-code-anyllm/
 ├─ config/
 │  ├─ providers.conf          # provider list (id|label|base_url|model|key_env)
 │  └─ litellm_config.yaml     # generated each run; committed as a working example
+├─ logs/                      # usage.csv — one row per session (git-ignored)
 └─ .venv/                     # LiteLLM environment (created by setup) — git-ignored
 ```
 

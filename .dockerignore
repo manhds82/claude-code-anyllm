@@ -1,0 +1,24 @@
+# Exclude everything that the Docker image doesn't need.
+# The image only needs docker-entrypoint.sh; everything else is generated at runtime.
+
+.venv/
+litellm-env/
+logs/
+*.log
+.env
+.env.*
+.git/
+.claude/
+*.ps1
+*.bat
+profiles/
+config/
+guideline*.html
+README.md
+LICENSE
+open-with-claude.sh
+start-claude.sh
+start-claude.ps1
+setup-litellm.*
+toggle-brain.*
+open-with-claude.*
