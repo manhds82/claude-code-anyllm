@@ -4,6 +4,10 @@
 # Keep PowerShell scripts CRLF for Windows
 *.ps1  text eol=crlf
 
+# Docker files use LF (Linux build context)
+Dockerfile     text eol=lf
+.dockerignore  text eol=lf
+
 # Normalize the rest
 *.md   text
 *.html text
