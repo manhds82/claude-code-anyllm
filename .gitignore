@@ -9,6 +9,9 @@ litellm-env/
 litellm-proxy.log
 *.log
 
+# Usage log (date/provider/model per run) — personal data, not tracked
+logs/
+
 # Secrets / local env files
 .env
 .env.*

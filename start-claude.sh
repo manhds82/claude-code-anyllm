@@ -33,7 +33,7 @@ KEY=""
 CLAUDE_ALIAS="claude-sonnet-4-6"
 PORT=4000
 
-DO_LIST=0; DO_STOP=0; NO_VSCODE=0; DO_LIST_PROVIDERS=0
+DO_LIST=0; DO_STOP=0; NO_VSCODE=0; DO_LIST_PROVIDERS=0; DO_CHECK_KEYS=0
 PROVIDER=""; BASE_URL_SET=0; MODEL_SET=0
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -52,6 +52,7 @@ start-claude.sh - run Claude Code on any OpenAI-compatible LLM via LiteLLM
                                         (built from config/providers.conf)
   ./start-claude.sh --provider nvidia  skip the menu, use this provider's id
   ./start-claude.sh --list-providers   list providers.conf and key status
+  ./start-claude.sh --check-keys       test each provider's API key, then exit
   ./start-claude.sh --model NAME       use a different model for this run
   ./start-claude.sh --key KEY          use a different key for this run
   ./start-claude.sh --base-url URL     use a different endpoint for this run
@@ -75,6 +76,7 @@ while [ $# -gt 0 ]; do
     --port)      PORT="$2"; shift 2 ;;
     --list)      DO_LIST=1; shift ;;
     --list-providers) DO_LIST_PROVIDERS=1; shift ;;
+    --check-keys) DO_CHECK_KEYS=1; shift ;;
     --stop)      DO_STOP=1; shift ;;
     --no-vscode) NO_VSCODE=1; shift ;;
     --open-dir)  OPEN_DIR="$2"; shift 2 ;;
@@ -118,6 +120,42 @@ list_providers() {
   done < "$PROVIDERS_FILE"
   printf '\nSet a key once:  export <KEY_ENV_NAME>="sk-..."   (add to ~/.zshrc or ~/.bashrc)\n'
   printf 'Use directly:    ./start-claude.sh --provider <id>\n'
+}
+
+# Test each provider that has a key set by calling GET /models on its endpoint.
+check_keys() {
+  step "Testing API keys for all providers in config/providers.conf ..."
+  [ -f "$PROVIDERS_FILE" ] || { err "providers.conf not found."; return 1; }
+  local ok_n=0 fail_n=0 skip_n=0
+  while IFS='|' read -r id label baseurl model keyenv; do
+    case "$id" in ''|\#*) continue ;; esac
+    label="$(echo "$label" | xargs)"; baseurl="$(echo "$baseurl" | xargs)"
+    model="$(echo "$model" | xargs)"; keyenv="$(echo "$keyenv" | xargs)"
+    k="${!keyenv:-}"
+    if [ -z "$k" ]; then
+      printf '  %s[!]%s  %-40s no key  (set %s)\n' "$c_yellow" "$c_reset" "$label" "$keyenv"
+      skip_n=$((skip_n + 1)); continue
+    fi
+    http_code="$(curl -o /dev/null -s -w "%{http_code}" \
+      -H "Authorization: Bearer $k" --max-time 8 "$baseurl/models" 2>/dev/null || echo "000")"
+    if [ "$http_code" = "200" ]; then
+      printf '  %s[OK]%s %-40s %s\n' "$c_green" "$c_reset" "$label" "$model"
+      ok_n=$((ok_n + 1))
+    elif [ "$http_code" = "401" ] || [ "$http_code" = "403" ]; then
+      printf '  %s[X]%s  %-40s HTTP %s — key không hợp lệ\n' "$c_red" "$c_reset" "$label" "$http_code"
+      fail_n=$((fail_n + 1))
+    elif [ "$http_code" = "429" ]; then
+      printf '  %s[!]%s  %-40s 429 rate limit (key OK, thử lại sau)\n' "$c_yellow" "$c_reset" "$label"
+      ok_n=$((ok_n + 1))
+    elif [ "$http_code" = "404" ]; then
+      printf '  %s[?]%s  %-40s /models không tồn tại (thử thủ công)\n' "$c_yellow" "$c_reset" "$label"
+      ok_n=$((ok_n + 1))
+    else
+      printf '  %s[X]%s  %-40s HTTP %s — lỗi kết nối\n' "$c_red" "$c_reset" "$label" "$http_code"
+      fail_n=$((fail_n + 1))
+    fi
+  done < "$PROVIDERS_FILE"
+  printf '\nKết quả: %s OK, %s lỗi, %s chưa có key\n' "$ok_n" "$fail_n" "$skip_n"
 }
 
 # Resolve a provider into SELECTED_BASE_URL / SELECTED_MODEL / SELECTED_KEYENV /
@@ -177,6 +215,12 @@ port_in_use() {
 # ---------- Mode --list-providers ----------
 if [ "$DO_LIST_PROVIDERS" -eq 1 ]; then
   list_providers
+  exit 0
+fi
+
+# ---------- Mode --check-keys ----------
+if [ "$DO_CHECK_KEYS" -eq 1 ]; then
+  check_keys
   exit 0
 fi
 
@@ -265,6 +309,12 @@ model_list:
       model: openai/$MODEL
       api_base: $BASE_URL
       api_key: os.environ/LLM_API_KEY
+
+litellm_settings:
+  cache: true
+  cache_params:
+    type: "local"
+    ttl: 3600
 EOF
 ok "Config written."
 
@@ -294,7 +344,20 @@ done
 if [ "$ready" -eq 1 ]; then
   ok "Proxy is ready at $PROXY_URL"
 else
-  warn "Could not confirm the proxy after 30s. Check the log: $LOG_FILE"
+  warn "Could not confirm the proxy after 30s."
+  if [ -f "$LOG_FILE" ]; then
+    warn "Lỗi cuối trong $LOG_FILE:"
+    tail -5 "$LOG_FILE" | while IFS= read -r line; do printf '    %s\n' "$line"; done
+    if grep -q "401\|Unauthorized" "$LOG_FILE" 2>/dev/null; then
+      err "Provider trả về 401 — kiểm tra API key. Chạy: ./start-claude.sh --check-keys"
+    elif grep -q "429\|RateLimitError" "$LOG_FILE" 2>/dev/null; then
+      err "Provider trả về 429 rate limit — đổi provider hoặc thử lại sau."
+    elif grep -q "ModuleNotFoundError\|ImportError" "$LOG_FILE" 2>/dev/null; then
+      err "Thiếu Python package — chạy: ./setup-litellm.sh --force"
+    elif grep -q "Connection refused\|No route to host\|Could not connect" "$LOG_FILE" 2>/dev/null; then
+      err "Không thể kết nối tới provider — kiểm tra BASE_URL và mạng."
+    fi
+  fi
 fi
 
 # ---------- 7. Point Claude Code at the proxy ----------
@@ -331,6 +394,14 @@ else
   warn "'code' command not found."
   warn "This shell now has the env vars set -- run 'claude' here, or open VS Code from this shell."
 fi
+
+# --- Usage log (logs/usage.csv) ---
+log_dir="$SCRIPT_DIR/logs"
+mkdir -p "$log_dir"
+log_file="$log_dir/usage.csv"
+[ -f "$log_file" ] || printf 'date,provider,model,port\n' > "$log_file"
+provider_label="${SELECTED_LABEL:-custom}"
+printf '%s,%s,%s,%s\n' "$(date '+%Y-%m-%d %H:%M')" "$provider_label" "$MODEL" "$PORT" >> "$log_file"
 
 printf '\n%s=================================================================%s\n' "$c_green" "$c_reset"
 printf '%s DONE. Claude Code now runs on: %s%s\n' "$c_green" "$MODEL" "$c_reset"

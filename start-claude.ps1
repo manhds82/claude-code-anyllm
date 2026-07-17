@@ -21,6 +21,7 @@
   PARAMETERS:
     -Provider <id> : Pick a provider by id from config\providers.conf.
     -ListProviders : List providers.conf entries and which have a key set.
+    -CheckKeys     : Test each configured provider's API key quickly (no proxy started).
     -BaseUrl <url> : OpenAI-compatible /v1 endpoint to use for this run
                      (overrides the selected provider's base_url).
     -Model <name>  : Model name to use for this run (overrides provider's model).
@@ -63,6 +64,7 @@ param(
     [switch]$Stop,
     [switch]$NoVSCode,
     [switch]$ListProviders,
+    [switch]$CheckKeys,
     [int]$Port = 4000,
 
     # Folder to open in VS Code. Default: the script's own folder (claude-code-anyllm).
@@ -195,6 +197,43 @@ if ($ListProviders) {
 }
 
 
+# ---------- Mode -CheckKeys: test each configured provider key, then exit ----------
+if ($CheckKeys) {
+    $providers = Get-Providers
+    if (-not $providers) { Write-Err2 "No providers found in config\providers.conf"; return }
+    Write-Step "Testing API keys for all providers in config\providers.conf ..."
+    $okN = 0; $failN = 0; $skipN = 0
+    foreach ($p in $providers) {
+        $k = [Environment]::GetEnvironmentVariable($p.KeyEnv)
+        if ([string]::IsNullOrWhiteSpace($k)) {
+            Write-Host ("  [!]  {0,-40} no key  (set {1})" -f $p.Label, $p.KeyEnv) -ForegroundColor Yellow
+            $skipN++; continue
+        }
+        try {
+            Invoke-RestMethod -Uri "$($p.BaseUrl)/models" `
+                -Headers @{ Authorization = "Bearer $k" } -TimeoutSec 8 -ErrorAction Stop | Out-Null
+            Write-Host ("  [OK] {0,-40} {1}" -f $p.Label, $p.Model) -ForegroundColor Green
+            $okN++
+        } catch {
+            $code = 0
+            if ($_.Exception.Response) { $code = [int]$_.Exception.Response.StatusCode }
+            switch ($code) {
+                { $_ -in 401,403 } {
+                    Write-Host ("  [X]  {0,-40} HTTP $code — key không hợp lệ" -f $p.Label) -ForegroundColor Red; $failN++ }
+                429 {
+                    Write-Host ("  [!]  {0,-40} 429 rate limit (key OK)" -f $p.Label) -ForegroundColor Yellow; $okN++ }
+                404 {
+                    Write-Host ("  [?]  {0,-40} /models không tồn tại (thử thủ công)" -f $p.Label) -ForegroundColor Yellow; $okN++ }
+                default {
+                    $msg = if ($code -gt 0) { "HTTP $code" } else { $_.Exception.Message.Substring(0,[Math]::Min($_.Exception.Message.Length,50)) }
+                    Write-Host ("  [X]  {0,-40} $msg" -f $p.Label) -ForegroundColor Red; $failN++ }
+            }
+        }
+    }
+    Write-Host "`nKết quả: $okN OK, $failN lỗi, $skipN chưa có key" -ForegroundColor Cyan
+    return
+}
+
 # ---------- Mode -List: list models then exit ----------
 if ($List) {
     $Key = Resolve-Key $Key
@@ -287,6 +326,12 @@ model_list:
       model: openai/$Model
       api_base: $BaseUrl
       api_key: os.environ/LLM_API_KEY
+
+litellm_settings:
+  cache: true
+  cache_params:
+    type: "local"
+    ttl: 3600
 "@
 [System.IO.File]::WriteAllText($ConfigPath, $yaml, (New-Object System.Text.UTF8Encoding($false)))
 $firstByte = [System.IO.File]::ReadAllBytes($ConfigPath)[0]
@@ -384,6 +429,16 @@ Remove-Item Env:\ANTHROPIC_API_KEY -ErrorAction SilentlyContinue
 
 code $ProjectDir
 Write-Ok "Opened VS Code for project: $ProjectDir"
+
+# --- Usage log (logs/usage.csv) ---
+$logDir = Join-Path $ScriptDir "logs"
+if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
+$logFile = Join-Path $logDir "usage.csv"
+if (-not (Test-Path $logFile)) {
+    [System.IO.File]::WriteAllText($logFile, "date,provider,model,port`n", (New-Object System.Text.UTF8Encoding($false)))
+}
+$providerLabel = if ($null -ne $selected -and $selected -is [PSCustomObject]) { $selected.Label } else { "custom" }
+[System.IO.File]::AppendAllText($logFile, "$(Get-Date -Format 'yyyy-MM-dd HH:mm'),$providerLabel,$Model,$Port`n", (New-Object System.Text.UTF8Encoding($false)))
 
 Write-Host "`n=================================================================" -ForegroundColor Green
 Write-Host " DONE. Claude Code in VS Code now runs on: $Model" -ForegroundColor Green

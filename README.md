@@ -151,6 +151,7 @@ Want to freeze updates entirely? Add `"env": { "DISABLE_AUTOUPDATER": "1" }` to 
 | Run (interactive menu)      | `.\start-claude.ps1`                      | `./start-claude.sh`                           |
 | Run — pick a provider by id | `-Provider nvidia`                        | `--provider nvidia`                           |
 | List providers + key status | `-ListProviders`                          | `--list-providers`                            |
+| Test all provider keys      | `-CheckKeys`                              | `--check-keys`                                |
 | Open a different project    | `-OpenDir "C:\MyProjects\myapp"`          | `--open-dir ~/myapp`                          |
 | Change key/model — permanent| Edit `$Key` / `$Model` in `start-claude.ps1` | Edit `KEY` / `MODEL` in `start-claude.sh` |
 | Change model — one run      | `-Model "..."`                            | `--model "..."`                               |
@@ -189,6 +190,44 @@ By default `start-claude.ps1` / `start-claude.sh` opens VS Code in its own folde
 ```
 
 The proxy starts, VS Code opens in **your** project. No `.venv` duplication — everything still runs from the single central installation.
+
+## Use with Cursor, Windsurf, or Continue.dev
+
+The proxy speaks the OpenAI API, so any editor that accepts a custom base URL works — not just VS Code. Start the proxy first without opening VS Code:
+
+```powershell
+.\start-claude.ps1 -Provider groq -NoVSCode   # Windows
+```
+```bash
+./start-claude.sh --provider groq --no-vscode  # macOS / Linux
+```
+
+Then configure your editor:
+
+**Cursor** — open Settings, find the Anthropic / Claude section, set a custom endpoint:
+```json
+{
+  "cursor.cpp.anthropicBaseUrl": "http://localhost:4000",
+  "cursor.cpp.anthropicApiKey": "dummy"
+}
+```
+
+**Windsurf** — Cascade settings → set the Anthropic base URL to `http://localhost:4000`, key to `dummy`.
+
+**Continue.dev** — add a model block to `.continue/config.json`:
+```json
+{
+  "models": [{
+    "title": "Proxy (Groq / FPT / ...)",
+    "provider": "anthropic",
+    "apiBase": "http://localhost:4000",
+    "apiKey": "dummy",
+    "model": "claude-sonnet-4-6"
+  }]
+}
+```
+
+Pick a model from the provider's list with `-List` / `--list` to find the exact names your endpoint exposes.
 
 ## 🧠 Brain toggle — persistent profile switching
 
