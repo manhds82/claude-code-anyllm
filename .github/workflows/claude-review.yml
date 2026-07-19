@@ -1,0 +1,79 @@
+# Template: drop this into .github/workflows/ in any of your repos.
+# Add GROQ_API_KEY to repo Settings → Secrets and Variables → Actions.
+# Every PR gets reviewed automatically using Groq's free tier.
+
+name: Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install LiteLLM proxy
+        run: pip install --quiet "litellm>=1.50,<2"
+
+      - name: Write proxy config
+        run: |
+          mkdir -p /tmp/cbcfg
+          printf '%s\n' \
+            'model_list:' \
+            '  - model_name: claude-sonnet-4-6' \
+            '    litellm_params:' \
+            '      model: openai/llama-3.3-70b-versatile' \
+            '      api_base: https://api.groq.com/openai/v1' \
+            '      api_key: os.environ/GROQ_API_KEY' \
+            > /tmp/cbcfg/config.yaml
+
+      - name: Start proxy
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: |
+          nohup litellm --config /tmp/cbcfg/config.yaml --port 4000 > /tmp/litellm.log 2>&1 &
+          for i in $(seq 1 20); do
+            curl -fsS http://localhost:4000/health/liveliness >/dev/null 2>&1 && echo "Proxy ready" && break
+            sleep 2
+          done
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code --quiet
+
+      - name: Review PR
+        env:
+          ANTHROPIC_BASE_URL: http://localhost:4000
+          ANTHROPIC_AUTH_TOKEN: dummy
+          ANTHROPIC_MODEL: claude-sonnet-4-6
+          ANTHROPIC_DEFAULT_HAIKU_MODEL: claude-sonnet-4-6
+          ANTHROPIC_DEFAULT_SONNET_MODEL: claude-sonnet-4-6
+          ANTHROPIC_DEFAULT_OPUS_MODEL: claude-sonnet-4-6
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          DIFF="$(git diff HEAD~1 | head -c 8000)"
+          REVIEW="$(claude --print "You are a senior code reviewer. Review this git diff and give concise feedback — 5-10 bullets max covering bugs, security issues, and code quality. No praise, just actionable findings.
+
+          \`\`\`diff
+          $DIFF
+          \`\`\`" 2>&1 || echo "_Review unavailable — check workflow logs._")"
+
+          gh pr comment "${{ github.event.pull_request.number }}" \
+            --body "## 🤖 Claude Code Review
+
+${REVIEW}
+
+<sub>Powered by [claude-code-anyllm](https://github.com/manhds82/claude-code-anyllm) · Groq free tier</sub>"

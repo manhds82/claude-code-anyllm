@@ -48,6 +48,18 @@ The script installs the proxy if needed, starts it, waits until it's ready, then
 > **Windows:** if PowerShell blocks the script, run `Set-ExecutionPolicy -Scope Process Bypass`.
 > **macOS/Linux:** if you get *permission denied*, run `chmod +x *.sh` (or `bash start-claude.sh`).
 
+## Zero-install — `npx claude-bridge`
+
+Have Node ≥ 18? Skip the clone entirely:
+
+```bash
+npx claude-bridge                    # interactive provider menu
+npx claude-bridge --provider groq    # jump straight to a provider
+npx claude-bridge --update           # pull latest from GitHub
+```
+
+First run clones the repo to `~/.claude-bridge` automatically. All flags pass through to `start-claude.ps1` / `start-claude.sh`. For the full dev workflow (per-project launcher, etc.) use `git clone` above.
+
 ## Pick a provider at start time (multiple keys, one script)
 
 Have keys for more than one provider — FPT, NVIDIA, Gemini, GitHub, Groq...? `config/providers.conf` lists them all; run the launcher with no arguments and pick one from a menu, or jump straight to one with `-Provider`/`--provider`:
@@ -86,7 +98,15 @@ export LLM_API_KEY_NVIDIA="nvapi-..."
 export LLM_API_KEY_GEMINI="AIza..."
 ```
 
-Add your own provider by adding one line to `config/providers.conf` — no code changes needed. `-BaseUrl`/`-Model`/`-Key` (or `--base-url`/`--model`/`--key`) still work exactly as before and always override the selected provider, so nothing below changes.
+Add your own provider by adding one line to `config/providers.conf` — no code changes needed.
+
+### Auto-failover
+
+Set keys for **more than one provider** and the proxy automatically retries the next one on rate-limit or error — no extra config needed. The generated YAML groups all available providers under the same `model_name`; LiteLLM's router picks the next one when one fails.
+
+```
+[OK] Auto-failover: Groq → Gemini Flash   ← shown at startup if fallbacks are available
+``` `-BaseUrl`/`-Model`/`-Key` (or `--base-url`/`--model`/`--key`) still work exactly as before and always override the selected provider, so nothing below changes.
 
 ## Configure it for your provider
 
@@ -312,6 +332,14 @@ docker run -d -p 4000:4000 \
 ```
 
 Edit `docker-compose.yml` to switch providers — uncomment a different `BASE_URL`/`MODEL`/`LLM_API_KEY` block.
+
+## GitHub Actions — free automatic PR review
+
+Copy `.github/workflows/claude-review.yml` from this repo into any of your own repos. Add `GROQ_API_KEY` to **Settings → Secrets and Variables → Actions** and every pull request is reviewed automatically using Groq's free tier.
+
+The workflow starts a LiteLLM proxy in the CI container, runs Claude Code CLI against the PR diff, and posts the result as a comment. No Anthropic key needed.
+
+> To use a different provider: edit the `model`, `api_base`, and secret name in the workflow file.
 
 ## Project structure
 

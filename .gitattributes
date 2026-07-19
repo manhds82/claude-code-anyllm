@@ -8,6 +8,9 @@
 Dockerfile     text eol=lf
 .dockerignore  text eol=lf
 
+# Node.js entry point uses LF (cross-platform)
+*.js   text eol=lf
+
 # Normalize the rest
 *.md   text
 *.html text

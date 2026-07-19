@@ -358,6 +358,23 @@ if ($Benchmark) {
     return
 }
 
+# ---------- 2.6 Collect fallback providers (auto-failover) ----------
+$fallbackProviders = [System.Collections.Generic.List[PSCustomObject]]::new()
+$fallbackKeyCmds   = ""
+if ($null -ne $providers -and $providers.Count -gt 0) {
+    foreach ($p in $providers) {
+        $k = [Environment]::GetEnvironmentVariable($p.KeyEnv)
+        if ([string]::IsNullOrWhiteSpace($k) -or $k -eq $Key) { continue }
+        $fallbackProviders.Add($p)
+        $fallbackKeyCmds += "`n`$env:$($p.KeyEnv) = '$k'"
+    }
+    if ($fallbackProviders.Count -gt 0) {
+        $fb = ($fallbackProviders | ForEach-Object { $_.Label }) -join ' → '
+        Write-Ok "Auto-failover: $fb"
+    }
+}
+
+
 # ---------- 3. Write the proxy config (UTF-8 WITHOUT BOM) ----------
 Write-Step "Writing config: $ConfigPath"
 $ConfigDir = Split-Path -Parent $ConfigPath
@@ -365,20 +382,34 @@ if (-not (Test-Path $ConfigDir)) {
     New-Item -ItemType Directory -Path $ConfigDir -Force | Out-Null
     Write-Ok "Created config folder: $ConfigDir"
 }
-$yaml = @"
-model_list:
-  - model_name: $ClaudeAlias
-    litellm_params:
-      model: openai/$Model
-      api_base: $BaseUrl
-      api_key: os.environ/LLM_API_KEY
-
-litellm_settings:
-  cache: true
-  cache_params:
-    type: "local"
-    ttl: 3600
-"@
+$yamlLines = [System.Collections.Generic.List[string]]::new()
+$yamlLines.Add("model_list:")
+$yamlLines.Add("  - model_name: $ClaudeAlias")
+$yamlLines.Add("    litellm_params:")
+$yamlLines.Add("      model: openai/$Model")
+$yamlLines.Add("      api_base: $BaseUrl")
+$yamlLines.Add("      api_key: os.environ/LLM_API_KEY")
+foreach ($fp in $fallbackProviders) {
+    $yamlLines.Add("  - model_name: $ClaudeAlias")
+    $yamlLines.Add("    litellm_params:")
+    $yamlLines.Add("      model: openai/$($fp.Model)")
+    $yamlLines.Add("      api_base: $($fp.BaseUrl)")
+    $yamlLines.Add("      api_key: os.environ/$($fp.KeyEnv)")
+}
+if ($fallbackProviders.Count -gt 0) {
+    $yamlLines.Add("")
+    $yamlLines.Add("router_settings:")
+    $yamlLines.Add("  num_retries: 2")
+    $yamlLines.Add("  retry_after: 5")
+    $yamlLines.Add("  allowed_fails: 1")
+}
+$yamlLines.Add("")
+$yamlLines.Add("litellm_settings:")
+$yamlLines.Add("  cache: true")
+$yamlLines.Add("  cache_params:")
+$yamlLines.Add("    type: `"local`"")
+$yamlLines.Add("    ttl: 3600")
+$yaml = ($yamlLines -join "`n") + "`n"
 [System.IO.File]::WriteAllText($ConfigPath, $yaml, (New-Object System.Text.UTF8Encoding($false)))
 $firstByte = [System.IO.File]::ReadAllBytes($ConfigPath)[0]
 if ($firstByte -eq 239) {
@@ -418,7 +449,7 @@ $ProxyUrl = "http://localhost:$Port"
 Write-Step "Starting LiteLLM proxy in a new window (port $Port) ..."
 $proxyCmd = @"
 & '$ActivateScript'
-`$env:LLM_API_KEY = '$Key'
+`$env:LLM_API_KEY = '$Key'$fallbackKeyCmds
 Write-Host 'LiteLLM proxy is running. CLOSE this window to stop the proxy.' -ForegroundColor Green
 litellm --config '$ConfigPath' --port $Port
 "@

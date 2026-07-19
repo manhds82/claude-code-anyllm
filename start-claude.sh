@@ -366,23 +366,39 @@ if [ "$DO_BENCHMARK" -eq 1 ]; then
   exit 0
 fi
 
+# ---------- 2.5 Collect fallback providers (auto-failover) ----------
+fallback_entries=""
+fallback_labels=""
+if [ -f "$PROVIDERS_FILE" ]; then
+  while IFS='|' read -r _id _label _baseurl _model _keyenv; do
+    case "$_id" in ''|\#*) continue ;; esac
+    _keyenv="$(printf '%s' "$_keyenv" | xargs)"
+    _label="$(printf '%s' "$_label" | xargs)"
+    _baseurl="$(printf '%s' "$_baseurl" | xargs)"
+    _model="$(printf '%s' "$_model" | xargs)"
+    [ -z "$_keyenv" ] && continue
+    _k="${!_keyenv:-}"
+    [ -z "$_k" ] && continue
+    [ "$_k" = "$KEY" ] && continue
+    export "$_keyenv=$_k"
+    fallback_entries="${fallback_entries}$(printf '  - model_name: %s\n    litellm_params:\n      model: openai/%s\n      api_base: %s\n      api_key: os.environ/%s\n' "$CLAUDE_ALIAS" "$_model" "$_baseurl" "$_keyenv")"
+    fallback_labels="$fallback_labels $_label"
+  done < "$PROVIDERS_FILE"
+fi
+[ -n "$fallback_labels" ] && ok "Auto-failover:$fallback_labels"
+
 # ---------- 3. Write the proxy config ----------
 step "Writing config: $CONFIG_PATH"
 mkdir -p "$(dirname "$CONFIG_PATH")"
-cat > "$CONFIG_PATH" <<EOF
-model_list:
-  - model_name: $CLAUDE_ALIAS
-    litellm_params:
-      model: openai/$MODEL
-      api_base: $BASE_URL
-      api_key: os.environ/LLM_API_KEY
-
-litellm_settings:
-  cache: true
-  cache_params:
-    type: "local"
-    ttl: 3600
-EOF
+{
+  printf 'model_list:\n  - model_name: %s\n    litellm_params:\n      model: openai/%s\n      api_base: %s\n      api_key: os.environ/LLM_API_KEY\n' \
+    "$CLAUDE_ALIAS" "$MODEL" "$BASE_URL"
+  [ -n "$fallback_entries" ] && printf '%s' "$fallback_entries"
+  if [ -n "$fallback_entries" ]; then
+    printf '\nrouter_settings:\n  num_retries: 2\n  retry_after: 5\n  allowed_fails: 1\n'
+  fi
+  printf '\nlitellm_settings:\n  cache: true\n  cache_params:\n    type: "local"\n    ttl: 3600\n'
+} > "$CONFIG_PATH"
 ok "Config written."
 
 # ---------- 4. Find a free port ----------

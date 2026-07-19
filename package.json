@@ -1,0 +1,22 @@
+{
+  "name": "claude-bridge",
+  "version": "1.0.0",
+  "description": "Start Claude Code with any OpenAI-compatible LLM via a local LiteLLM proxy — one npx command on any OS",
+  "bin": {
+    "claude-bridge": "./bin/claude-bridge.js"
+  },
+  "keywords": ["claude", "claude-code", "litellm", "openai", "proxy", "llm", "groq", "gemini", "anthropic"],
+  "author": "manhds82",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manhds82/claude-code-anyllm.git"
+  },
+  "homepage": "https://github.com/manhds82/claude-code-anyllm#readme",
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "bin/"
+  ]
+}
