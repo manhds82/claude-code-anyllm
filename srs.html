@@ -36,8 +36,8 @@
 
 <h1>claude-code-anyllm — Software Requirements Specification</h1>
 <p class="meta">
-  Version: 1.0 &nbsp;·&nbsp;
-  Last updated: <span>2026-07-18</span> &nbsp;·&nbsp;
+  Version: 1.1 &nbsp;·&nbsp;
+  Last updated: <span>2026-07-21</span> &nbsp;·&nbsp;
   Branch: main &nbsp;·&nbsp;
   Tất cả nội dung đánh dấu <span>màu xanh</span> = mới trong version này
 </p>
@@ -70,6 +70,8 @@ VS Code (Claude Code)  ──►  LiteLLM proxy :4000  ──►  provider /v1 e
   <li class="new">Key không bao giờ lưu vào file — truyền qua env var</li>
   <li class="new">Response caching tự động (in-memory, 1h TTL)</li>
   <li class="new">Usage log mỗi session ghi vào <code>logs/usage.csv</code></li>
+  <li><span style="color:#2196F3;font-weight:bold">Auto-failover: khi provider lỗi/rate-limit, proxy tự retry provider tiếp theo có key</span></li>
+  <li><span style="color:#2196F3;font-weight:bold">Zero-install: <code>npx claude-bridge</code> — không cần git clone, tự setup</span></li>
 </ul>
 
 <!-- ═══════════════════════════════ 2. FLOW ═══════════════════════════════ -->
@@ -79,6 +81,7 @@ VS Code (Claude Code)  ──►  LiteLLM proxy :4000  ──►  provider /v1 e
   <li>Script đọc <code>config/providers.conf</code>, hiển thị menu chọn provider</li>
   <li>Resolve API key từ env var (<code>LLM_API_KEY_FPT</code>, <code>LLM_API_KEY_GROQ</code>, v.v.)</li>
   <li>Generate <code>config/litellm_config.yaml</code> (kèm cache settings)</li>
+  <li><span style="color:#2196F3;font-weight:bold">Collect fallback providers — tất cả provider có key set được thêm vào YAML cùng model_name group + router_settings</span></li>
   <li>Start LiteLLM proxy trong background / cửa sổ mới</li>
   <li>Đợi proxy ready (max 30s), set env vars ANTHROPIC_*</li>
   <li>Mở VS Code ở project dir; ghi entry vào <code>logs/usage.csv</code></li>
@@ -133,6 +136,7 @@ VS Code (Claude Code)  ──►  LiteLLM proxy :4000  ──►  provider /v1 e
   <li class="new">YAML gen bao gồm <code>litellm_settings.cache: local, ttl=3600</code></li>
   <li class="new">Usage log: append <code>logs/usage.csv</code> sau mỗi session thành công</li>
   <li class="new">Better errors (bash): khi proxy timeout → đọc log, detect 401/429/ImportError</li>
+  <li><span style="color:#2196F3;font-weight:bold">Auto-failover: collect fallback providers trước khi gen YAML — mỗi provider có key được thêm vào cùng <code>model_name</code> group; proxy window nhận fallback keys qua env vars</span></li>
 </ul>
 
 <h3>open-with-claude.ps1 / open-with-claude.sh <span class="badge badge-new">mới</span></h3>
@@ -172,6 +176,9 @@ docker run -d -p 4000:4000 -e LLM_API_KEY="..." -e BASE_URL="..." -e MODEL="..."
     <tr><td><code class="new">Dockerfile</code></td><td class="new">Docker image definition. LF line endings.</td></tr>
     <tr><td><code class="new">docker-compose.yml</code></td><td class="new">Compose file, configure provider qua env vars.</td></tr>
     <tr><td><code class="new">docker-entrypoint.sh</code></td><td class="new">Entrypoint container: gen config + start litellm.</td></tr>
+    <tr><td><code style="color:#2196F3;font-weight:bold">package.json</code></td><td><span style="color:#2196F3;font-weight:bold">npm package metadata cho <code>npx claude-bridge</code>.</span></td></tr>
+    <tr><td><code style="color:#2196F3;font-weight:bold">bin/claude-bridge.js</code></td><td><span style="color:#2196F3;font-weight:bold">Node.js entry point: clone repo lần đầu, forward args sang script PS1/SH.</span></td></tr>
+    <tr><td><code style="color:#2196F3;font-weight:bold">.github/workflows/claude-review.yml</code></td><td><span style="color:#2196F3;font-weight:bold">Template GitHub Actions: review PR tự động bằng Groq + Claude Code CLI.</span></td></tr>
   </tbody>
 </table>
 
@@ -185,7 +192,7 @@ docker run -d -p 4000:4000 -e LLM_API_KEY="..." -e BASE_URL="..." -e MODEL="..."
     <tr><td class="new">Cursor</td><td class="new">Settings → <code>cursor.cpp.anthropicBaseUrl = http://localhost:4000</code></td></tr>
     <tr><td class="new">Windsurf</td><td class="new">Cascade settings → custom Anthropic base URL</td></tr>
     <tr><td class="new">Continue.dev</td><td class="new"><code>.continue/config.json</code>: provider anthropic, apiBase localhost:4000</td></tr>
-    <tr><td class="new">GitHub Actions CI</td><td class="new">Start proxy với <code>--no-vscode</code>, set <code>ANTHROPIC_BASE_URL</code> trong workflow</td></tr>
+    <tr><td><span style="color:#2196F3;font-weight:bold">GitHub Actions CI</span></td><td><span style="color:#2196F3;font-weight:bold">Copy <code>.github/workflows/claude-review.yml</code> — tự review PR, post comment, dùng Groq free tier</span></td></tr>
   </tbody>
 </table>
 

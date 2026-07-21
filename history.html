@@ -51,6 +51,25 @@
 <tbody>
 
   <tr>
+    <td class="date">2026-07-21</td>
+    <td><code class="hash">091e604</code></td>
+    <td><span class="badge badge-feat">feat</span></td>
+    <td>
+      <div class="msg">1000× — auto-failover, npx claude-bridge, GitHub Actions PR review</div>
+      <div class="detail">
+        <ul>
+          <li>Auto-failover: khi provider primary rate-limit/lỗi, LiteLLM router tự retry provider tiếp theo. Tất cả provider có key set được thêm vào config cùng <code>model_name</code> group + <code>router_settings</code></li>
+          <li><code>npx claude-bridge</code>: zero-install — <code>package.json</code> + <code>bin/claude-bridge.js</code> tự clone repo về <code>~/.claude-bridge</code> lần đầu, forward tất cả args sang script gốc</li>
+          <li><code>.github/workflows/claude-review.yml</code>: template review PR tự động bằng Groq free tier + Claude Code CLI, post comment vào PR</li>
+          <li>README: thêm "Zero-install", "Auto-failover", "GitHub Actions" sections</li>
+          <li><code>.gitattributes</code>: thêm <code>*.js text eol=lf</code></li>
+        </ul>
+      </div>
+    </td>
+    <td class="status-ok">✅ pushed</td>
+  </tr>
+
+  <tr>
     <td class="date">2026-07-18</td>
     <td><code class="hash">181e029</code></td>
     <td><span class="badge badge-feat">feat</span></td>
