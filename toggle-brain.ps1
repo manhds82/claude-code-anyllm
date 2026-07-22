@@ -1,4 +1,4 @@
-<#
+﻿<#
 ================================================================
   toggle-brain.ps1  (claude-code-anyllm)
   Toggle Claude Code's "brain" between real Anthropic and any

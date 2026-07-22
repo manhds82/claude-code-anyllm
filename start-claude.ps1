@@ -1,4 +1,4 @@
-<#
+﻿<#
 ================================================================
   start-claude.ps1  (claude-code-anyllm)
   Run Claude Code inside VS Code, but powered by ANY OpenAI-compatible
