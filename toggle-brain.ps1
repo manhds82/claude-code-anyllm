@@ -356,25 +356,37 @@ if ($Mode -eq "proxy") {
         # we derive it from the alias. Users can override with -Key.
         $providerModel = "DeepSeek-V4-Flash"
 
+        # F-03: quote user-supplied values as YAML single-quoted scalars so a
+        # stray quote/colon/newline cannot break or inject YAML structure.
+        $q = { param([string]$s) "'" + ($s -replace "'", "''") + "'" }
         $yaml = @"
 model_list:
-  - model_name: $ClaudeAlias
+  - model_name: $(& $q $ClaudeAlias)
     litellm_params:
-      model: openai/$providerModel
-      api_base: $baseUrl
+      model: $(& $q ("openai/" + $providerModel))
+      api_base: $(& $q $baseUrl)
       api_key: os.environ/LLM_API_KEY
 "@
         [System.IO.File]::WriteAllText($ConfigPath, $yaml, (New-Object System.Text.UTF8Encoding($false)))
         Write-Ok "Config written: $ConfigPath"
 
-        # Start proxy in a new window
+        # B-02: hand the key to the proxy through the ENVIRONMENT (the child
+        # process inherits a copy of this process's env) instead of interpolating
+        # it into the -Command string, where a key containing a quote would break
+        # the string literal or allow command injection.
+        $prevLlmKey = $env:LLM_API_KEY
+        $env:LLM_API_KEY = $Key
         $proxyCmd = @"
 & '$ActivateScript'
-`$env:LLM_API_KEY = '$Key'
 Write-Host 'LiteLLM proxy is running. CLOSE this window to stop.' -ForegroundColor Green
 litellm --config '$ConfigPath' --port $Port
 "@
-        Start-Process powershell -ArgumentList "-NoExit", "-Command", $proxyCmd | Out-Null
+        try {
+            Start-Process powershell -ArgumentList "-NoExit", "-Command", $proxyCmd | Out-Null
+        } finally {
+            if ($null -eq $prevLlmKey) { Remove-Item Env:\LLM_API_KEY -ErrorAction SilentlyContinue }
+            else { $env:LLM_API_KEY = $prevLlmKey }
+        }
         Write-Ok "Proxy starting on port $Port (separate window)"
 
         # Wait for readiness

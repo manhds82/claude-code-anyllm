@@ -360,13 +360,14 @@ if ($Benchmark) {
 
 # ---------- 2.6 Collect fallback providers (auto-failover) ----------
 $fallbackProviders = [System.Collections.Generic.List[PSCustomObject]]::new()
-$fallbackKeyCmds   = ""
 if ($null -ne $providers -and $providers.Count -gt 0) {
     foreach ($p in $providers) {
         $k = [Environment]::GetEnvironmentVariable($p.KeyEnv)
         if ([string]::IsNullOrWhiteSpace($k) -or $k -eq $Key) { continue }
+        # B-02: the fallback key already lives in THIS process's environment
+        # (that is where it was just read from), so the proxy child process
+        # inherits it automatically. Never interpolate a key into a command string.
         $fallbackProviders.Add($p)
-        $fallbackKeyCmds += "`n`$env:$($p.KeyEnv) = '$k'"
     }
     if ($fallbackProviders.Count -gt 0) {
         $fb = ($fallbackProviders | ForEach-Object { $_.Label }) -join ' → '
@@ -382,18 +383,23 @@ if (-not (Test-Path $ConfigDir)) {
     New-Item -ItemType Directory -Path $ConfigDir -Force | Out-Null
     Write-Ok "Created config folder: $ConfigDir"
 }
+# F-03: emit user-supplied values as YAML single-quoted scalars so a stray
+# quote / colon / newline in a model name or base URL cannot break or inject
+# YAML structure. (api_key stays bare: it is our own fixed os.environ/ marker.)
+function ConvertTo-YamlScalar([string]$s) { "'" + ($s -replace "'", "''") + "'" }
+
 $yamlLines = [System.Collections.Generic.List[string]]::new()
 $yamlLines.Add("model_list:")
-$yamlLines.Add("  - model_name: $ClaudeAlias")
+$yamlLines.Add("  - model_name: $(ConvertTo-YamlScalar $ClaudeAlias)")
 $yamlLines.Add("    litellm_params:")
-$yamlLines.Add("      model: openai/$Model")
-$yamlLines.Add("      api_base: $BaseUrl")
+$yamlLines.Add("      model: $(ConvertTo-YamlScalar ("openai/" + $Model))")
+$yamlLines.Add("      api_base: $(ConvertTo-YamlScalar $BaseUrl)")
 $yamlLines.Add("      api_key: os.environ/LLM_API_KEY")
 foreach ($fp in $fallbackProviders) {
-    $yamlLines.Add("  - model_name: $ClaudeAlias")
+    $yamlLines.Add("  - model_name: $(ConvertTo-YamlScalar $ClaudeAlias)")
     $yamlLines.Add("    litellm_params:")
-    $yamlLines.Add("      model: openai/$($fp.Model)")
-    $yamlLines.Add("      api_base: $($fp.BaseUrl)")
+    $yamlLines.Add("      model: $(ConvertTo-YamlScalar ("openai/" + $fp.Model))")
+    $yamlLines.Add("      api_base: $(ConvertTo-YamlScalar $fp.BaseUrl)")
     $yamlLines.Add("      api_key: os.environ/$($fp.KeyEnv)")
 }
 if ($fallbackProviders.Count -gt 0) {
@@ -447,13 +453,25 @@ $ProxyUrl = "http://localhost:$Port"
 
 # ---------- 6. Start the proxy in its own window ----------
 Write-Step "Starting LiteLLM proxy in a new window (port $Port) ..."
+# B-02: hand the key to the proxy through the ENVIRONMENT (Start-Process gives
+# the child a copy of this process's env) instead of interpolating it into the
+# -Command string, where a key containing a quote would break the string literal
+# or allow command injection.
+$prevLlmKey = $env:LLM_API_KEY
+$env:LLM_API_KEY = $Key
 $proxyCmd = @"
 & '$ActivateScript'
-`$env:LLM_API_KEY = '$Key'$fallbackKeyCmds
 Write-Host 'LiteLLM proxy is running. CLOSE this window to stop the proxy.' -ForegroundColor Green
 litellm --config '$ConfigPath' --port $Port
 "@
-Start-Process powershell -ArgumentList "-NoExit", "-Command", $proxyCmd | Out-Null
+try {
+    Start-Process powershell -ArgumentList "-NoExit", "-Command", $proxyCmd | Out-Null
+} finally {
+    # Restore the caller's session: do not leave the key behind (it would other-
+    # wise also be inherited by the editor we launch later).
+    if ($null -eq $prevLlmKey) { Remove-Item Env:\LLM_API_KEY -ErrorAction SilentlyContinue }
+    else { $env:LLM_API_KEY = $prevLlmKey }
+}
 Write-Ok "Proxy window started."
 
 

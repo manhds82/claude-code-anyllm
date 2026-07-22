@@ -87,6 +87,9 @@ function Invoke-PolicyCI {
     Check "policy-ci" "config has model_name" ($cfg -and $cfg -match "model_name:")
     Check "policy-ci" "config key via os.environ" ($cfg -and $cfg -match "api_key:\s*os\.environ/")
 
+    # 4b. F-03 regression: generated config quotes user-supplied scalars
+    Check "policy-ci" "config quotes user values (YAML scalars)" (($cfg -match "model_name:\s*'") -and ($cfg -match "api_base:\s*'"))
+
     # 5. .gitignore covers venv + env files
     $gi = ReadText ".gitignore"
     Check "policy-ci" ".gitignore ignores .venv" ($gi -and $gi -match "(?m)^\.venv/")
@@ -171,6 +174,16 @@ function Invoke-RedTeam {
         }
     }
     Check "red-team" "ANTHROPIC_AUTH_TOKEN is dummy only" ($authBad.Count -eq 0) ($authBad -join ", ")
+
+    # B-02 regression: a key must never be interpolated into a command string.
+    # The proxy child inherits the key from the environment instead.
+    $keyInterp = @()
+    $badPatterns = @(("LLM_API_KEY = '" + '$'), ("KeyEnv) = '" + '$'))
+    foreach ($f in $productPs1) {
+        $t = ReadText $f; if (-not $t) { continue }
+        foreach ($bp in $badPatterns) { if ($t.Contains($bp)) { $keyInterp += "$f ~ $bp" } }
+    }
+    Check "red-team" "key never interpolated into a command string" ($keyInterp.Count -eq 0) ($keyInterp -join " | ")
 
     # product scripts must not pipe remote content into a shell
     $remoteExec = @()

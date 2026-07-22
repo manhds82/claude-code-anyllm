@@ -11,8 +11,9 @@
 | ID | Angle | Severity | Status | Title |
 |----|-------|----------|--------|-------|
 | B‑01 | Correctness | 🔴 HIGH | ✅ Fixed | `.ps1` without BOM + Unicode → PowerShell 5.1 parse failure |
-| B‑02 | Security | 🟠 MEDIUM | ⬜ Open | Windows proxy‑start interpolates the API key into a `-Command` string |
-| F‑03 | Security | 🟡 LOW | ⬜ Open | `model`/`base_url` interpolated into generated YAML unquoted |
+| B‑02 | Security | 🟠 MEDIUM | ✅ Fixed | Windows proxy‑start interpolated the API key into a `-Command` string |
+| B‑03 | Correctness | 🟠 MEDIUM | ✅ Fixed | bash: command substitution stripped the newline → 2+ fallback entries produced malformed YAML |
+| F‑03 | Security | 🟡 LOW | ✅ Fixed | `model`/`base_url` interpolated into generated YAML unquoted |
 | F‑04 | Robustness | 🟡 LOW | Known | Readiness waits use fixed‑interval polling (bounded) |
 | F‑05 | Correctness | 🟡 LOW | Known | `Remove-Item Env:\ANTHROPIC_API_KEY` only affects a fresh session |
 
@@ -40,21 +41,32 @@ reopen. Already documented (README/guideline note "fully quit and reopen"). No c
 
 ## Security
 
-**B‑02 — Windows proxy‑start interpolates the key into a command string. 🟠 MEDIUM — OPEN.**
+**B‑02 — Windows proxy‑start interpolated the key into a command string. 🟠 MEDIUM — ✅ FIXED.**
 `start-claude.ps1:452` and `toggle-brain.ps1:373` build a here‑string
 `` `$env:LLM_API_KEY = '$Key' `` and run it via `Start-Process powershell -Command`. A key containing
 a single quote breaks the literal (corrupting proxy start) and is a code‑injection smell. *Contrast:*
-the bash side is safe — `LLM_API_KEY="$KEY" nohup "$LITELLM" …` (start-claude.sh:415,
-toggle-brain.sh:254) passes the key as a real env var, never interpolated. *Recommended fix:* set
-`$env:LLM_API_KEY = $Key` (and any fallback keys) in the **parent** before `Start-Process`, which the
-child inherits, and drop the key line from the command string. *Not auto‑fixed:* the PS branch also
-appends `$fallbackKeyCmds` (multi‑provider fallback) that needs a full read before refactoring —
-flagged for the owner to keep the feature intact. Exploitability is low (the key is the user's own).
+the bash side was already safe — `LLM_API_KEY="$KEY" nohup "$LITELLM" …` passes the key as a real env
+var. *Fix (applied):* the key is now set on the **parent** process (`$env:LLM_API_KEY = $Key`) and the
+child inherits a copy via `Start-Process`; the key line was removed from the command string, and the
+parent session is restored in a `finally` block so the key is not left behind or inherited by the
+editor launched later. The `$fallbackKeyCmds` string was **deleted entirely** — those keys were read
+*from* the process environment in the first place, so the child already inherits them (the
+interpolation was both unsafe and redundant). Guarded by the red‑team check
+"key never interpolated into a command string".
 
-**F‑03 — `model`/`base_url` interpolated into generated YAML unquoted. 🟡 LOW — OPEN.**
-The generated `config/litellm_config.yaml` inlines `$Model`/`$BaseUrl` without quoting; a value with
-YAML‑special characters or a newline could corrupt the config. User‑controlled, non‑remote, low risk.
-*Fix:* validate/quote these values, or write via a YAML emitter.
+**F‑03 — `model`/`base_url` interpolated into generated YAML unquoted. 🟡 LOW — ✅ FIXED.**
+*Fix (applied):* user‑supplied scalars (`model_name`, `model`, `api_base`) are emitted as YAML
+single‑quoted scalars with `'` doubled — `ConvertTo-YamlScalar` (PowerShell) / `yqs()` (bash) — in
+`start-claude.*` and `toggle-brain.*`. `api_key` stays bare (it is our own fixed `os.environ/` marker).
+*Verified:* `yqs "weird'name"` → `'weird''name'`; sample config parses under PyYAML. Guarded by the
+policy‑ci check "config quotes user values (YAML scalars)".
+
+**B‑03 — bash fallback entries lost their trailing newline. 🟠 MEDIUM — ✅ FIXED.**
+`start-claude.sh` built `fallback_entries` with `"${fallback_entries}$(printf '…\n')"`. Command
+substitution strips *all* trailing newlines, so with **two or more** fallback providers the entries
+were concatenated onto one line, producing malformed YAML that LiteLLM would reject. *Fix (applied):*
+append an explicit `$'\n'` after the substitution. *Verified:* simulating two fallback providers now
+emits two correctly separated `- model_name:` blocks.
 
 **PASS — secrets.** No secret patterns in any tracked file; `config`/`profiles` reference only
 `os.environ/LLM_API_KEY`; `ANTHROPIC_AUTH_TOKEN` is the fixed dummy `litellm-proxy`; product scripts
@@ -71,7 +83,13 @@ detached with `nohup`+`disown` and logs to `litellm-proxy.log`; `--stop`/`-Stop`
 
 ## Follow‑ups
 
-1. Apply B‑02 (env‑inherit key on Windows) once the multi‑provider fallback path is mapped.
-2. Optionally address F‑03 (quote YAML values).
-3. Consider adding `pwsh`/`bash` matrix execution of `tests/run-tests.*` to
+All product findings (B‑01, B‑02, B‑03, F‑03) are **fixed and regression‑guarded**; suites are green
+(PowerShell 34/34, bash 32/32). Remaining, deliberately not changed:
+
+1. **F‑04 / F‑05** — by design / already documented. The readiness polls are bounded and safe
+   (backoff is low ROI); un‑setting `ANTHROPIC_API_KEY` cannot reach an already‑running editor, which
+   the README/guideline already tell the user to restart.
+2. Consider adding `pwsh`/`bash` matrix execution of `tests/run-tests.*` to
    `.github/workflows/claude-review.yml`.
+3. Governance harness (`.harness/` bundle) findings are **out of scope for this repo** — owned by the
+   harness project.

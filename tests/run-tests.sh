@@ -81,6 +81,13 @@ run_policy_ci() {
   check policy-ci "config has model_name"       "$(b "$(grep -q 'model_name:' config/litellm_config.yaml && echo true || echo false)")"
   check policy-ci "config key via os.environ"   "$(b "$(grep -Eq 'api_key:[[:space:]]*os\.environ/' config/litellm_config.yaml && echo true || echo false)")"
 
+  # 3b. F-03 regression: generated config quotes user-supplied scalars
+  if grep -Eq "model_name:[[:space:]]*'" config/litellm_config.yaml && grep -Eq "api_base:[[:space:]]*'" config/litellm_config.yaml; then
+    check policy-ci "config quotes user values (YAML scalars)" 0
+  else
+    check policy-ci "config quotes user values (YAML scalars)" 1
+  fi
+
   # 4. .gitignore / .gitattributes
   check policy-ci ".gitignore ignores .venv"    "$(b "$(grep -Eq '^\.venv/' .gitignore && echo true || echo false)")"
   check policy-ci ".gitignore ignores .env"     "$(b "$(grep -Eq '^\.env' .gitignore && echo true || echo false)")"
@@ -132,6 +139,13 @@ run_red_team() {
     fi
   done
   check red-team "ANTHROPIC_AUTH_TOKEN is dummy only" "$authbad"
+
+  # 4b. B-02 regression: a key must never be interpolated into a command string
+  local keyinterp=0
+  for f in "${PRODUCT_PS1[@]}"; do [ -f "$f" ] || continue
+    if grep -Fq -- "LLM_API_KEY = '\$" "$f" || grep -Fq -- "KeyEnv) = '\$" "$f"; then keyinterp=1; fi
+  done
+  check red-team "key never interpolated into a command string" "$keyinterp"
 
   # 5. no remote-to-shell in product scripts
   local rex=0

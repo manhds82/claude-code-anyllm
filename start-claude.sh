@@ -367,6 +367,10 @@ if [ "$DO_BENCHMARK" -eq 1 ]; then
 fi
 
 # ---------- 2.5 Collect fallback providers (auto-failover) ----------
+# F-03: emit user-supplied values as YAML single-quoted scalars so a stray
+# quote/colon/newline in a model name or base URL cannot break/inject YAML.
+yqs() { printf "'%s'" "$(printf '%s' "$1" | sed "s/'/''/g")"; }
+
 fallback_entries=""
 fallback_labels=""
 if [ -f "$PROVIDERS_FILE" ]; then
@@ -381,7 +385,10 @@ if [ -f "$PROVIDERS_FILE" ]; then
     [ -z "$_k" ] && continue
     [ "$_k" = "$KEY" ] && continue
     export "$_keyenv=$_k"
-    fallback_entries="${fallback_entries}$(printf '  - model_name: %s\n    litellm_params:\n      model: openai/%s\n      api_base: %s\n      api_key: os.environ/%s\n' "$CLAUDE_ALIAS" "$_model" "$_baseurl" "$_keyenv")"
+    # NOTE the trailing $'\n': command substitution strips trailing newlines, so
+    # without it two or more fallback entries would be glued onto one line and
+    # produce malformed YAML.
+    fallback_entries="${fallback_entries}$(printf '  - model_name: %s\n    litellm_params:\n      model: %s\n      api_base: %s\n      api_key: os.environ/%s' "$(yqs "$CLAUDE_ALIAS")" "$(yqs "openai/$_model")" "$(yqs "$_baseurl")" "$_keyenv")"$'\n'
     fallback_labels="$fallback_labels $_label"
   done < "$PROVIDERS_FILE"
 fi
@@ -391,8 +398,8 @@ fi
 step "Writing config: $CONFIG_PATH"
 mkdir -p "$(dirname "$CONFIG_PATH")"
 {
-  printf 'model_list:\n  - model_name: %s\n    litellm_params:\n      model: openai/%s\n      api_base: %s\n      api_key: os.environ/LLM_API_KEY\n' \
-    "$CLAUDE_ALIAS" "$MODEL" "$BASE_URL"
+  printf 'model_list:\n  - model_name: %s\n    litellm_params:\n      model: %s\n      api_base: %s\n      api_key: os.environ/LLM_API_KEY\n' \
+    "$(yqs "$CLAUDE_ALIAS")" "$(yqs "openai/$MODEL")" "$(yqs "$BASE_URL")"
   [ -n "$fallback_entries" ] && printf '%s' "$fallback_entries"
   if [ -n "$fallback_entries" ]; then
     printf '\nrouter_settings:\n  num_retries: 2\n  retry_after: 5\n  allowed_fails: 1\n'

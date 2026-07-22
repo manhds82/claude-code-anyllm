@@ -11,7 +11,8 @@
 
 | # | Vấn đề | Mức | Trạng thái | Ngày |
 |---|---|---|---|---|
-| [B-02](#b-02) | Windows start-proxy nội suy API key vào chuỗi `-Command` (key có `'` sẽ hỏng/inject) | 🟠 Vừa | ⬜ Mở | 2026-07-22 |
+| [B-03](#b-03) | ⭐ bash: `$( )` nuốt newline → từ 2 fallback provider trở lên sinh YAML hỏng | 🟠 Vừa | ✅ Fixed | 2026-07-22 |
+| [B-02](#b-02) | Windows start-proxy nội suy API key vào chuỗi `-Command` (key có `'` sẽ hỏng/inject) | 🟠 Vừa | ✅ Fixed | 2026-07-22 |
 | [B-01](#b-01) | ⭐ `.ps1` không có BOM + ký tự Unicode → PowerShell 5.1 lỗi parse trên locale non-UTF-8 | 🔴 Cao | ✅ Fixed | 2026-07-22 |
 
 <!-- Mức: 🔴 Cao · 🟠 Vừa · 🟡 Thấp -->
@@ -19,8 +20,31 @@
 
 ---
 
+<a id="b-03"></a>
+## B-03 — ⭐[COMMON] bash `$( )` nuốt newline làm YAML fallback dính liền ✅ FIXED
+
+**Tóm tắt.** Khi có **từ 2 fallback provider trở lên**, `start-claude.sh` sinh
+`config/litellm_config.yaml` bị dính các entry vào cùng một dòng → YAML sai cú pháp → LiteLLM không
+load được config (auto-failover chết).
+
+**Chi tiết.** `start-claude.sh:384` (cũ):
+`fallback_entries="${fallback_entries}$(printf '...\n')"`. Mô phỏng 2 provider cho ra
+`...api_key: os.environ/K1  - model_name: ...` (entry 2 dính đuôi entry 1).
+
+**Nguyên nhân.** Command substitution `$( )` trong POSIX shell **luôn cắt bỏ mọi newline ở cuối**.
+Nên `\n` cuối của `printf` bị mất, các entry nối trực tiếp vào nhau. Bug chỉ lộ khi có ≥2 fallback
+(1 fallback vẫn "may mắn" đúng vì block kế tiếp mở đầu bằng `\n`).
+
+**Cách fix.** Nối thêm newline tường minh sau command substitution: `...)"$'\n'`, và bỏ `\n` thừa
+trong format string.
+
+**Verify.** Mô phỏng 2 provider sau fix → 2 block `- model_name:` tách dòng đúng chuẩn; PyYAML parse
+config mẫu OK. `tests/run-tests.*` xanh (PS 34/34, bash 32/32).
+
+---
+
 <a id="b-02"></a>
-## B-02 — Windows start-proxy nội suy API key vào chuỗi `-Command` ⬜ MỞ
+## B-02 — Windows start-proxy nội suy API key vào chuỗi `-Command` ✅ FIXED
 
 **Tóm tắt.** Trên Windows, `start-claude.ps1` và `toggle-brain.ps1` dựng chuỗi lệnh chứa
 `` `$env:LLM_API_KEY = '$Key' `` rồi chạy qua `Start-Process powershell -Command`. Key chứa dấu nháy
@@ -33,10 +57,15 @@ biến môi trường, KHÔNG nội suy vào chuỗi lệnh. Đây là điểm *
 **Nguyên nhân.** Nhánh PowerShell build command-string cho cửa sổ proxy mới và nhét key vào trong,
 thay vì set env ở tiến trình cha rồi để tiến trình con kế thừa.
 
-**Cách fix (đề xuất, CHƯA làm).** Set `$env:LLM_API_KEY = $Key` (và các fallback key) ở tiến trình
-cha TRƯỚC `Start-Process`; `Start-Process` tự kế thừa env → bỏ dòng key khỏi command-string. Chưa tự
-sửa vì nhánh này còn ghép `$fallbackKeyCmds` (multi-provider fallback) cần đọc kỹ để không phá tính
-năng. Rủi ro khai thác thấp (key là của chính người dùng). Xem `docs/review-findings.md` B-02.
+**Cách fix.** Set `$env:LLM_API_KEY = $Key` ở tiến trình **cha** trước `Start-Process` (tiến trình con
+kế thừa bản sao env), bỏ hẳn dòng key khỏi command-string, và khôi phục env của phiên gọi trong khối
+`finally` để không để sót key (tránh editor mở sau đó cũng thừa hưởng). **Xoá hẳn
+`$fallbackKeyCmds`**: các key fallback vốn được ĐỌC TỪ env của tiến trình (dòng 366) nên con đã tự kế
+thừa — việc nội suy chúng vừa không an toàn vừa thừa. Áp cho `start-claude.ps1` và `toggle-brain.ps1`.
+
+**Verify.** `powershell -File start-claude.ps1 -Stop -Port 4999` và `toggle-brain.ps1 -Status` chạy
+đúng; parse 0 lỗi. Regression test mới `key never interpolated into a command string` (red-team) chặn
+tái diễn. Suite: PS 34/34, bash 32/32 xanh. Xem `docs/review-findings.md` B-02.
 
 ---
 

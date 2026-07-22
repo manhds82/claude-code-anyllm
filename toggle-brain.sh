@@ -240,12 +240,15 @@ case "$ACTION" in
         base_url=$(grep -o '"ANTHROPIC_BASE_URL"[[:space:]]*:[[:space:]]*"[^"]*"' "$profile_path" 2>/dev/null | sed -E 's/.*"([^"]*)"$/\1/')
 
         mkdir -p "$(dirname "$CONFIG_PATH")"
+        # F-03: quote user-supplied values as YAML single-quoted scalars so a
+        # stray quote/colon/newline cannot break or inject YAML structure.
+        yqs() { printf "'%s'" "$(printf '%s' "$1" | sed "s/'/''/g")"; }
         cat > "$CONFIG_PATH" <<EOF
 model_list:
-  - model_name: $claude_alias
+  - model_name: $(yqs "$claude_alias")
     litellm_params:
-      model: openai/DeepSeek-V4-Flash
-      api_base: $base_url
+      model: $(yqs "openai/DeepSeek-V4-Flash")
+      api_base: $(yqs "$base_url")
       api_key: os.environ/LLM_API_KEY
 EOF
         ok "Config written: $CONFIG_PATH"
