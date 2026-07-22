@@ -11,12 +11,35 @@
 
 | # | Vấn đề | Mức | Trạng thái | Ngày |
 |---|---|---|---|---|
+| [B-04](#b-04) | ⭐ Workflow CI sai YAML (dòng cột 0 trong block `run: \|`) → GitHub Actions **chưa từng chạy** | 🔴 Cao | ✅ Fixed | 2026-07-22 |
 | [B-03](#b-03) | ⭐ bash: `$( )` nuốt newline → từ 2 fallback provider trở lên sinh YAML hỏng | 🟠 Vừa | ✅ Fixed | 2026-07-22 |
 | [B-02](#b-02) | Windows start-proxy nội suy API key vào chuỗi `-Command` (key có `'` sẽ hỏng/inject) | 🟠 Vừa | ✅ Fixed | 2026-07-22 |
 | [B-01](#b-01) | ⭐ `.ps1` không có BOM + ký tự Unicode → PowerShell 5.1 lỗi parse trên locale non-UTF-8 | 🔴 Cao | ✅ Fixed | 2026-07-22 |
 
 <!-- Mức: 🔴 Cao · 🟠 Vừa · 🟡 Thấp -->
 <!-- Trạng thái: ✅ Fixed · ⏳ Đang xử lý · ⬜ Mở / CHƯA FIX · ⬜ Giới hạn đã biết -->
+
+---
+
+<a id="b-04"></a>
+## B-04 — ⭐[COMMON] Workflow CI sai YAML nên GitHub Actions chưa từng chạy ✅ FIXED
+
+**Tóm tắt.** `.github/workflows/claude-review.yml` **không parse được**, nên GitHub Actions bỏ qua
+toàn bộ workflow — job review PR **chưa từng chạy lần nào**, và job test mới thêm cũng sẽ không chạy.
+
+**Chi tiết.** `python -c "yaml.safe_load(...)"` → `ScannerError: could not find expected ':'` tại
+dòng 104–106. Đó là `${REVIEW}` và `<sub>...</sub>` nằm ở **cột 0** bên trong block scalar `run: |`.
+
+**Nguyên nhân.** Trong YAML, mọi dòng thuộc block scalar phải thụt lề sâu hơn key `run:`. Dòng ở cột
+0 kết thúc block và bị hiểu là key YAML mới → sai cú pháp. Lỗi im lặng: Actions chỉ bỏ qua workflow.
+Không thể sửa bằng cách thụt lề vào, vì khi đó markdown sẽ có 10 space đầu dòng → biến thành code block.
+
+**Cách fix.** Dựng nội dung comment bằng `printf` vào `"$RUNNER_TEMP/review.md"` rồi
+`gh pr comment --body-file` → mọi dòng nằm gọn trong block scalar, markdown vẫn sạch.
+
+**Verify.** `yaml.safe_load` OK → `jobs: ['tests','review']`, matrix `[ubuntu-latest, windows-latest]`,
+review gated `github.event_name == 'pull_request'`. Thêm guard `CI workflow YAML parses` vào policy-ci
+(PS 35/35, bash 33/33 xanh) để không tái diễn.
 
 ---
 

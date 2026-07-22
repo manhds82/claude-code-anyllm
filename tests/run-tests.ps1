@@ -116,6 +116,19 @@ function Invoke-PolicyCI {
         Check "policy-ci" "parity: $($m.f)" $ok "ps:$($psL.Contains($m.ps)) sh:$($shL.Contains($m.sh))"
     }
 
+    # 7b. CI workflow YAML must parse - a broken workflow silently never runs
+    $wf = RepoFile ".github/workflows/claude-review.yml"
+    $py = (Get-Command python3 -ErrorAction SilentlyContinue) ; if (-not $py) { $py = Get-Command python -ErrorAction SilentlyContinue }
+    $canYaml = $false
+    if ($py) { & $py.Source -c "import yaml" 2>$null; $canYaml = ($LASTEXITCODE -eq 0) }
+    if ($canYaml -and (Test-Path $wf)) {
+        $wfPath = $wf.Replace('\','/')
+        & $py.Source -c "import yaml;yaml.safe_load(open(r'$wfPath',encoding='utf-8'))" 2>$null
+        Check "policy-ci" "CI workflow YAML parses" ($LASTEXITCODE -eq 0) "invalid YAML in $wfPath"
+    } else {
+        Check "policy-ci" "CI workflow YAML parses" $true "SKIP: python+pyyaml unavailable"
+    }
+
     # 8. engineering docs exist
     Check "policy-ci" "docs/SRS.md exists"  (Test-Path (RepoFile "docs/SRS.md"))
     Check "policy-ci" "docs/spec.md exists" (Test-Path (RepoFile "docs/spec.md"))

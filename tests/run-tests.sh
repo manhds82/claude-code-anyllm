@@ -102,6 +102,20 @@ run_policy_ci() {
       check policy-ci "parity: $f" 0; else check policy-ci "parity: $f" 1; fi
   done
 
+  # 5b. CI workflow YAML must parse - a broken workflow silently never runs
+  local PY=""
+  command -v python3 >/dev/null 2>&1 && PY=python3 || { command -v python >/dev/null 2>&1 && PY=python; }
+  local wf=".github/workflows/claude-review.yml"
+  if [ -n "$PY" ] && $PY -c "import yaml" 2>/dev/null && [ -f "$wf" ]; then
+    if $PY -c "import yaml;yaml.safe_load(open('$wf',encoding='utf-8'))" 2>/dev/null; then
+      check policy-ci "CI workflow YAML parses" 0
+    else
+      check policy-ci "CI workflow YAML parses" 1 "invalid YAML in $wf"
+    fi
+  else
+    check policy-ci "CI workflow YAML parses" 0 "SKIP: python+pyyaml unavailable"
+  fi
+
   # 6. engineering docs
   check policy-ci "docs/SRS.md exists"  "$(b "$([ -f docs/SRS.md ] && echo true || echo false)")"
   check policy-ci "docs/spec.md exists" "$(b "$([ -f docs/spec.md ] && echo true || echo false)")"
