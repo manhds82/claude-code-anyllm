@@ -33,7 +33,7 @@ KEY=""
 CLAUDE_ALIAS="claude-sonnet-4-6"
 PORT=4000
 
-DO_LIST=0; DO_STOP=0; NO_VSCODE=0; DO_LIST_PROVIDERS=0; DO_CHECK_KEYS=0; DO_BENCHMARK=0; DO_DASHBOARD=0
+DO_LIST=0; DO_STOP=0; NO_VSCODE=0; DO_LIST_PROVIDERS=0; DO_CHECK_KEYS=0; DO_BENCHMARK=0; DO_DASHBOARD=0; DO_ROUTE=0
 PROVIDER=""; BASE_URL_SET=0; MODEL_SET=0
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -62,6 +62,7 @@ start-claude.sh - run Claude Code on any OpenAI-compatible LLM via LiteLLM
   ./start-claude.sh --port N           proxy port (default 4000)
   ./start-claude.sh --stop             stop a running proxy on that port
   ./start-claude.sh --no-vscode        only start the proxy
+  ./start-claude.sh --route            token-aware routing (reads config/routing.conf)
   ./start-claude.sh --open-dir PATH    open VS Code in PATH instead of this folder
                                         (or drop open-with-claude.sh in your project)
 EOF
@@ -81,6 +82,7 @@ while [ $# -gt 0 ]; do
     --check-keys) DO_CHECK_KEYS=1; shift ;;
     --benchmark)  DO_BENCHMARK=1; shift ;;
     --dashboard)  DO_DASHBOARD=1; shift ;;
+    --route)      DO_ROUTE=1; shift ;;
     --stop)      DO_STOP=1; shift ;;
     --no-vscode) NO_VSCODE=1; shift ;;
     --open-dir)  OPEN_DIR="$2"; shift 2 ;;
@@ -331,7 +333,7 @@ if [ -n "$PROVIDER" ]; then
   [ "$MODEL_SET" -eq 0 ] && MODEL="$SELECTED_MODEL"
   [ -z "$KEY" ] && KEY="${!SELECTED_KEYENV:-}"
   ok "Provider: $SELECTED_LABEL"
-elif [ "$BASE_URL_SET" -eq 0 ] && [ "$MODEL_SET" -eq 0 ] && [ -f "$PROVIDERS_FILE" ]; then
+elif [ "$DO_ROUTE" -eq 0 ] && [ "$BASE_URL_SET" -eq 0 ] && [ "$MODEL_SET" -eq 0 ] && [ -f "$PROVIDERS_FILE" ]; then
   if ! select_provider ""; then
     err "Invalid choice."
     exit 1
@@ -357,8 +359,10 @@ fi
 ok "LiteLLM found."
 
 # ---------- 2. Resolve the key ----------
-KEY="$(resolve_key)"
-[ -z "$KEY" ] && { err "No API key. Aborting."; exit 1; }
+if [ "$DO_ROUTE" -eq 0 ]; then
+  KEY="$(resolve_key)"
+  [ -z "$KEY" ] && { err "No API key. Aborting."; exit 1; }
+fi
 
 # ---------- Mode --benchmark: run test prompts against the provider, then exit ----------
 if [ "$DO_BENCHMARK" -eq 1 ]; then
@@ -369,7 +373,7 @@ fi
 # ---------- 2.5 Collect fallback providers (auto-failover) ----------
 fallback_entries=""
 fallback_labels=""
-if [ -f "$PROVIDERS_FILE" ]; then
+if [ "$DO_ROUTE" -eq 0 ] && [ -f "$PROVIDERS_FILE" ]; then
   while IFS='|' read -r _id _label _baseurl _model _keyenv; do
     case "$_id" in ''|\#*) continue ;; esac
     _keyenv="$(printf '%s' "$_keyenv" | xargs)"
@@ -387,15 +391,64 @@ if [ -f "$PROVIDERS_FILE" ]; then
 fi
 [ -n "$fallback_labels" ] && ok "Auto-failover:$fallback_labels"
 
+# ---------- 2.6 Parse routing config (--route) ----------
+ROUTING_MW_ARGS=""
+ROUTING_YAML_ENTRIES=""
+if [ "$DO_ROUTE" -eq 1 ]; then
+  routing_conf="$SCRIPT_DIR/config/routing.conf"
+  [ ! -f "$routing_conf" ] && { err "config/routing.conf not found. Create it or run without --route."; exit 1; }
+  while IFS='|' read -r tier_name max_tok prov_id; do
+    case "$tier_name" in ''|\#*) continue ;; esac
+    tier_name="$(printf '%s' "$tier_name" | xargs)"
+    max_tok="$(printf '%s' "$max_tok" | xargs)"
+    prov_id="$(printf '%s' "$prov_id" | xargs)"
+    [ -z "$tier_name" ] && continue
+    [ -z "$prov_id" ] && continue
+    found=0
+    if [ -f "$PROVIDERS_FILE" ]; then
+      while IFS='|' read -r _id _lbl _url _mdl _kenv; do
+        case "$_id" in ''|\#*) continue ;; esac
+        _id="$(printf '%s' "$_id" | xargs)"
+        [ "$_id" != "$prov_id" ] && continue
+        _url="$(printf '%s' "$_url" | xargs)"
+        _mdl="$(printf '%s' "$_mdl" | xargs)"
+        _kenv="$(printf '%s' "$_kenv" | xargs)"
+        _k="${!_kenv:-}"
+        if [ -z "$_k" ]; then
+          warn "routing: no key for '$prov_id' (env: $_kenv). Skipping tier $tier_name."; found=1; break
+        fi
+        export "$_kenv=$_k"
+        model_name="model-${tier_name}"
+        ROUTING_MW_ARGS="$ROUTING_MW_ARGS --tier ${tier_name}:${max_tok}:${model_name}"
+        ROUTING_YAML_ENTRIES="${ROUTING_YAML_ENTRIES}  - model_name: ${model_name}
+    litellm_params:
+      model: openai/${_mdl}
+      api_base: ${_url}
+      api_key: os.environ/${_kenv}
+"
+        ok "Routing tier: $tier_name (max_tok=$max_tok) → $prov_id"
+        found=1; break
+      done < "$PROVIDERS_FILE"
+    fi
+    [ "$found" -eq 0 ] && warn "routing.conf: provider '$prov_id' not found in providers.conf."
+  done < "$routing_conf"
+  [ -z "$ROUTING_MW_ARGS" ] && { err "No valid routing tiers configured. Check routing.conf and providers.conf."; exit 1; }
+fi
+
 # ---------- 3. Write the proxy config ----------
 step "Writing config: $CONFIG_PATH"
 mkdir -p "$(dirname "$CONFIG_PATH")"
 {
-  printf 'model_list:\n  - model_name: %s\n    litellm_params:\n      model: openai/%s\n      api_base: %s\n      api_key: os.environ/LLM_API_KEY\n' \
-    "$CLAUDE_ALIAS" "$MODEL" "$BASE_URL"
-  [ -n "$fallback_entries" ] && printf '%s' "$fallback_entries"
-  if [ -n "$fallback_entries" ]; then
-    printf '\nrouter_settings:\n  num_retries: 2\n  retry_after: 5\n  allowed_fails: 1\n'
+  printf 'model_list:\n'
+  if [ "$DO_ROUTE" -eq 1 ]; then
+    printf '%s' "$ROUTING_YAML_ENTRIES"
+  else
+    printf '  - model_name: %s\n    litellm_params:\n      model: openai/%s\n      api_base: %s\n      api_key: os.environ/LLM_API_KEY\n' \
+      "$CLAUDE_ALIAS" "$MODEL" "$BASE_URL"
+    [ -n "$fallback_entries" ] && printf '%s' "$fallback_entries"
+    if [ -n "$fallback_entries" ]; then
+      printf '\nrouter_settings:\n  num_retries: 2\n  retry_after: 5\n  allowed_fails: 1\n'
+    fi
   fi
   printf '\nlitellm_settings:\n  cache: true\n  cache_params:\n    type: "local"\n    ttl: 3600\n'
 } > "$CONFIG_PATH"
@@ -409,6 +462,7 @@ while port_in_use "$PORT"; do
 done
 [ "$PORT" != "$orig_port" ] && warn "Port $orig_port was busy, switching to port $PORT."
 PROXY_URL="http://localhost:$PORT"
+ROUTER_PORT=$((PORT + 1))
 
 # ---------- 5. Start the proxy in the background ----------
 step "Starting LiteLLM proxy in the background (port $PORT) ..."
@@ -416,6 +470,21 @@ LLM_API_KEY="$KEY" nohup "$LITELLM" --config "$CONFIG_PATH" --port "$PORT" >"$LO
 PROXY_PID=$!
 disown "$PROXY_PID" 2>/dev/null || true
 ok "Proxy started (PID $PROXY_PID). Logs: $LOG_FILE"
+
+# ---------- 5.5 Start routing middleware ----------
+if [ "$DO_ROUTE" -eq 1 ]; then
+  step "Starting routing middleware (port $ROUTER_PORT → LiteLLM :$PORT) ..."
+  MIDDLEWARE_LOG="$SCRIPT_DIR/router-middleware.log"
+  PYTHON="${VENV_PATH}/bin/python"
+  [ -x "$PYTHON" ] || PYTHON="$(command -v python3 2>/dev/null || command -v python 2>/dev/null || echo python3)"
+  # shellcheck disable=SC2086
+  nohup "$PYTHON" "$SCRIPT_DIR/router-middleware.py" \
+    --port "$ROUTER_PORT" --litellm-port "$PORT" \
+    $ROUTING_MW_ARGS > "$MIDDLEWARE_LOG" 2>&1 &
+  MW_PID=$!
+  disown "$MW_PID" 2>/dev/null || true
+  ok "Routing middleware started (PID $MW_PID). Logs: $MIDDLEWARE_LOG"
+fi
 
 # ---------- 6. Wait until the proxy is ready ----------
 step "Waiting for the proxy to be ready (up to 30s) ..."
@@ -444,7 +513,11 @@ else
 fi
 
 # ---------- 7. Point Claude Code at the proxy ----------
-export ANTHROPIC_BASE_URL="$PROXY_URL"
+if [ "$DO_ROUTE" -eq 1 ]; then
+  export ANTHROPIC_BASE_URL="http://localhost:$ROUTER_PORT"
+else
+  export ANTHROPIC_BASE_URL="$PROXY_URL"
+fi
 export ANTHROPIC_AUTH_TOKEN="litellm-proxy"   # dummy token; the real key lives in the proxy
 export ANTHROPIC_MODEL="$CLAUDE_ALIAS"
 # Route background models (haiku/sonnet/opus) to the same alias so they resolve too.
@@ -456,7 +529,11 @@ unset ANTHROPIC_API_KEY
 if [ "$NO_VSCODE" -eq 1 ]; then
   step "Skipping VS Code (--no-vscode)."
   printf '\nProxy is running. To use it, run THESE in your shell:\n'
-  printf "  export ANTHROPIC_BASE_URL='%s'\n" "$PROXY_URL"
+  if [ "$DO_ROUTE" -eq 1 ]; then
+    printf "  export ANTHROPIC_BASE_URL='http://localhost:%s'\n" "$ROUTER_PORT"
+  else
+    printf "  export ANTHROPIC_BASE_URL='%s'\n" "$PROXY_URL"
+  fi
   printf "  export ANTHROPIC_AUTH_TOKEN='litellm-proxy'\n"
   printf "  export ANTHROPIC_MODEL='%s'\n" "$CLAUDE_ALIAS"
   printf "  export ANTHROPIC_DEFAULT_HAIKU_MODEL='%s'\n" "$CLAUDE_ALIAS"

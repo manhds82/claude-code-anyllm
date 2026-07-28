@@ -69,6 +69,7 @@ param(
     [switch]$CheckKeys,
     [switch]$Benchmark,
     [switch]$Dashboard,
+    [switch]$Route,
     [int]$Port = 4000,
 
     # Folder to open in VS Code. Default: the script's own folder (claude-code-anyllm).
@@ -274,7 +275,7 @@ if ($Provider) {
     if (-not $PSBoundParameters.ContainsKey('Model'))   { $Model   = $selected.Model }
     if ([string]::IsNullOrWhiteSpace($Key)) { $Key = [Environment]::GetEnvironmentVariable($selected.KeyEnv) }
     Write-Ok "Provider: $($selected.Label)"
-} elseif (-not $PSBoundParameters.ContainsKey('BaseUrl') -and -not $PSBoundParameters.ContainsKey('Model') -and $providers.Count -gt 0) {
+} elseif (-not $Route -and -not $PSBoundParameters.ContainsKey('BaseUrl') -and -not $PSBoundParameters.ContainsKey('Model') -and $providers.Count -gt 0) {
     $selected = Select-ProviderInteractive $providers
     if (-not $selected) { return }
     $BaseUrl = $selected.BaseUrl
@@ -309,10 +310,12 @@ Write-Ok "LiteLLM found."
 
 
 # ---------- 2. Resolve the key (prompt if missing) ----------
-$Key = Resolve-Key $Key
-if ([string]::IsNullOrWhiteSpace($Key)) {
-    Write-Err2 "No API key. Aborting."
-    return
+if (-not $Route) {
+    $Key = Resolve-Key $Key
+    if ([string]::IsNullOrWhiteSpace($Key)) {
+        Write-Err2 "No API key. Aborting."
+        return
+    }
 }
 
 
@@ -358,10 +361,10 @@ if ($Benchmark) {
     return
 }
 
-# ---------- 2.6 Collect fallback providers (auto-failover) ----------
+# ---------- 2.6 Collect fallback providers (auto-failover, skipped in -Route mode) ----------
 $fallbackProviders = [System.Collections.Generic.List[PSCustomObject]]::new()
 $fallbackKeyCmds   = ""
-if ($null -ne $providers -and $providers.Count -gt 0) {
+if (-not $Route -and $null -ne $providers -and $providers.Count -gt 0) {
     foreach ($p in $providers) {
         $k = [Environment]::GetEnvironmentVariable($p.KeyEnv)
         if ([string]::IsNullOrWhiteSpace($k) -or $k -eq $Key) { continue }
@@ -375,6 +378,47 @@ if ($null -ne $providers -and $providers.Count -gt 0) {
 }
 
 
+
+# ---------- 2.7 Parse routing tiers (only when -Route) ----------
+$routingTiers = [System.Collections.Generic.List[PSCustomObject]]::new()
+$RouterPort   = $Port + 1
+if ($Route) {
+    $routingConf = Join-Path $ScriptDir "config\routing.conf"
+    if (-not (Test-Path $routingConf)) {
+        Write-Err2 "-Route requires config\routing.conf — it was not found in $ScriptDir\config\"
+        return
+    }
+    foreach ($line in Get-Content $routingConf) {
+        $line = $line.Trim()
+        if (-not $line -or $line.StartsWith('#')) { continue }
+        $parts = $line -split '\|' | ForEach-Object { $_.Trim() }
+        if ($parts.Count -lt 3) { continue }
+        $tier = $parts[0]; $maxTok = $parts[1]; $pid = $parts[2]
+        $prov = $providers | Where-Object { $_.Id -eq $pid } | Select-Object -First 1
+        if (-not $prov) {
+            Write-Warn2 "routing.conf: provider '$pid' not in providers.conf — skipping tier '$tier'"
+            continue
+        }
+        $k = [Environment]::GetEnvironmentVariable($prov.KeyEnv)
+        if ([string]::IsNullOrWhiteSpace($k)) {
+            Write-Warn2 "routing.conf: no key for '$pid' (set $($prov.KeyEnv)) — skipping tier '$tier'"
+            continue
+        }
+        $routingTiers.Add([PSCustomObject]@{ Tier=$tier; MaxTok=$maxTok; Provider=$prov; ModelName="model-$tier" })
+        $fallbackKeyCmds += "`n`$env:$($prov.KeyEnv) = '$k'"
+    }
+    if ($routingTiers.Count -eq 0) {
+        Write-Err2 "No valid routing tiers — check provider IDs and key env vars in routing.conf."
+        return
+    }
+    Write-Ok "Task routing enabled ($($routingTiers.Count) tiers) → middleware on port $RouterPort"
+    foreach ($rt in $routingTiers) {
+        $lbl = if ($rt.MaxTok -eq 'inf') { '∞ tok    ' } else { "≤ $($rt.MaxTok) tok" }
+        Write-Host "    $lbl  →  $($rt.ModelName)  ($($rt.Provider.Label))" -ForegroundColor Cyan
+    }
+}
+
+
 # ---------- 3. Write the proxy config (UTF-8 WITHOUT BOM) ----------
 Write-Step "Writing config: $ConfigPath"
 $ConfigDir = Split-Path -Parent $ConfigPath
@@ -384,24 +428,36 @@ if (-not (Test-Path $ConfigDir)) {
 }
 $yamlLines = [System.Collections.Generic.List[string]]::new()
 $yamlLines.Add("model_list:")
-$yamlLines.Add("  - model_name: $ClaudeAlias")
-$yamlLines.Add("    litellm_params:")
-$yamlLines.Add("      model: openai/$Model")
-$yamlLines.Add("      api_base: $BaseUrl")
-$yamlLines.Add("      api_key: os.environ/LLM_API_KEY")
-foreach ($fp in $fallbackProviders) {
+if ($routingTiers.Count -gt 0) {
+    # Routing mode: one entry per tier with a distinct model_name
+    foreach ($rt in $routingTiers) {
+        $yamlLines.Add("  - model_name: $($rt.ModelName)")
+        $yamlLines.Add("    litellm_params:")
+        $yamlLines.Add("      model: openai/$($rt.Provider.Model)")
+        $yamlLines.Add("      api_base: $($rt.Provider.BaseUrl)")
+        $yamlLines.Add("      api_key: os.environ/$($rt.Provider.KeyEnv)")
+    }
+} else {
+    # Normal mode: primary provider + failover fallbacks under the same model_name
     $yamlLines.Add("  - model_name: $ClaudeAlias")
     $yamlLines.Add("    litellm_params:")
-    $yamlLines.Add("      model: openai/$($fp.Model)")
-    $yamlLines.Add("      api_base: $($fp.BaseUrl)")
-    $yamlLines.Add("      api_key: os.environ/$($fp.KeyEnv)")
-}
-if ($fallbackProviders.Count -gt 0) {
-    $yamlLines.Add("")
-    $yamlLines.Add("router_settings:")
-    $yamlLines.Add("  num_retries: 2")
-    $yamlLines.Add("  retry_after: 5")
-    $yamlLines.Add("  allowed_fails: 1")
+    $yamlLines.Add("      model: openai/$Model")
+    $yamlLines.Add("      api_base: $BaseUrl")
+    $yamlLines.Add("      api_key: os.environ/LLM_API_KEY")
+    foreach ($fp in $fallbackProviders) {
+        $yamlLines.Add("  - model_name: $ClaudeAlias")
+        $yamlLines.Add("    litellm_params:")
+        $yamlLines.Add("      model: openai/$($fp.Model)")
+        $yamlLines.Add("      api_base: $($fp.BaseUrl)")
+        $yamlLines.Add("      api_key: os.environ/$($fp.KeyEnv)")
+    }
+    if ($fallbackProviders.Count -gt 0) {
+        $yamlLines.Add("")
+        $yamlLines.Add("router_settings:")
+        $yamlLines.Add("  num_retries: 2")
+        $yamlLines.Add("  retry_after: 5")
+        $yamlLines.Add("  allowed_fails: 1")
+    }
 }
 $yamlLines.Add("")
 $yamlLines.Add("litellm_settings:")
@@ -442,7 +498,8 @@ while ($true) {
 if ($Port -ne $originalPort) {
     Write-Warn2 "Port $originalPort was busy, switching to port $Port."
 }
-$ProxyUrl = "http://localhost:$Port"
+$ProxyUrl  = "http://localhost:$Port"
+$ClientUrl = if ($routingTiers.Count -gt 0) { "http://localhost:$RouterPort" } else { $ProxyUrl }
 
 
 # ---------- 6. Start the proxy in its own window ----------
@@ -455,6 +512,18 @@ litellm --config '$ConfigPath' --port $Port
 "@
 Start-Process powershell -ArgumentList "-NoExit", "-Command", $proxyCmd | Out-Null
 Write-Ok "Proxy window started."
+
+
+# ---------- 6.5 Start router middleware (only when -Route) ----------
+if ($routingTiers.Count -gt 0) {
+    Write-Step "Starting router middleware on port $RouterPort ..."
+    $middlewarePy = Join-Path $ScriptDir "router-middleware.py"
+    $python       = Join-Path $VenvPath "Scripts\python.exe"
+    $tierArgs     = ($routingTiers | ForEach-Object { "--tier $($_.Tier):$($_.MaxTok):$($_.ModelName)" }) -join " "
+    $mwCmd = "& '$python' '$middlewarePy' --port $RouterPort --litellm-port $Port $tierArgs"
+    Start-Process powershell -ArgumentList "-NoExit", "-Command", $mwCmd | Out-Null
+    Write-Ok "Router middleware window started."
+}
 
 
 # ---------- 7. Wait until the proxy is ready ----------
@@ -481,7 +550,7 @@ if ($ready) {
 if ($NoVSCode) {
     Write-Step "Skipping VS Code (-NoVSCode)."
     Write-Host "`nProxy is running. To open VS Code manually, run IN THIS WINDOW:" -ForegroundColor Cyan
-    Write-Host "  `$env:ANTHROPIC_BASE_URL = '$ProxyUrl'"
+    Write-Host "  `$env:ANTHROPIC_BASE_URL = '$ClientUrl'"
     Write-Host "  `$env:ANTHROPIC_AUTH_TOKEN = 'litellm-proxy'"
     Write-Host "  `$env:ANTHROPIC_MODEL = '$ClaudeAlias'"
     Write-Host "  `$env:ANTHROPIC_DEFAULT_HAIKU_MODEL = '$ClaudeAlias'"
@@ -493,7 +562,7 @@ if ($NoVSCode) {
 }
 
 Write-Step "Opening VS Code (Claude Code pointed at the proxy) ..."
-$env:ANTHROPIC_BASE_URL   = $ProxyUrl
+$env:ANTHROPIC_BASE_URL   = $ClientUrl
 $env:ANTHROPIC_AUTH_TOKEN = "litellm-proxy"   # dummy token; the real key lives in the proxy
 $env:ANTHROPIC_MODEL      = $ClaudeAlias
 # Route the background models (haiku/sonnet/opus) to the same alias so the proxy

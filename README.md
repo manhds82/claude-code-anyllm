@@ -108,6 +108,38 @@ Set keys for **more than one provider** and the proxy automatically retries the 
 [OK] Auto-failover: Groq → Gemini Flash   ← shown at startup if fallbacks are available
 ``` `-BaseUrl`/`-Model`/`-Key` (or `--base-url`/`--model`/`--key`) still work exactly as before and always override the selected provider, so nothing below changes.
 
+### Task-aware routing
+
+Have multiple providers at different speeds/costs? Pass `-Route` (Windows) / `--route` (macOS/Linux) to automatically steer each request to the cheapest model that fits the task:
+
+```powershell
+.\start-claude.ps1 -Route          # Windows
+```
+```bash
+./start-claude.sh --route          # macOS / Linux
+```
+
+Routing is driven by `config/routing.conf` — a simple pipe-delimited file:
+
+```
+# tier_name | max_tokens | provider_id
+fast         | 500        | groq
+medium       | 2000       | fpt
+heavy        | inf        | gemini
+```
+
+A thin FastAPI middleware (port 4001) sits in front of LiteLLM, estimates the token count of each request (~4 chars = 1 token), and rewrites the `model` field before forwarding:
+
+```
+Claude Code  ──►  router :4001  ──►  LiteLLM :4000  ──►  groq / fpt / gemini
+```
+
+- **fast** (≤ 500 tok) → Groq free tier — quick questions, short edits
+- **medium** (≤ 2000 tok) → FPT / any mid-tier provider
+- **heavy** (> 2000 tok) → Gemini / long context, architecture review
+
+`provider_id` must match an `id` in `config/providers.conf` and the corresponding key env var must be set. The middleware (`router-middleware.py`) is started automatically alongside the proxy; logs go to `router-middleware.log`.
+
 ## Configure it for your provider
 
 Open the launcher for your OS and edit the block marked `EDIT THESE FOR YOUR PROVIDER`:
@@ -183,6 +215,7 @@ Want to freeze updates entirely? Add `"env": { "DISABLE_AUTOUPDATER": "1" }` to 
 | Change the proxy port       | `-Port 4010`                              | `--port 4010`                                  |
 | Stop the proxy              | `-Stop`                                   | `--stop`                                        |
 | Proxy only (no VS Code)     | `-NoVSCode`                               | `--no-vscode`                                   |
+| Task-aware routing          | `-Route`                                  | `--route`                                        |
 
 ## Use with an existing project
 
@@ -364,8 +397,10 @@ claude-code-anyllm/
 ├─ profiles/
 │  ├─ claude.json             # profile: real Anthropic account
 │  └─ fpt.json                # profile: FPT/DeepSeek via proxy
+├─ router-middleware.py        # token-aware routing middleware (started by -Route/--route)
 ├─ config/
 │  ├─ providers.conf          # provider list (id|label|base_url|model|key_env)
+│  ├─ routing.conf            # routing tiers (tier|max_tokens|provider_id) — used with --route
 │  └─ litellm_config.yaml     # generated each run; committed as a working example
 ├─ logs/                      # usage.csv — one row per session (git-ignored)
 └─ .venv/                     # LiteLLM environment (created by setup) — git-ignored

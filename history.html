@@ -51,6 +51,25 @@
 <tbody>
 
   <tr>
+    <td class="date">2026-07-28</td>
+    <td><code class="hash">pending</code></td>
+    <td><span class="badge badge-feat">feat</span></td>
+    <td>
+      <div class="msg">Task-aware routing — tự động chọn provider theo token count</div>
+      <div class="detail">
+        <ul>
+          <li><code>router-middleware.py</code>: FastAPI thin proxy (port 4001) ước tính token count (~4 chars = 1 tok), rewrite <code>model</code> field, forward tới LiteLLM :4000. Hỗ trợ streaming (SSE).</li>
+          <li><code>config/routing.conf</code>: cấu hình tiers <code>tier | max_tokens | provider_id</code></li>
+          <li><code>-Route</code> (PS1) / <code>--route</code> (bash): parse routing.conf, generate multi-model YAML, start middleware tự động</li>
+          <li><code>start-claude.sh</code>: thêm đầy đủ <code>--route</code> support (step 0 menu bypass, key resolution bypass, step 2.6 routing config parse, step 3 YAML branch, step 5.5 middleware start, <code>ANTHROPIC_BASE_URL</code> trỏ tới router port)</li>
+          <li>README: thêm "Task-aware routing" section, cập nhật Commands table + Project structure</li>
+        </ul>
+      </div>
+    </td>
+    <td class="status-ok">✅ pushed</td>
+  </tr>
+
+  <tr>
     <td class="date">2026-07-21</td>
     <td><code class="hash">091e604</code></td>
     <td><span class="badge badge-feat">feat</span></td>

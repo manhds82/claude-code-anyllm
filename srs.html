@@ -36,8 +36,8 @@
 
 <h1>claude-code-anyllm — Software Requirements Specification</h1>
 <p class="meta">
-  Version: 1.1 &nbsp;·&nbsp;
-  Last updated: <span>2026-07-21</span> &nbsp;·&nbsp;
+  Version: 1.2 &nbsp;·&nbsp;
+  Last updated: <span>2026-07-28</span> &nbsp;·&nbsp;
   Branch: main &nbsp;·&nbsp;
   Tất cả nội dung đánh dấu <span>màu xanh</span> = mới trong version này
 </p>
@@ -72,6 +72,7 @@ VS Code (Claude Code)  ──►  LiteLLM proxy :4000  ──►  provider /v1 e
   <li class="new">Usage log mỗi session ghi vào <code>logs/usage.csv</code></li>
   <li><span style="color:#2196F3;font-weight:bold">Auto-failover: khi provider lỗi/rate-limit, proxy tự retry provider tiếp theo có key</span></li>
   <li><span style="color:#2196F3;font-weight:bold">Zero-install: <code>npx claude-bridge</code> — không cần git clone, tự setup</span></li>
+  <li><span style="color:#2196F3;font-weight:bold">Task-aware routing (<code>-Route</code>/<code>--route</code>): tự chọn provider theo token count — fast/medium/heavy tier</span></li>
 </ul>
 
 <!-- ═══════════════════════════════ 2. FLOW ═══════════════════════════════ -->
@@ -82,6 +83,7 @@ VS Code (Claude Code)  ──►  LiteLLM proxy :4000  ──►  provider /v1 e
   <li>Resolve API key từ env var (<code>LLM_API_KEY_FPT</code>, <code>LLM_API_KEY_GROQ</code>, v.v.)</li>
   <li>Generate <code>config/litellm_config.yaml</code> (kèm cache settings)</li>
   <li><span style="color:#2196F3;font-weight:bold">Collect fallback providers — tất cả provider có key set được thêm vào YAML cùng model_name group + router_settings</span></li>
+  <li><span style="color:#2196F3;font-weight:bold">Nếu <code>--route</code>: parse <code>config/routing.conf</code> → gen YAML với nhiều model_name group; start <code>router-middleware.py</code> (port 4001) → ước tính token count → rewrite <code>model</code> field</span></li>
   <li>Start LiteLLM proxy trong background / cửa sổ mới</li>
   <li>Đợi proxy ready (max 30s), set env vars ANTHROPIC_*</li>
   <li>Mở VS Code ở project dir; ghi entry vào <code>logs/usage.csv</code></li>
@@ -119,6 +121,7 @@ VS Code (Claude Code)  ──►  LiteLLM proxy :4000  ──►  provider /v1 e
     <tr><td>Đổi port</td><td><code>-Port 4010</code></td><td><code>--port 4010</code></td></tr>
     <tr><td>Stop proxy</td><td><code>-Stop</code></td><td><code>--stop</code></td></tr>
     <tr><td>Liệt kê models của endpoint</td><td><code>-List</code></td><td><code>--list</code></td></tr>
+    <tr><td><span style="color:#2196F3;font-weight:bold">Task-aware routing</span></td><td><code style="color:#2196F3">-Route</code></td><td><code style="color:#2196F3">--route</code></td></tr>
   </tbody>
 </table>
 
@@ -137,6 +140,14 @@ VS Code (Claude Code)  ──►  LiteLLM proxy :4000  ──►  provider /v1 e
   <li class="new">Usage log: append <code>logs/usage.csv</code> sau mỗi session thành công</li>
   <li class="new">Better errors (bash): khi proxy timeout → đọc log, detect 401/429/ImportError</li>
   <li><span style="color:#2196F3;font-weight:bold">Auto-failover: collect fallback providers trước khi gen YAML — mỗi provider có key được thêm vào cùng <code>model_name</code> group; proxy window nhận fallback keys qua env vars</span></li>
+  <li><span style="color:#2196F3;font-weight:bold">Mode <code>-Route</code>/<code>--route</code>: đọc <code>config/routing.conf</code>, gen YAML với nhiều <code>model_name</code> riêng biệt, start <code>router-middleware.py</code> (port+1), set <code>ANTHROPIC_BASE_URL</code> → router port</span></li>
+</ul>
+
+<h3>router-middleware.py <span class="badge badge-new">mới</span></h3>
+<p><span style="color:#2196F3;font-weight:bold">FastAPI thin proxy ngồi giữa Claude Code (port 4001) và LiteLLM (port 4000). Ước tính token count (~4 chars = 1 token) của mỗi chat/completions request, rewrite <code>model</code> field theo tier, forward request. Hỗ trợ streaming (SSE).</span></p>
+<ul>
+  <li><span style="color:#2196F3;font-weight:bold">Tiers từ <code>--tier name:max_tokens:model_name</code> CLI args (repeatable)</span></li>
+  <li><span style="color:#2196F3;font-weight:bold">Sử dụng <code>httpx.AsyncClient.stream()</code> cho streaming — không buffer toàn bộ response</span></li>
 </ul>
 
 <h3>open-with-claude.ps1 / open-with-claude.sh <span class="badge badge-new">mới</span></h3>
@@ -179,6 +190,8 @@ docker run -d -p 4000:4000 -e LLM_API_KEY="..." -e BASE_URL="..." -e MODEL="..."
     <tr><td><code style="color:#2196F3;font-weight:bold">package.json</code></td><td><span style="color:#2196F3;font-weight:bold">npm package metadata cho <code>npx claude-bridge</code>.</span></td></tr>
     <tr><td><code style="color:#2196F3;font-weight:bold">bin/claude-bridge.js</code></td><td><span style="color:#2196F3;font-weight:bold">Node.js entry point: clone repo lần đầu, forward args sang script PS1/SH.</span></td></tr>
     <tr><td><code style="color:#2196F3;font-weight:bold">.github/workflows/claude-review.yml</code></td><td><span style="color:#2196F3;font-weight:bold">Template GitHub Actions: review PR tự động bằng Groq + Claude Code CLI.</span></td></tr>
+    <tr><td><code style="color:#2196F3;font-weight:bold">router-middleware.py</code></td><td><span style="color:#2196F3;font-weight:bold">FastAPI token-aware routing middleware. Start tự động khi dùng <code>-Route</code>/<code>--route</code>.</span></td></tr>
+    <tr><td><code style="color:#2196F3;font-weight:bold">config/routing.conf</code></td><td><span style="color:#2196F3;font-weight:bold">Routing tier config: <code>tier_name | max_tokens | provider_id</code>. Đọc bởi <code>-Route</code>/<code>--route</code>.</span></td></tr>
   </tbody>
 </table>
 
