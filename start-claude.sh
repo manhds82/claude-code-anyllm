@@ -371,6 +371,10 @@ if [ "$DO_BENCHMARK" -eq 1 ]; then
 fi
 
 # ---------- 2.5 Collect fallback providers (auto-failover) ----------
+# F-03: emit user-supplied values as YAML single-quoted scalars so a stray
+# quote/colon/newline in a model name or base URL cannot break/inject YAML.
+yqs() { printf "'%s'" "$(printf '%s' "$1" | sed "s/'/''/g")"; }
+
 fallback_entries=""
 fallback_labels=""
 if [ "$DO_ROUTE" -eq 0 ] && [ -f "$PROVIDERS_FILE" ]; then
@@ -385,7 +389,10 @@ if [ "$DO_ROUTE" -eq 0 ] && [ -f "$PROVIDERS_FILE" ]; then
     [ -z "$_k" ] && continue
     [ "$_k" = "$KEY" ] && continue
     export "$_keyenv=$_k"
-    fallback_entries="${fallback_entries}$(printf '  - model_name: %s\n    litellm_params:\n      model: openai/%s\n      api_base: %s\n      api_key: os.environ/%s\n' "$CLAUDE_ALIAS" "$_model" "$_baseurl" "$_keyenv")"
+    # NOTE the trailing $'\n': command substitution strips trailing newlines, so
+    # without it two or more fallback entries would be glued onto one line and
+    # produce malformed YAML.
+    fallback_entries="${fallback_entries}$(printf '  - model_name: %s\n    litellm_params:\n      model: %s\n      api_base: %s\n      api_key: os.environ/%s' "$(yqs "$CLAUDE_ALIAS")" "$(yqs "openai/$_model")" "$(yqs "$_baseurl")" "$_keyenv")"$'\n'
     fallback_labels="$fallback_labels $_label"
   done < "$PROVIDERS_FILE"
 fi
@@ -420,10 +427,10 @@ if [ "$DO_ROUTE" -eq 1 ]; then
         export "$_kenv=$_k"
         model_name="model-${tier_name}"
         ROUTING_MW_ARGS="$ROUTING_MW_ARGS --tier ${tier_name}:${max_tok}:${model_name}"
-        ROUTING_YAML_ENTRIES="${ROUTING_YAML_ENTRIES}  - model_name: ${model_name}
+        ROUTING_YAML_ENTRIES="${ROUTING_YAML_ENTRIES}  - model_name: $(yqs "${model_name}")
     litellm_params:
-      model: openai/${_mdl}
-      api_base: ${_url}
+      model: $(yqs "openai/${_mdl}")
+      api_base: $(yqs "${_url}")
       api_key: os.environ/${_kenv}
 "
         ok "Routing tier: $tier_name (max_tok=$max_tok) → $prov_id"
@@ -443,8 +450,8 @@ mkdir -p "$(dirname "$CONFIG_PATH")"
   if [ "$DO_ROUTE" -eq 1 ]; then
     printf '%s' "$ROUTING_YAML_ENTRIES"
   else
-    printf '  - model_name: %s\n    litellm_params:\n      model: openai/%s\n      api_base: %s\n      api_key: os.environ/LLM_API_KEY\n' \
-      "$CLAUDE_ALIAS" "$MODEL" "$BASE_URL"
+    printf '  - model_name: %s\n    litellm_params:\n      model: %s\n      api_base: %s\n      api_key: os.environ/LLM_API_KEY\n' \
+      "$(yqs "$CLAUDE_ALIAS")" "$(yqs "openai/$MODEL")" "$(yqs "$BASE_URL")"
     [ -n "$fallback_entries" ] && printf '%s' "$fallback_entries"
     if [ -n "$fallback_entries" ]; then
       printf '\nrouter_settings:\n  num_retries: 2\n  retry_after: 5\n  allowed_fails: 1\n'

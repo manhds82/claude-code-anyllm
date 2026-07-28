@@ -24,3 +24,6 @@ desktop.ini
 
 # Claude Code local-only settings
 .claude/settings.local.json
+
+# Harness Portal ingest key - secret, never commit (C5)
+.harness/portal-sync.key

@@ -1,19 +1,46 @@
-# Template: drop this into .github/workflows/ in any of your repos.
-# Add GROQ_API_KEY to repo Settings → Secrets and Variables → Actions.
-# Every PR gets reviewed automatically using Groq's free tier.
+# Two jobs:
+#   tests  - runs the offline policy-ci + red-team suites on Linux AND Windows.
+#            No secrets needed; gates every push to main and every PR.
+#   review - AI review of the PR diff via Groq's free tier.
+#            Add GROQ_API_KEY to repo Settings → Secrets and Variables → Actions.
 
-name: Claude Code Review
+name: CI (tests + PR review)
 
 on:
   pull_request:
     types: [opened, synchronize]
+  push:
+    branches: [main]
 
 permissions:
   pull-requests: write
   contents: read
 
 jobs:
+  # Deterministic, offline suites. The bash runner also parses the .ps1 files via
+  # pwsh (preinstalled on the Linux runner), so both launchers are covered on both OSes.
+  tests:
+    name: tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run suites (bash)
+        if: runner.os != 'Windows'
+        run: bash tests/run-tests.sh
+
+      - name: Run suites (PowerShell)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: pwsh -File tests/run-tests.ps1
+
   review:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -71,9 +98,12 @@ jobs:
           $DIFF
           \`\`\`" 2>&1 || echo "_Review unavailable — check workflow logs._")"
 
-          gh pr comment "${{ github.event.pull_request.number }}" \
-            --body "## 🤖 Claude Code Review
-
-${REVIEW}
-
-<sub>Powered by [claude-code-anyllm](https://github.com/manhds82/claude-code-anyllm) · Groq free tier</sub>"
+          # Build the body in a file: a bare "${REVIEW}" at column 0 would end the
+          # YAML block scalar (invalid workflow), and indenting it would turn the
+          # comment into a markdown code block.
+          {
+            printf '## 🤖 Claude Code Review\n\n'
+            printf '%s\n\n' "$REVIEW"
+            printf '%s\n' '<sub>Powered by [claude-code-anyllm](https://github.com/manhds82/claude-code-anyllm) · Groq free tier</sub>'
+          } > "$RUNNER_TEMP/review.md"
+          gh pr comment "${{ github.event.pull_request.number }}" --body-file "$RUNNER_TEMP/review.md"
