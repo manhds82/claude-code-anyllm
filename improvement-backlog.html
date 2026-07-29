@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>1000× Ideas — claude-code-anyllm</title>
+<style>
+/* === TOKENS === */
+:root {
+  --bg: #F6F8FB;
+  --surface: #FFFFFF;
+  --surface2: #EEF1F7;
+  --border: #D5DCE8;
+  --text: #18243A;
+  --muted: #62738E;
+  --amber: #C8711A;
+  --amber-bg: rgba(200,113,26,.09);
+  --blue: #2E6FBA;
+  --blue-bg: rgba(46,111,186,.09);
+  --teal: #1A9A86;
+  --teal-bg: rgba(26,154,134,.09);
+  --mono: 'Courier New','Menlo','Consolas',monospace;
+  --sans: system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0C1520;--surface:#111D2E;--surface2:#182538;
+    --border:#1C2D42;--text:#D0DDEF;--muted:#5A7090;
+    --amber:#E8942A;--amber-bg:rgba(232,148,42,.13);
+    --blue:#5090D0;--blue-bg:rgba(80,144,208,.11);
+    --teal:#28C0A8;--teal-bg:rgba(40,192,168,.11);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0C1520;--surface:#111D2E;--surface2:#182538;
+  --border:#1C2D42;--text:#D0DDEF;--muted:#5A7090;
+  --amber:#E8942A;--amber-bg:rgba(232,148,42,.13);
+  --blue:#5090D0;--blue-bg:rgba(80,144,208,.11);
+  --teal:#28C0A8;--teal-bg:rgba(40,192,168,.11);
+}
+:root[data-theme="light"]{
+  --bg:#F6F8FB;--surface:#FFFFFF;--surface2:#EEF1F7;
+  --border:#D5DCE8;--text:#18243A;--muted:#62738E;
+  --amber:#C8711A;--amber-bg:rgba(200,113,26,.09);
+  --blue:#2E6FBA;--blue-bg:rgba(46,111,186,.09);
+  --teal:#1A9A86;--teal-bg:rgba(26,154,134,.09);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:var(--sans);line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* === LAYOUT === */
+.wrap{max-width:780px;margin:0 auto;padding:0 24px}
+
+/* === HEADER === */
+.header{padding:60px 0 44px}
+.eyebrow{
+  font-family:var(--mono);font-size:11px;
+  letter-spacing:.15em;text-transform:uppercase;
+  color:var(--amber);margin-bottom:22px;display:block;
+}
+.header h1{
+  font-family:var(--mono);
+  font-size:clamp(30px,7vw,58px);
+  font-weight:700;line-height:1.06;
+  letter-spacing:-.015em;margin-bottom:20px;
+  text-wrap:balance;
+}
+.header h1 em{color:var(--amber);font-style:normal}
+.header p{
+  font-size:15px;color:var(--muted);
+  max-width:530px;line-height:1.72;
+}
+.header hr{
+  border:none;border-top:1px solid var(--border);
+  margin-top:44px;
+}
+
+/* === TIERS === */
+.tier{margin-top:52px}
+.tier-heading{
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:22px;
+}
+.tier-badge{
+  font-family:var(--mono);font-size:19px;font-weight:700;
+  letter-spacing:-.02em;white-space:nowrap;
+}
+.tier-badge.amber{color:var(--amber)}
+.tier-badge.blue{color:var(--blue)}
+.tier-badge.teal{color:var(--teal)}
+.tier-rule{flex:1;height:1px;background:var(--border)}
+.tier-note{
+  font-size:12px;color:var(--muted);
+  font-style:italic;white-space:nowrap;
+}
+
+/* === CARDS === */
+.cards{display:flex;flex-direction:column;gap:13px}
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-left:3px solid;
+  border-radius:5px;
+  padding:17px 20px 17px 17px;
+}
+.card.amber{border-left-color:var(--amber)}
+.card.blue{border-left-color:var(--blue)}
+.card.teal{border-left-color:var(--teal)}
+
+.card-top{
+  display:flex;align-items:flex-start;
+  justify-content:space-between;gap:12px;
+  margin-bottom:7px;
+}
+.card-title{font-size:14.5px;font-weight:600;line-height:1.35}
+.effort{
+  font-family:var(--mono);font-size:10px;
+  letter-spacing:.06em;text-transform:uppercase;
+  padding:2px 7px;border-radius:3px;
+  white-space:nowrap;flex-shrink:0;
+  margin-top:1px;font-weight:600;
+}
+.effort.easy{background:var(--teal-bg);color:var(--teal)}
+.effort.medium{background:var(--blue-bg);color:var(--blue)}
+.effort.hard{background:var(--amber-bg);color:var(--amber)}
+
+.status{
+  font-family:var(--mono);font-size:10px;
+  letter-spacing:.06em;text-transform:uppercase;
+  padding:2px 7px;border-radius:3px;
+  white-space:nowrap;flex-shrink:0;
+  margin-top:1px;font-weight:700;
+}
+.status.done{background:rgba(26,154,134,.16);color:var(--teal)}
+.status.partial{background:rgba(200,113,26,.16);color:var(--amber)}
+.status.todo{background:rgba(120,120,120,.16);color:var(--muted)}
+.status-note{
+  font-size:12.5px;margin-top:9px;padding-top:9px;
+  border-top:1px dashed var(--border);
+}
+.status-note b{color:var(--text)}
+
+.card-body{
+  font-size:13.5px;color:var(--muted);
+  line-height:1.66;
+}
+.card-body strong{color:var(--text);font-weight:500}
+
+.card-code{
+  font-family:var(--mono);font-size:11.5px;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:4px;padding:9px 12px;
+  margin-top:11px;overflow-x:auto;
+  color:var(--text);line-height:1.55;
+  white-space:pre;opacity:.9;
+}
+
+/* === FOOTER === */
+.footer{
+  border-top:1px solid var(--border);
+  margin-top:64px;padding:28px 0 56px;
+  font-family:var(--mono);font-size:12px;
+  color:var(--muted);
+}
+.footer span{color:var(--amber)}
+
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="header">
+    <span class="eyebrow">claude-code-anyllm — improvement backlog</span>
+    <h1>The <em>1000×</em><br>improvement list</h1>
+    <p>Idéer rangert etter innvirkning — fra ting som endrer hva verktøyet <em>er</em>, til ting som gjør det bedre å bruke dag til dag. Implementasjonsvanskelighet er oppgitt per punkt.</p>
+    <hr>
+  </div>
+
+  <!-- ===== TIER 1 ===== -->
+  <div class="tier">
+    <div class="tier-heading">
+      <span class="tier-badge amber">1000×</span>
+      <div class="tier-rule"></div>
+      <span class="tier-note">endrer hva verktøyet er</span>
+    </div>
+    <div class="cards">
+
+      <div class="card amber">
+        <div class="card-top">
+          <div class="card-title">Auto-failover: bytt provider automatisk ved feil</div>
+          <span class="effort hard">vanskelig</span>
+          <span class="status done">✅ done</span>
+        </div>
+        <div class="card-body">
+          Når en provider returnerer <strong>429 rate-limit eller 5xx</strong>, bytter proxy automatisk til neste tilgjengelige provider — uten at Claude Code merker noe. Du mister aldri en kode-sesjon til et ratelimit.
+          <br><br>
+          LiteLLM har innebygd <code>model_fallbacks</code> i litellm_config.yaml. Generer listen automatisk fra providers.conf basert på hvilke keys som er satt.
+        </div>
+        <div class="card-code"># Generert i litellm_config.yaml:
+model_list:
+  - model_name: claude-proxy
+    litellm_params: {model: openai/DeepSeek-V4-Flash, api_base: ..., api_key: ...}
+  - model_name: claude-proxy-fallback-1
+    litellm_params: {model: openai/llama-3.3-70b, api_base: ..., api_key: ...}
+router_settings:
+  model_group_alias: {claude-proxy: [claude-proxy, claude-proxy-fallback-1]}</div>
+        <div class="status-note"><b>Trạng thái:</b> đã triển khai. Mọi provider có key được thêm vào cùng model_name group + <code>router_settings</code> (retry/fallback). Commit <code>091e604</code>.</div>
+      </div>
+
+      <div class="card amber">
+        <div class="card-top">
+          <div class="card-title">npx claude-bridge — null-friksjon distribusjon</div>
+          <span class="effort medium">middels</span>
+          <span class="status done">✅ done</span>
+        </div>
+        <div class="card-body">
+          Publiser som en <strong>npm-pakke</strong>. I dag krever onboarding git-klon, Python, setup-script og manuell path-konfigurasjon — 5–10 minutter. Med en npm-pakke: <code>npx claude-bridge start --provider groq</code> og alt skjer automatisk. 100 millioner npm-brukere kan ta det i bruk på 30 sekunder.
+        </div>
+        <div class="card-code">npx claude-bridge start --provider groq
+npx claude-bridge start --provider nvidia --key nvapi-...
+npx claude-bridge list-providers
+npx claude-bridge benchmark</div>
+        <div class="status-note"><b>Trạng thái:</b> đã triển khai — <code>package.json</code> + <code>bin/claude-bridge.js</code> clone repo về <code>~/.claude-bridge</code> lần đầu rồi forward args sang script gốc.</div>
+      </div>
+
+      <div class="card amber">
+        <div class="card-top">
+          <div class="card-title">GitHub Actions-integrasjon: automatisk code review på hver PR</div>
+          <span class="effort medium">middels</span>
+          <span class="status done">✅ done</span>
+        </div>
+        <div class="card-body">
+          Kjør Claude Code i CI uten Claude Pro: <strong>automatisk code review, doc-generering eller test-skriving</strong> på hver pull request. Bruk Groq (gratis tier) eller Gemini Flash. Dette åpner en helt ny use case — verktøyet er ikke lenger bare for interaktiv utvikling.
+        </div>
+        <div class="card-code"># .github/workflows/claude-review.yml
+- name: Start claude-bridge
+  run: npx claude-bridge start --provider groq --no-vscode &
+  env:
+    LLM_API_KEY_GROQ: ${{ secrets.GROQ_API_KEY }}
+
+- name: Run Claude Code review
+  run: claude --print "Review the diff and suggest improvements"
+  env:
+    ANTHROPIC_BASE_URL: http://localhost:4000
+    ANTHROPIC_AUTH_TOKEN: dummy</div>
+        <div class="status-note"><b>Trạng thái:</b> đã triển khai trong <code>.github/workflows/claude-review.yml</code>, đã fix lỗi YAML (B-04) nên job đã chạy được thật; test suite chạy matrix ubuntu+windows.</div>
+      </div>
+
+      <div class="card amber">
+        <div class="card-top">
+          <div class="card-title">Task-aware model routing: rett modell til rett oppgave</div>
+          <span class="effort hard">vanskelig</span>
+          <span class="status done">✅ done</span>
+        </div>
+        <div class="card-body">
+          Klassifiser prompten automatisk (<em>enkel spørsmål / kode-edit / kompleks analyse</em>) og rut til riktig modell — billig og rask for enkle ting, best tilgjengelig for komplekse edits. <strong>Kutt kostnader 60–80%</strong> uten å ofre kvalitet der det teller.
+          <br><br>
+          LiteLLM-router støtter <code>allowed_model_region</code> og <code>rpm_limit</code> per modell; legg til en liten klassifiserings-interceptor foran proxyen.
+        </div>
+        <div class="status-note"><b>Trạng thái:</b> đã triển khai khác cách đề xuất — dùng <code>router-middleware.py</code> (FastAPI, port 4001) ước tính token count và rewrite <code>model</code> field trước khi forward tới LiteLLM, thay vì phân loại độ khó câu hỏi. Kích hoạt qua <code>--route</code>/<code>-Route</code> + <code>config/routing.conf</code>.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== TIER 2 ===== -->
+  <div class="tier">
+    <div class="tier-heading">
+      <span class="tier-badge blue">100×</span>
+      <div class="tier-rule"></div>
+      <span class="tier-note">dramatisk bedre workflow</span>
+    </div>
+    <div class="cards">
+
+      <div class="card blue">
+        <div class="card-top">
+          <div class="card-title">Live web-dashboard på localhost:4001</div>
+          <span class="effort medium">middels</span>
+          <span class="status partial">⚠️ partial</span>
+        </div>
+        <div class="card-body">
+          LiteLLM har en innebygd UI på <code>/ui</code> — eksponer den. Viser: <strong>aktiv provider, tokens brukt i dag, estimert kostnad, live request-log, provider-helse</strong>. Åpnes automatisk i nettleseren ved oppstart (som dev-servers gjør).
+        </div>
+        <div class="card-code"># I start-claude.ps1 — legg til flagget:
+litellm --config config/litellm_config.yaml --port 4000 --ui
+
+# Åpne dashboard automatisk:
+Start-Process "http://localhost:4000/ui"</div>
+        <div class="status-note"><b>Trạng thái:</b> chỉ làm một phần. <code>-Dashboard</code>/<code>--dashboard</code> mở browser tới Swagger UI (<code>/docs</code>) trên port của proxy — chưa có dashboard token/cost/health thời gian thực như đề xuất.</div>
+      </div>
+
+      <div class="card blue">
+        <div class="card-top">
+          <div class="card-title">Bytt provider inne i sesjonen via MCP-tool</div>
+          <span class="effort medium">middels</span>
+          <span class="status todo">◻ chưa làm</span>
+        </div>
+        <div class="card-body">
+          I dag krever providerbytting at du stopper proxy og starter på nytt. Med en liten <strong>MCP-server</strong> kan du skrive <code>/switch-provider nvidia</code> direkte i Claude Code uten å forlate VS Code eller miste kontekst.
+        </div>
+        <div class="card-code"># .claude/mcp.json i prosjektet ditt:
+{
+  "mcpServers": {
+    "bridge": {
+      "command": "npx",
+      "args": ["claude-bridge", "mcp"]
+    }
+  }
+}
+# Bruk i Claude Code:
+/switch-provider nvidia
+/bridge status</div>
+        <div class="status-note"><b>Trạng thái:</b> chưa triển khai. Không có <code>mcp.json</code> hay MCP server nào trong repo; đổi provider vẫn cần stop/start lại proxy.</div>
+      </div>
+
+      <div class="card blue">
+        <div class="card-top">
+          <div class="card-title">Response-caching: identiske prompts = $0 og instant svar</div>
+          <span class="effort easy">lett</span>
+          <span class="status done">✅ done</span>
+        </div>
+        <div class="card-body">
+          LiteLLM har innebygd in-memory cache. Aktiver det med <strong>to linjer i litellm_config.yaml</strong>. Identiske prompt + modell-kombinasjoner returnerer umiddelbart og koster ingenting. Stor fordel når du itererer på samme problem eller kjører tester.
+        </div>
+        <div class="card-code"># Legg til i litellm_config.yaml (generer disse linjene):
+litellm_settings:
+  cache: true
+  cache_params:
+    type: "local"      # "redis" for persistent cache
+    ttl: 3600          # sekunder</div>
+        <div class="status-note"><b>Trạng thái:</b> đã triển khai — generated config có <code>litellm_settings.cache: true</code>, <code>cache_params.type: local</code>, <code>ttl: 3600</code>.</div>
+      </div>
+
+      <div class="card blue">
+        <div class="card-top">
+          <div class="card-title">Pre-flight key validation: vet hva som fungerer før oppstart</div>
+          <span class="effort easy">lett</span>
+          <span class="status done">✅ done</span>
+        </div>
+        <div class="card-body">
+          Før proxyen startes: send en billig <code>GET /models</code>-request til hver provider som har en key satt. Vis tydelig hvilke som er gyldige. Eliminerer "proxy krasjet stille" — det vanligste mystery-problemet.
+        </div>
+        <div class="card-code">.\start-claude.ps1 --check-keys
+
+# Output:
+[OK]  fpt      DeepSeek-V4-Flash     key: LLM_API_KEY_FPT
+[OK]  groq     llama-3.3-70b         key: LLM_API_KEY_GROQ
+[!]   nvidia   qwen2.5-coder-32b     key: IKKE SATT
+[X]   gemini   gemini-2.5-flash      401 Unauthorized — sjekk key</div>
+        <div class="status-note"><b>Trạng thái:</b> đã triển khai — <code>-CheckKeys</code>/<code>--check-keys</code> test từng provider có key trước khi start proxy.</div>
+      </div>
+
+      <div class="card blue">
+        <div class="card-top">
+          <div class="card-title">Delt team-proxy: én server, mange devs</div>
+          <span class="effort hard">vanskelig</span>
+          <span class="status partial">⚠️ partial</span>
+        </div>
+        <div class="card-body">
+          Kjør proxyen på én server (eller en Raspberry Pi på LAN). Alle på teamet setter <code>ANTHROPIC_BASE_URL=http://server:4000</code> — API-keys forblir på serveren, ingen trenger egne keys. <strong>Ideelt for team der én person har enterprise-avtaler.</strong>
+        </div>
+        <div class="card-code"># På serveren:
+docker run -e LLM_API_KEY_GROQ=... -p 4000:4000 \
+  ghcr.io/manhds82/claude-bridge:latest
+
+# Hver dev setter i ~/.zshrc:
+export ANTHROPIC_BASE_URL="http://192.168.1.100:4000"
+export ANTHROPIC_AUTH_TOKEN="team-shared-dummy"</div>
+        <div class="status-note"><b>Trạng thái:</b> chỉ làm một phần. <code>Dockerfile</code>/<code>docker-compose.yml</code> có sẵn (chạy proxy trong container), nhưng chưa publish image lên GHCR và chưa có docs riêng cho kịch bản "1 server dùng chung cho cả team".</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== TIER 3 ===== -->
+  <div class="tier">
+    <div class="tier-heading">
+      <span class="tier-badge teal">10×</span>
+      <div class="tier-rule"></div>
+      <span class="tier-note">meningsfull forbedring av daglig bruk</span>
+    </div>
+    <div class="cards">
+
+      <div class="card teal">
+        <div class="card-top">
+          <div class="card-title">VS Code-statuslinje: aktiv provider + dagens token-bruk</div>
+          <span class="effort hard">vanskelig</span>
+          <span class="status todo">◻ chưa làm</span>
+        </div>
+        <div class="card-body">
+          En liten VS Code-extension som viser <code>▶ groq · 42k tok · $0.04</code> nederst. Klikk for å bytte provider. Proxyen eksponerer et enkelt status-endpoint; extension poller det.
+        </div>
+        <div class="card-code">GET http://localhost:4000/health
+→ { "provider": "groq", "tokens_today": 42100,
+    "cost_usd": 0.038, "status": "ok" }</div>
+        <div class="status-note"><b>Trạng thái:</b> chưa triển khai. Không có VS Code extension nào trong repo.</div>
+      </div>
+
+      <div class="card teal">
+        <div class="card-top">
+          <div class="card-title">Kostnadslogger og daglig budsjettvarsel</div>
+          <span class="effort medium">middels</span>
+          <span class="status partial">⚠️ partial</span>
+        </div>
+        <div class="card-body">
+          LiteLLM-callback <code>on_success()</code> gir token-antall per request. Summer mot provider-prisliste, skriv til en CSV-logg. Send desktop-notifikasjon (via PowerShell eller <code>osascript</code>) når du nærmer deg et daglig budsjett du setter selv.
+        </div>
+        <div class="card-code"># logs/usage-2025-07.csv
+date,provider,model,tokens_in,tokens_out,cost_usd
+2025-07-17,groq,llama-3.3-70b,1840,612,0.0021
+2025-07-17,fpt,DeepSeek-V4-Flash,3201,890,0.0041</div>
+        <div class="status-note"><b>Trạng thái:</b> chỉ làm một phần. <code>logs/usage.csv</code> ghi date/provider/model/port mỗi session — nhưng chưa tính cost_usd và chưa có budget alert/notification.</div>
+      </div>
+
+      <div class="card teal">
+        <div class="card-top">
+          <div class="card-title">Docker-image for én-kommando deploy</div>
+          <span class="effort easy">lett</span>
+          <span class="status partial">⚠️ partial</span>
+        </div>
+        <div class="card-body">
+          Publiser et <strong>Docker-image på GHCR</strong>. Gjør det trivielt å kjøre proxyen på en server, NAS, Raspberry Pi, eller i en bedrifts-infrastruktur uten å installere Python manuelt. Åpner for bruk i miljøer der PowerShell/bash-oppsett ikke er ønskelig.
+        </div>
+        <div class="card-code">docker run \
+  -e LLM_API_KEY_GROQ="gsk_..." \
+  -e LLM_API_KEY_GEMINI="AIza..." \
+  -p 4000:4000 \
+  ghcr.io/manhds82/claude-bridge:latest</div>
+        <div class="status-note"><b>Trạng thái:</b> <code>Dockerfile</code> + <code>docker-compose.yml</code> + <code>docker-entrypoint.sh</code> đã có (build & chạy local) — nhưng chưa publish image sẵn lên GHCR, người dùng phải tự build.</div>
+      </div>
+
+      <div class="card teal">
+        <div class="card-top">
+          <div class="card-title">Model benchmark-runner: sammenlign providers på dine egne oppgaver</div>
+          <span class="effort medium">middels</span>
+          <span class="status done">✅ done</span>
+        </div>
+        <div class="card-body">
+          Kjør et standardsett med kode-prompts mot alle konfigurerte providers parallelt. Ranger etter <strong>kvalitet (lengde + struktur), hastighet (ms/token) og kostnad</strong>. Hjelper deg velge riktig provider for din arbeidsflyt — ikke bare teste på benchmarks andre har laget.
+        </div>
+        <div class="card-code">.\start-claude.ps1 --benchmark
+
+Provider          Quality   Speed      Cost/1k
+fpt (DeepSeek)    ████████  280 tok/s  $0.003
+groq (llama-3.3)  ███████   490 tok/s  $0.005
+gemini-flash      ████████  310 tok/s  $0.002</div>
+        <div class="status-note"><b>Trạng thái:</b> đã triển khai — <code>-Benchmark</code>/<code>--benchmark</code> chạy 3 test prompt (ping, code gen, tool-call), báo latency + tool support.</div>
+      </div>
+
+      <div class="card teal">
+        <div class="card-top">
+          <div class="card-title">Bedre feilmeldinger med handlingsrettede hints</div>
+          <span class="effort easy">lett</span>
+          <span class="status done">✅ done</span>
+        </div>
+        <div class="card-body">
+          Parser den faktiske provider-feilen (rate-limit window, ugyldig modellnavn, billing-kvote) og viser en <strong>konkret hint</strong> i terminalen — ikke bare "proxy krasjet, sjekk loggen". De vanligste feilene håndteres: 401, 429, 404 modell-ikke-funnet, nettverksfeil.
+        </div>
+        <div class="card-code">[X] Groq returnerte 429 — rate limit nådd.
+    Prøv igjen om 43 sekunder, eller bytt provider:
+    .\start-claude.ps1 -Provider fpt
+
+[X] Gemini: 401 Unauthorized
+    LLM_API_KEY_GEMINI ser ut til å være utgått.
+    Generer ny key: https://aistudio.google.com/apikey</div>
+        <div class="status-note"><b>Trạng thái:</b> đã triển khai (bash) — khi proxy timeout, đọc log file và detect 401/429/ImportError/connection error để in hint cụ thể.</div>
+      </div>
+
+      <div class="card teal">
+        <div class="card-top">
+          <div class="card-title">Cursor / Windsurf / Continue.dev kompatibilitet</div>
+          <span class="effort easy">lett</span>
+          <span class="status done">✅ done</span>
+        </div>
+        <div class="card-body">
+          Proxyen snakker allerede OpenAI-format, men dokumentasjon og launchers er Claude Code-spesifikke. Legg til konfigurasjonssnutter for <strong>Cursor, Windsurf og Continue.dev</strong> — alle bruker <code>ANTHROPIC_BASE_URL</code> eller et OpenAI-kompatibelt endpoint. Reach 10× bredere uten ny kode.
+        </div>
+        <div class="card-code"># Cursor settings.json:
+{
+  "cursor.cpp.anthropicBaseUrl": "http://localhost:4000",
+  "cursor.cpp.anthropicApiKey": "dummy"
+}
+
+# Continue.dev config.json:
+{
+  "models": [{
+    "provider": "anthropic",
+    "apiBase": "http://localhost:4000",
+    "apiKey": "dummy"
+  }]
+}</div>
+        <div class="status-note"><b>Trạng thái:</b> đã triển khai — README có section riêng với config snippet cho Cursor/Windsurf/Continue.dev.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="footer wrap">
+    <span>claude-code-anyllm</span> — idéoversikt generert 2025-07-17<br>
+    Trạng thái cập nhật 2026-07-29: <span style="color:var(--teal)">9 done</span> ·
+    <span style="color:var(--amber)">4 partial</span> ·
+    <span style="color:var(--muted)">2 chưa làm</span> (tổng 15 mục)
+  </div>
+</div>
+
+</body>
+</html>
