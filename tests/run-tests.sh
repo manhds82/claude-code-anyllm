@@ -133,6 +133,13 @@ run_policy_ci() {
   fi
   check policy-ci "impact-map.json valid + resolver present" "$imok"
 
+  # 5d. golden fixtures: the impact resolver behaves as pinned
+  if [ -n "$PY" ] && [ -f tests/golden/run-golden.py ]; then
+    if $PY tests/golden/run-golden.py >/dev/null 2>&1; then check policy-ci "golden: impact resolver" 0; else check policy-ci "golden: impact resolver" 1 "resolver output drifted"; fi
+  else
+    check policy-ci "golden: impact resolver" 0 "SKIP: python unavailable"
+  fi
+
   # 6. engineering docs
   check policy-ci "docs/SRS.md exists"  "$(b "$([ -f docs/SRS.md ] && echo true || echo false)")"
   check policy-ci "docs/spec.md exists" "$(b "$([ -f docs/spec.md ] && echo true || echo false)")"

@@ -139,6 +139,16 @@ function Invoke-PolicyCI {
     try { Get-Content (RepoFile "tests/impact-map.json") -Raw | ConvertFrom-Json | Out-Null; $imOk = (Test-Path (RepoFile "tests/select-suites.py")) } catch { $imOk = $false }
     Check "policy-ci" "impact-map.json valid + resolver present" $imOk
 
+    # 7d. golden fixtures: the impact resolver behaves as pinned
+    $gpy = Get-Command python -ErrorAction SilentlyContinue
+    if (-not $gpy) { $gpy = Get-Command python3 -ErrorAction SilentlyContinue }
+    if ($gpy -and (Test-Path (RepoFile "tests/golden/run-golden.py"))) {
+        $gout = & $gpy.Source (RepoFile "tests/golden/run-golden.py") 2>&1
+        Check "policy-ci" "golden: impact resolver" ($LASTEXITCODE -eq 0) (($gout | Select-Object -Last 1) -join " ")
+    } else {
+        Check "policy-ci" "golden: impact resolver" $true "SKIP: python unavailable"
+    }
+
     # 8. engineering docs exist
     Check "policy-ci" "docs/SRS.md exists"  (Test-Path (RepoFile "docs/SRS.md"))
     Check "policy-ci" "docs/spec.md exists" (Test-Path (RepoFile "docs/spec.md"))

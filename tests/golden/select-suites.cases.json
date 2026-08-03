@@ -1,0 +1,19 @@
+{
+  "_comment": "Golden fixtures: expected output of the impact-scoped resolver (tests/select-suites.py) for representative changed-file sets. Run by tests/golden/run-golden.py inside both suites. Add a case = one line here.",
+  "cases": [
+    { "changed": ["docs/spec.md", "README.md"],                "expect": "NONE" },
+    { "changed": ["docs/harness-uplift-proposal.html"],        "expect": "NONE" },
+    { "changed": ["start-claude.ps1"],                          "expect": "policy-ci red-team" },
+    { "changed": ["start-claude.sh"],                           "expect": "policy-ci red-team" },
+    { "changed": ["toggle-brain.sh"],                           "expect": "policy-ci red-team" },
+    { "changed": ["profiles/fpt.json"],                         "expect": "policy-ci red-team" },
+    { "changed": ["config/providers.conf"],                     "expect": "policy-ci red-team" },
+    { "changed": ["config/litellm_config.yaml"],               "expect": "policy-ci red-team" },
+    { "changed": ["setup-litellm.sh", "README.md"],            "expect": "policy-ci" },
+    { "changed": [".github/workflows/claude-review.yml"],      "expect": "policy-ci" },
+    { "changed": ["tests/run-tests.ps1"],                      "expect": "ALL" },
+    { "changed": [".gitignore"],                               "expect": "ALL" },
+    { "changed": ["something/unknown.xyz"],                    "expect": "ALL" },
+    { "changed": ["docs/spec.md", "start-claude.ps1"],        "expect": "policy-ci red-team" }
+  ]
+}

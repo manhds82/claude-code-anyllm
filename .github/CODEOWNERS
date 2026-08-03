@@ -1,0 +1,18 @@
+# Code owners for claude-code-anyllm.
+# Requires "Require review from Code Owners" in branch protection (GitHub Settings
+# -> Branches) to actually gate merges — the file alone only auto-requests review.
+
+# Default owner for everything
+*                           @manhds82
+
+# Governance-critical: tests, CI, security-shaped scripts, and the spec pair
+/tests/                     @manhds82
+/.github/                   @manhds82
+/docs/SRS.md                @manhds82
+/docs/spec.md               @manhds82
+/start-claude.ps1           @manhds82
+/start-claude.sh            @manhds82
+/toggle-brain.ps1           @manhds82
+/toggle-brain.sh            @manhds82
+/.gitignore                 @manhds82
+/.gitattributes             @manhds82
