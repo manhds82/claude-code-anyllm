@@ -14,7 +14,12 @@
   Exit code = number of failed checks (0 = all green).
 ================================================================
 #>
-param([ValidateSet("all","policy-ci","red-team")] [string]$Suite = "all")
+param(
+    [ValidateSet("all","policy-ci","red-team")] [string]$Suite = "all",
+    # Impact-scoped run: pass changed files (e.g. from `git diff --name-only`).
+    # Only the suites those files can affect run (see tests/impact-map.json).
+    [string[]]$Changed = @()
+)
 
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $PSScriptRoot          # repo root (tests/ is one level down)
@@ -129,6 +134,11 @@ function Invoke-PolicyCI {
         Check "policy-ci" "CI workflow YAML parses" $true "SKIP: python+pyyaml unavailable"
     }
 
+    # 7c. impact-map is valid JSON (broken map would silently fall back to ALL)
+    $imOk = $false
+    try { Get-Content (RepoFile "tests/impact-map.json") -Raw | ConvertFrom-Json | Out-Null; $imOk = (Test-Path (RepoFile "tests/select-suites.py")) } catch { $imOk = $false }
+    Check "policy-ci" "impact-map.json valid + resolver present" $imOk
+
     # 8. engineering docs exist
     Check "policy-ci" "docs/SRS.md exists"  (Test-Path (RepoFile "docs/SRS.md"))
     Check "policy-ci" "docs/spec.md exists" (Test-Path (RepoFile "docs/spec.md"))
@@ -208,9 +218,32 @@ function Invoke-RedTeam {
     Check "red-team" "no remote-to-shell in product scripts" (($remoteExec | Select-Object -Unique).Count -eq 0) (($remoteExec | Select-Object -Unique) -join ", ")
 }
 
+# Resolve suites from changed files via tests/select-suites.py (python soft-dep;
+# missing python or any error => ALL, i.e. safety first).
+function Resolve-ChangedSuites($files) {
+    $py = Get-Command python -ErrorAction SilentlyContinue
+    if (-not $py) { $py = Get-Command python3 -ErrorAction SilentlyContinue }
+    if (-not $py) { return "ALL" }
+    $out = & $py.Source (RepoFile "tests/select-suites.py") (RepoFile "tests/impact-map.json") @files 2>$null
+    if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($out)) { return "ALL" }
+    return $out.Trim()
+}
+
 # --------------------------------------------------------------------- run
-if ($Suite -in @("all","policy-ci")) { Invoke-PolicyCI }
-if ($Suite -in @("all","red-team"))  { Invoke-RedTeam }
+$run = @()
+if ($Changed.Count -gt 0) {
+    $sel = Resolve-ChangedSuites $Changed
+    Write-Host ("impact-scoped: changed files -> " + $sel) -ForegroundColor Cyan
+    if ($sel -eq "ALL") { $run = @("policy-ci","red-team") }
+    elseif ($sel -eq "NONE") { $run = @() }
+    else { $run = @($sel -split '\s+') }
+} else {
+    if ($Suite -in @("all","policy-ci")) { $run += "policy-ci" }
+    if ($Suite -in @("all","red-team"))  { $run += "red-team" }
+}
+if ($run -contains "policy-ci") { Invoke-PolicyCI }
+if ($run -contains "red-team")  { Invoke-RedTeam }
+if ($run.Count -eq 0) { Write-Host "`nNo impacted suites for the changed files - skipping (QA gate still runs full)." -ForegroundColor Yellow }
 
 Write-Host "`n=== summary ===" -ForegroundColor Cyan
 $fail = 0

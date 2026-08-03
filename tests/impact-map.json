@@ -1,0 +1,13 @@
+{
+  "_comment": "Impact-scoped test selection. Maps changed-file globs to test suites so dev runs only what a change can affect. Core/unknown files -> ALL (safety first). QA gate still runs full.",
+  "rules": [
+    { "when": ["start-claude.ps1", "start-claude.sh", "config/*", "*litellm_config*"], "suites": ["policy-ci", "red-team"] },
+    { "when": ["toggle-brain.ps1", "toggle-brain.sh", "toggle-brain.bat"], "suites": ["policy-ci", "red-team"] },
+    { "when": ["setup-litellm.ps1", "setup-litellm.sh"], "suites": ["policy-ci"] },
+    { "when": ["profiles/*.json"], "suites": ["policy-ci", "red-team"] },
+    { "when": [".github/workflows/*"], "suites": ["policy-ci"] },
+    { "when": ["docs/*", "*.md", "*.html"], "suites": [] }
+  ],
+  "core_globs": ["tests/*", "tests/**", ".gitattributes", ".gitignore"],
+  "on_core_or_unknown": "ALL"
+}

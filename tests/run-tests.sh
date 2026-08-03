@@ -9,9 +9,18 @@
 #   Exit code = number of failed checks (0 = all green).
 # ============================================================
 set -uo pipefail
-SUITE="${1:-all}"
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
+
+# Args: a suite name (all|policy-ci|red-team) and/or --changed "<files>".
+SUITE="all"; CHANGED=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --changed) CHANGED="${2:-}"; shift 2 ;;
+    policy-ci|red-team|all) SUITE="$1"; shift ;;
+    *) shift ;;
+  esac
+done
 
 PASS_PC=0; FAIL_PC=0; PASS_RT=0; FAIL_RT=0
 c_green=$'\033[32m'; c_red=$'\033[31m'; c_cyan=$'\033[36m'; c_dim=$'\033[90m'; c_reset=$'\033[0m'
@@ -116,6 +125,14 @@ run_policy_ci() {
     check policy-ci "CI workflow YAML parses" 0 "SKIP: python+pyyaml unavailable"
   fi
 
+  # 5c. impact-map is valid JSON + resolver present (broken map -> silent ALL)
+  local imok=1
+  if [ -f tests/impact-map.json ] && [ -f tests/select-suites.py ]; then
+    if [ -n "$PY" ] && $PY -c "import json;json.load(open('tests/impact-map.json',encoding='utf-8'))" 2>/dev/null; then imok=0
+    elif [ -z "$PY" ] && head -c1 tests/impact-map.json | grep -q '{'; then imok=0; fi
+  fi
+  check policy-ci "impact-map.json valid + resolver present" "$imok"
+
   # 6. engineering docs
   check policy-ci "docs/SRS.md exists"  "$(b "$([ -f docs/SRS.md ] && echo true || echo false)")"
   check policy-ci "docs/spec.md exists" "$(b "$([ -f docs/spec.md ] && echo true || echo false)")"
@@ -170,8 +187,27 @@ run_red_team() {
   check red-team "no remote-to-shell in product scripts" "$rex"
 }
 
-[ "$SUITE" = all ] || [ "$SUITE" = policy-ci ] && run_policy_ci
-[ "$SUITE" = all ] || [ "$SUITE" = red-team ]  && run_red_team
+# Resolve impacted suites from changed files (python soft-dep; missing/err -> ALL).
+resolve_changed() {
+  local py=""
+  command -v python3 >/dev/null 2>&1 && py=python3 || { command -v python >/dev/null 2>&1 && py=python; }
+  [ -z "$py" ] && { echo ALL; return; }
+  $py "$ROOT/tests/select-suites.py" "$ROOT/tests/impact-map.json" $CHANGED 2>/dev/null || echo ALL
+}
+
+if [ -n "$CHANGED" ]; then
+  SEL="$(resolve_changed)"
+  printf '%simpact-scoped: changed files -> %s%s\n' "$c_cyan" "$SEL" "$c_reset"
+  case "$SEL" in
+    ALL)  run_policy_ci; run_red_team ;;
+    NONE) printf '%sNo impacted suites - skipping (QA gate still runs full).%s\n' "$c_yellow" "$c_reset" ;;
+    *)    case "$SEL" in *policy-ci*) run_policy_ci ;; esac
+          case "$SEL" in *red-team*)  run_red_team  ;; esac ;;
+  esac
+else
+  { [ "$SUITE" = all ] || [ "$SUITE" = policy-ci ]; } && run_policy_ci
+  { [ "$SUITE" = all ] || [ "$SUITE" = red-team ]; }  && run_red_team
+fi
 
 printf '\n%s=== summary ===%s\n' "$c_cyan" "$c_reset"
 printf '  policy-ci  %d passed, %d failed\n' "$PASS_PC" "$FAIL_PC"
