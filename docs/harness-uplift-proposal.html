@@ -1,0 +1,299 @@
+<meta charset="utf-8">
+<title>Đề xuất nâng cấp Harness (H2/H3/H5/H7) + Agent tự động — claude-code-anyllm</title>
+<style>
+  :root{
+    --bg:#f6f8fb; --card:#fff; --ink:#16202e; --muted:#5b6b7f; --line:#e3e8ef;
+    --accent:#005BA6; --accent2:#0096D6; --ok:#10B981; --warn:#F59E0B; --bad:#E04F5F; --purple:#7C5CFC;
+    --code:#0e1726; --codeink:#e8edf6;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--bg:#0d1117;--card:#161b22;--ink:#e6edf3;--muted:#9aa7b4;--line:#2a313b;
+      --accent:#4aa3e0;--accent2:#39c0ed;--code:#0a0e14;--codeink:#e8edf6;}
+  }
+  :root[data-theme="dark"]{--bg:#0d1117;--card:#161b22;--ink:#e6edf3;--muted:#9aa7b4;--line:#2a313b;--accent:#4aa3e0;--accent2:#39c0ed;--code:#0a0e14;}
+  :root[data-theme="light"]{--bg:#f6f8fb;--card:#fff;--ink:#16202e;--muted:#5b6b7f;--line:#e3e8ef;--accent:#005BA6;--accent2:#0096D6;--code:#0e1726;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.6 "Segoe UI",Calibri,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 20px 64px}
+  header.hero{background:linear-gradient(135deg,#002B5C,#00254E);color:#fff;padding:44px 20px;margin-bottom:8px}
+  .hero .in{max-width:1000px;margin:0 auto}
+  .hero h1{margin:0 0 8px;font-size:clamp(24px,4vw,38px);line-height:1.15}
+  .hero p{margin:0;opacity:.9;max-width:70ch}
+  .tag{display:inline-block;font-size:12px;letter-spacing:.04em;text-transform:uppercase;
+    background:rgba(255,255,255,.15);padding:3px 10px;border-radius:999px;margin-bottom:14px}
+  h2{font-size:clamp(20px,3vw,26px);margin:36px 0 6px;padding-bottom:6px;border-bottom:2px solid var(--line)}
+  h3{font-size:1.15em;margin:22px 0 6px;color:var(--accent)}
+  h4{margin:14px 0 4px;font-size:1em}
+  p,li{color:var(--ink)}
+  .muted{color:var(--muted)}
+  code{background:rgba(127,140,160,.15);padding:1px 6px;border-radius:5px;
+    font:13px/1.5 "Cascadia Code",Consolas,monospace}
+  pre{background:var(--code);color:var(--codeink);border-radius:10px;padding:14px 16px;overflow:auto;
+    border-left:4px solid var(--accent2);font:13px/1.6 "Cascadia Code",Consolas,monospace}
+  pre .c{color:#7FB4E6}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:14px 0}
+  table{width:100%;border-collapse:collapse;font-size:.93em;margin:10px 0}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:rgba(0,91,166,.10);font-weight:600}
+  .wrapx{overflow-x:auto}
+  .pill{display:inline-block;padding:1px 9px;border-radius:999px;font-size:.8em;font-weight:700;color:#fff}
+  .g{background:var(--ok)} .y{background:var(--warn)} .r{background:var(--bad)} .b{background:var(--accent)} .p{background:var(--purple)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:720px){.two{grid-template-columns:1fr}}
+  .box{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--card)}
+  .box.proj{border-top:4px solid var(--accent)} .box.tk{border-top:4px solid var(--purple)}
+  .lead{font-size:1.05em}
+  ul.tight{margin:6px 0;padding-left:20px} ul.tight li{margin:3px 0}
+  .kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:14px 0}
+  .kpi .k{background:var(--card);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:14px;text-align:center}
+  .kpi .n{font-size:1.9em;font-weight:800;color:var(--accent)}
+  .kpi .l{font-size:.8em;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+  .note{border-left:4px solid var(--warn);background:rgba(245,158,11,.08);padding:10px 14px;border-radius:8px;margin:12px 0}
+  .toc{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+  .toc a{border:1px solid var(--line);border-radius:999px;padding:5px 12px;text-decoration:none;color:var(--accent);font-size:14px;font-weight:600;background:var(--card)}
+  footer{margin-top:40px;color:var(--muted);font-size:.85em;border-top:1px solid var(--line);padding-top:16px}
+</style>
+
+<header class="hero"><div class="in">
+  <span class="tag">Proposal · CASAN Harness Uplift</span>
+  <h1>Nâng cấp Harness H2 / H3 / H5 / H7 &amp; Agent tự động review–fix–test</h1>
+  <p>Dự án <b>claude-code-anyllm</b> · Tách rõ 2 luồng công việc: <b>Dự án tự làm</b> vs <b>Request Harness Toolkit</b> (common). Kèm thiết kế bộ agent tự động review/fix/UT/IT chỉ chạy trên <b>vùng bị ảnh hưởng</b>. · 2026-08-03</p>
+</div></header>
+
+<div class="wrap">
+
+<div class="toc">
+  <a href="#tq">1. Tổng quan</a>
+  <a href="#root">2. Vì sao thấp</a>
+  <a href="#score">3. Scorecard</a>
+  <a href="#h2">4. H2</a>
+  <a href="#h3">5. H3</a>
+  <a href="#h5">6. H5</a>
+  <a href="#h7">7. H7</a>
+  <a href="#agent">8. Agent tự động</a>
+  <a href="#impact">9. Test theo vùng ảnh hưởng</a>
+  <a href="#road">10. Roadmap</a>
+  <a href="#req">11. Request Toolkit</a>
+</div>
+
+<section id="tq">
+<h2>1. Tổng quan &amp; nguyên tắc</h2>
+<p class="lead">4 harness đang thấp (H2 Tool, H3 Evaluation, H5 Governance, H7 Orchestration) đều có <b>chung một gốc</b>: toolkit đã ship <i>script + policy khai báo</i>, nhưng phần <b>thực thi cứng (enforce)</b> nằm ở tầng server (<code>gateway</code> / <code>pdp</code> / <code>workflow_engine</code>) — hiện chưa deploy. Local hook chỉ là <b>defence-in-depth</b> (nguyên tắc C10: không quảng cáo an toàn hơn mắt xích yếu nhất).</p>
+<div class="note"><b>Hệ quả chia việc:</b> phần <b>khai báo dữ liệu, ghi log, viết test, wiring, DAG nội bộ</b> → <b>dự án tự làm được ngay</b>. Phần <b>enforce tập trung (PDP/gateway/workflow engine, ledger anchoring, model-fallback routing)</b> → là <b>common</b>, phải <b>request Harness Toolkit</b> vì một project không thể tự dựng hạ tầng dùng chung.</p>
+<div class="kpi">
+  <div class="k"><div class="n">58→80</div><div class="l">CASAN avg mục tiêu</div></div>
+  <div class="k"><div class="n">4</div><div class="l">Harness cần nâng</div></div>
+  <div class="k"><div class="n">2</div><div class="l">Luồng việc (Dự án / Toolkit)</div></div>
+  <div class="k"><div class="n">6</div><div class="l">Agent tự động đề xuất</div></div>
+</div>
+</section>
+
+<section id="root">
+<h2>2. Chẩn đoán gốc rễ (đã đối chiếu repo)</h2>
+<div class="wrapx"><table>
+<tr><th>Harness</th><th>Artifact ĐÃ CÓ trong repo</th><th>Vì sao vẫn thấp</th></tr>
+<tr><td><b>H2 Tool</b></td><td><code>contracts/tool-registry.yaml</code>, <code>.harness/scripts/*/tool-idempotency.*</code>, <code>harness-runtime-guard</code> (đang chặn lệnh nguy hiểm — đã chứng kiến)</td><td>Tool call thực tế <b>chưa gắn idempotency key</b>; rate-limit &amp; deny-unknown-tool <code>enforced_at: gateway</code> (chưa chạy); <b>audit per-call chưa ghi</b> vào ledger.</td></tr>
+<tr><td><b>H3 Eval</b></td><td><code>tests/run-tests.*</code> (đã wire vào <code>suite_commands</code>), <code>harness-eval</code>, <code>hard-gate</code>, skill <code>qa-gate</code></td><td>Suite hiện là <b>static check</b>; <code>golden_dataset_path</code> <b>rỗng</b>; release-gate <code>enforced_at: pdp</code> (chưa deploy) → gate không thật sự chặn deploy.</td></tr>
+<tr><td><b>H5 Gov</b></td><td><code>.harness/ledger/chain.jsonl</code>, <code>evidence-ledger</code>, <code>approval-gate</code>, <code>contracts/approval-flow.yaml</code>, <code>risk-registry.yaml</code></td><td>Ledger <b>gần như rỗng</b> (side-effect chưa ghi); approval <code>enforced_at: gateway</code>; ledger là <b>file local</b> → tamper-evident nhưng <b>chưa anchor</b> ra ngoài (admin vẫn ghi đè cả chuỗi).</td></tr>
+<tr><td><b>H7 Orch</b></td><td><code>contracts/workflow.yaml</code>, <code>harness-model-fallback</code>, <code>harness-rollback</code>, <code>orchestration.retry/transaction</code> trong policy</td><td><code>enforced_at: workflow_engine</code> (chưa có engine chạy); dự án chưa khai báo <b>DAG nội bộ</b> (CI / vòng agent) có retry+rollback; agent chưa dùng <b>model ladder</b> fallback.</td></tr>
+</table></div>
+</section>
+
+<section id="score">
+<h2>3. Scorecard hiện tại → mục tiêu (ước lượng cho dự án này)</h2>
+<div class="wrapx"><table>
+<tr><th>ID</th><th>Harness</th><th>Hiện tại</th><th>Mục tiêu</th><th>Chặn trên bởi</th></tr>
+<tr><td>H1</td><td>Context</td><td><span class="pill g">85</span></td><td>90</td><td>—</td></tr>
+<tr><td>H2</td><td>Tool</td><td><span class="pill y">35</span></td><td>75</td><td>Gateway PDP (rate/idempotency)</td></tr>
+<tr><td>H3</td><td>Evaluation</td><td><span class="pill y">45</span></td><td>80</td><td>PDP release gate + golden set</td></tr>
+<tr><td>H4</td><td>Security</td><td><span class="pill g">60</span></td><td>75</td><td>Gateway egress allowlist</td></tr>
+<tr><td>H5</td><td>Governance</td><td><span class="pill y">35</span></td><td>75</td><td>Approval PDP + ledger anchor</td></tr>
+<tr><td>H6</td><td>AgentOps</td><td><span class="pill y">40</span></td><td>70</td><td>Portal/telemetry pipeline</td></tr>
+<tr><td>H7</td><td>Orchestration</td><td><span class="pill y">40</span></td><td>75</td><td>Workflow engine</td></tr>
+</table></div>
+<p class="muted">Đây là <b>ước lượng</b> để định hướng gap→action; điểm chính thức nên lấy từ portal. Nguyên tắc: <b>mắt xích yếu nhất quyết định ceiling</b> — nâng đồng đều 4 harness thấp mới lên được Level 4.</p>
+</section>
+
+<!-- ============ H2 ============ -->
+<section id="h2">
+<h2>4. H2 — Tool Harness &nbsp;<span class="pill y">35 → 75</span></h2>
+<p>Mục tiêu: mọi side-effect gọi qua <b>registry</b>, mang <b>idempotency key</b>, có <b>audit per-call</b>, và <b>rate-limit</b> được enforce.</p>
+<div class="two">
+  <div class="box proj"><h4><span class="pill b">DỰ ÁN</span> làm được ngay</h4>
+  <ul class="tight">
+    <li><b>Đăng ký đủ side-effect</b> của chính dự án vào <code>contracts/tool-registry.yaml</code>: ghi config, start/stop proxy, mở VS Code, <code>git push</code> trong CI, <code>claude install</code> — kèm schema input/output + cờ <code>idempotent: true/false</code> (C3 deny-by-default).</li>
+    <li><b>Gắn idempotency key</b> qua <code>tool-idempotency.*</code>: ghi config keyed theo <code>(base_url,model)</code>; start-proxy keyed theo <code>port</code> (đã có sẵn logic "port đang chạy → skip").</li>
+    <li><b>Audit per-call</b>: gọi <code>evidence-ledger</code> ghi 1 dòng cho mỗi side-effect (định danh + hash input/output) — nâng luôn H5.</li>
+    <li><b>Test C3</b>: thêm check policy-ci "mọi script side-effect có entry trong tool-registry" (unknown tool → fail).</li>
+  </ul></div>
+  <div class="box tk"><h4><span class="pill p">REQUEST TOOLKIT</span> (common)</h4>
+  <ul class="tight">
+    <li><b>Gateway/PDP enforce</b> <code>rate_limits</code> + dedup idempotency + <b>deny-unknown-tool</b> ở server (một project không dựng được gateway dùng chung).</li>
+    <li><b>Idempotency store</b> (dedup cache) dùng chung ở toolkit.</li>
+    <li><b>SDK wrapper chuẩn</b> tự đính idempotency key + audit cho mọi tool call → project nào cũng được free.</li>
+  </ul></div>
+</div>
+</section>
+
+<!-- ============ H3 ============ -->
+<section id="h3">
+<h2>5. H3 — Evaluation Harness &nbsp;<span class="pill y">45 → 80</span></h2>
+<p>Mục tiêu: có <b>golden dataset</b>, <b>hard-gate</b> chặn release khi fail, và <b>feedback loop</b> bug→test.</p>
+<div class="two">
+  <div class="box proj"><h4><span class="pill b">DỰ ÁN</span></h4>
+  <ul class="tight">
+    <li><b>Tạo golden set</b> tại <code>.harness/eval/golden/</code>: fixture chạy offline — ví dụ "config sinh ra là YAML hợp lệ", "toggle-brain -Status nhận đúng mode", "-List trả về danh sách model id". Mỗi case = input + expected.</li>
+    <li><b>Bổ sung test hành vi</b> (không chỉ static) vào <code>tests/</code>, chạy <b>theo vùng ảnh hưởng</b> (mục 9).</li>
+    <li><b>Wire hard-gate cục bộ</b>: dùng <code>hard-gate.ps1</code> + skill <code>qa-gate</code> làm pre-push hook &amp; job CI — fail suite ⇒ chặn push/merge.</li>
+    <li><b>Feedback loop chính thức</b>: mỗi bug (buglist B-0x) <b>bắt buộc</b> kèm 1 regression test (đã áp dụng cho B-01…B-04) — biến thành policy.</li>
+  </ul></div>
+  <div class="box tk"><h4><span class="pill p">REQUEST TOOLKIT</span></h4>
+  <ul class="tight">
+    <li><b>Release gate PDP</b> (server-side) từ chối deploy nếu suite bắt buộc chưa PASS / report quá hạn (<code>max_report_age_hours</code>).</li>
+    <li><b>LLM-as-judge dịch vụ</b> + rubric <code>qa-gate</code> hosted, dùng <b>model ladder</b> (review: Opus 4.8 → Haiku 4.5).</li>
+    <li><b>Golden-runner + schema</b> chuẩn ở toolkit → project chỉ cần thả fixture.</li>
+  </ul></div>
+</div>
+</section>
+
+<!-- ============ H5 ============ -->
+<section id="h5">
+<h2>6. H5 — Governance Harness &nbsp;<span class="pill y">35 → 75</span></h2>
+<p>Mục tiêu: <b>ledger bất biến có ghi thật</b>, <b>approval</b> cho action rủi ro, <b>risk registry sống</b>, trả lời được "ai làm gì, lúc nào, ai duyệt".</p>
+<div class="two">
+  <div class="box proj"><h4><span class="pill b">DỰ ÁN</span></h4>
+  <ul class="tight">
+    <li><b>Ghi ledger thật</b>: wire <code>evidence-ledger</code> vào các điểm side-effect + CI (hiện chuỗi gần rỗng). Sinh <b>evidence-bundle</b> (skill có sẵn) mỗi thay đổi → append ledger (DoD close-out).</li>
+    <li><b>Điền risk-registry.yaml</b> bằng action rủi ro thật của dự án: <code>git push</code> repo public, start proxy kèm key, <code>claude install</code> — map sang <code>approval-flow.yaml</code>.</li>
+    <li><b>Governance bằng Git</b> (làm được ngay): <code>CODEOWNERS</code> phủ <code>.harness/** contracts/** tests/**</code> + branch protection yêu cầu review — đây là approval "nghèo" nhưng thật.</li>
+  </ul></div>
+  <div class="box tk"><h4><span class="pill p">REQUEST TOOLKIT</span></h4>
+  <ul class="tight">
+    <li><b>Approval workflow server-side</b> (human-in-the-loop PDP) cho action high-risk.</li>
+    <li><b>Ledger anchoring/witness</b> ra store WORM/notary ngoài → hash-chain mới <b>thật sự bất biến</b> (local chỉ tamper-evident).</li>
+    <li><b>Compliance report</b> định kỳ như dịch vụ chung.</li>
+  </ul></div>
+</div>
+</section>
+
+<!-- ============ H7 ============ -->
+<section id="h7">
+<h2>7. H7 — Orchestration Harness &nbsp;<span class="pill y">40 → 75</span></h2>
+<p>Mục tiêu: DAG rõ, <b>retry có giới hạn</b>, <b>fallback model</b>, <b>transaction rollback</b> khi step giữa fail.</p>
+<div class="two">
+  <div class="box proj"><h4><span class="pill b">DỰ ÁN</span></h4>
+  <ul class="tight">
+    <li><b>Khai báo DAG nội bộ</b> trong <code>workflow.yaml</code> cho luồng của chính dự án: CI (test→gate→push) và <b>vòng agent</b> review→fix→verify với retry bounded (<code>max_fix_retries=5</code>, <code>back_to_plan=3</code>).</li>
+    <li><b>Dùng model ladder</b> (<code>orchestration.model_fallback</code>) cho các agent dự án chạy (planning/coding/review/summarization) — pin đúng C4.</li>
+    <li><b>Transaction boundary cục bộ</b>: nếu step deploy/apply fail → <code>harness-rollback</code> revert working tree; step <b>idempotent + resumable</b>.</li>
+  </ul></div>
+  <div class="box tk"><h4><span class="pill p">REQUEST TOOLKIT</span></h4>
+  <ul class="tight">
+    <li><b>Workflow engine</b> (DAG executor: retry/backoff, parallel, transaction boundary, rollback-on-failure) — hạ tầng chung.</li>
+    <li><b>Model-fallback routing tại gateway</b> (primary→fallback đa provider) để mọi agent call auto-failover.</li>
+    <li><b>Agent-to-agent protocol</b> + state store cho handoff multi-agent.</li>
+  </ul></div>
+</div>
+</section>
+
+<!-- ============ AGENTS ============ -->
+<section id="agent">
+<h2>8. Bộ Agent tự động: review → fix → UT/IT → chống hồi quy</h2>
+<p>Tận dụng tài sản đã có: <code>.claude/agents/</code> (reviewer, developer, tester, devops…) + skills <code>code-review</code>, <code>implement-change</code>, <code>fix-and-verify</code>, <code>verify-implementation</code>, <code>qa-gate</code>. Chỉ cần <b>ghép thành 1 vòng có kiểm soát</b> + thêm <b>Impact Analyzer</b>.</p>
+<div class="wrapx"><table>
+<tr><th>Agent</th><th>Vai trò</th><th>Dựa trên</th></tr>
+<tr><td><b>Impact Analyzer</b> ⭐mới</td><td>Từ <code>git diff</code> → tính <b>vùng ảnh hưởng</b> + chọn ĐÚNG tập test cần chạy (mục 9)</td><td><code>tests/impact-map.json</code> + runner cờ <code>-Changed</code></td></tr>
+<tr><td><b>Reviewer</b> (×3 lens)</td><td>Review chỉ các hunk thay đổi: correctness / security / performance</td><td>skill <code>code-review</code>, <code>.claude/agents/reviewer.md</code></td></tr>
+<tr><td><b>Fixer</b></td><td>Áp fix từ finding, surgical, tôn trọng guard-zones</td><td><code>implement-change</code>, <code>fix-and-verify</code></td></tr>
+<tr><td><b>Test Runner</b></td><td>Chạy UT/IT <b>chỉ vùng ảnh hưởng</b>; full ở gate</td><td><code>tests/run-tests.*</code></td></tr>
+<tr><td><b>Regression Guard</b></td><td>So kết quả trước/sau: chỉ được xanh hơn, cấm thêm fail mới</td><td>baseline diff + buglist policy</td></tr>
+<tr><td><b>QA Gate</b></td><td>Trước merge/release: chạy FULL suite 1 lần + chấm rubric → APPROVED/CHANGES_REQUIRED/REJECTED</td><td>skill <code>qa-gate</code>, <code>hard-gate</code></td></tr>
+</table></div>
+
+<h3>Luồng chạy (mỗi lần đối ứng / mỗi PR)</h3>
+<pre><span class="c"># bounded loop — chống "sửa cái này hỏng cái kia"</span>
+1. Impact Analyzer:  git diff --name-only  ->  vùng ảnh hưởng + tập test
+2. Reviewer x3 (song song)  ->  findings (chỉ trên diff)
+3. Fixer  ->  áp fix (guard-zone aware, diff nhỏ)
+4. Test Runner  ->  chạy CHỈ test vùng ảnh hưởng
+5. Regression Guard  ->  fail mới? -> quay lại (3), tối đa 5 lần
+6. QA Gate (trước merge)  ->  FULL suite + rubric  ->  verdict
+7. Ledger + evidence-bundle  ->  ghi ai/gì/khi nào</pre>
+
+<h3>Guardrail: "không làm sai, không gây bug mỗi lần đối ứng"</h3>
+<ul class="tight">
+  <li><b>Guard-zones</b> (<code>.harness/control/guard-zones.json</code>): agent không được đụng file bảo vệ nếu chưa duyệt.</li>
+  <li><b>Regression baseline</b>: chụp kết quả test trước khi sửa; sau khi sửa <b>không được xuất hiện fail mới</b> (kể cả ngoài vùng nghi).</li>
+  <li><b>Bounded retry</b>: tối đa 5 vòng fix, 3 vòng back-to-plan → tránh loop vô hạn.</li>
+  <li><b>Bug → test bắt buộc</b>: mọi bug phải kèm regression test (B-01…B-04 đã theo) → không tái diễn.</li>
+  <li><b>Impact-scoped để nhanh khi dev, FULL ở gate để an toàn</b> — không đánh đổi chất lượng lấy tốc độ.</li>
+</ul>
+</section>
+
+<!-- ============ IMPACT ============ -->
+<section id="impact">
+<h2>9. Test theo vùng ảnh hưởng (không test-all mỗi lần)</h2>
+<p>Cơ chế: 1 <b>impact-map</b> ánh xạ glob đường dẫn → tập suite/case. Runner nhận danh sách file đổi (<code>git diff</code>) → hợp các suite liên quan → chạy tập con. Nếu chạm <b>file lõi/dùng chung</b> → chạy <b>ALL</b> (an toàn trước tốc độ).</p>
+<pre><span class="c">// tests/impact-map.json  (đề xuất)</span>
+{
+  "rules": [
+    { "when": ["start-claude.*"],        "run": ["policy-ci:parse,parity,config-quote", "red-team:key,secret"] },
+    { "when": ["toggle-brain.*"],        "run": ["policy-ci:parse,encoding", "red-team:key"] },
+    { "when": ["profiles/*.json"],       "run": ["policy-ci:profiles"] },
+    { "when": ["config/*", "*litellm*"], "run": ["policy-ci:config-quote", "red-team:config"] },
+    { "when": [".github/workflows/*"],   "run": ["policy-ci:workflow-yaml"] },
+    { "when": ["docs/**", "*.md"],       "run": ["policy-ci:docs"] }
+  ],
+  "core_globs": ["tests/**", ".gitattributes", ".gitignore", ".harness/control/**"],
+  "on_core_change": "ALL"
+}</pre>
+<p>Runner nhận cờ mới (đề xuất): <code>-Changed &lt;files&gt;</code> / <code>--changed &lt;files&gt;</code> → resolve qua impact-map. Ví dụ dùng trong hook/CI:</p>
+<pre><span class="c"># chỉ chạy test của vùng thay đổi so với main</span>
+$diff = git diff --name-only origin/main...HEAD
+pwsh -File tests/run-tests.ps1 -Changed $diff        <span class="c"># PowerShell</span>
+bash tests/run-tests.sh --changed "$(git diff --name-only origin/main...HEAD)"  <span class="c"># bash</span></pre>
+<div class="note"><b>An toàn:</b> impact-scoped chỉ dùng ở vòng dev nhanh. <b>QA Gate luôn chạy FULL</b> một lần trước merge/release + <b>Regression Guard</b> quét toàn bộ để bắt tác dụng phụ ngoài dự đoán.</div>
+</section>
+
+<!-- ============ ROADMAP ============ -->
+<section id="road">
+<h2>10. Roadmap</h2>
+<div class="wrapx"><table>
+<tr><th>Phase</th><th>Việc</th><th>Harness</th><th>Chủ thể</th><th>Effort</th></tr>
+<tr><td rowspan="5"><b>P1</b><br>Dự án<br>(1–2 tuần)</td>
+    <td>impact-map.json + cờ <code>-Changed</code>/<code>--changed</code> cho 2 runner</td><td>H3/H7</td><td>Dự án</td><td>S</td></tr>
+<tr><td>Ledger ghi thật + evidence-bundle mỗi thay đổi</td><td>H5/H2</td><td>Dự án</td><td>M</td></tr>
+<tr><td>Golden set tối thiểu tại <code>.harness/eval/golden/</code></td><td>H3</td><td>Dự án</td><td>M</td></tr>
+<tr><td>Điền risk-registry + CODEOWNERS + branch protection</td><td>H5</td><td>Dự án</td><td>S</td></tr>
+<tr><td>Đăng ký side-effect vào tool-registry + idempotency key</td><td>H2</td><td>Dự án</td><td>M</td></tr>
+<tr><td rowspan="2"><b>P2</b><br>Agent loop<br>(1–2 tuần)</td>
+    <td>Ghép vòng review→fix→test→regression-guard→qa-gate</td><td>H3/H7</td><td>Dự án</td><td>M</td></tr>
+<tr><td>Wire hard-gate làm pre-push hook + job CI (đã có tests job)</td><td>H3</td><td>Dự án</td><td>S</td></tr>
+<tr><td rowspan="4"><b>P3</b><br>Toolkit<br>(request)</td>
+    <td>Gateway/PDP: rate-limit + idempotency dedup + deny-unknown-tool</td><td>H2</td><td>Toolkit</td><td>L</td></tr>
+<tr><td>Release-gate PDP + LLM-judge service + golden-runner</td><td>H3</td><td>Toolkit</td><td>L</td></tr>
+<tr><td>Approval workflow + ledger anchoring/witness</td><td>H5</td><td>Toolkit</td><td>L</td></tr>
+<tr><td>Workflow engine + model-fallback routing tại gateway</td><td>H7</td><td>Toolkit</td><td>L</td></tr>
+</table></div>
+</section>
+
+<!-- ============ REQUEST ============ -->
+<section id="req">
+<h2>11. Danh sách request gửi Harness Toolkit (common)</h2>
+<div class="card">
+<ol>
+  <li><b>[H2]</b> Gateway/PDP enforce <code>tool.rate_limits</code> + idempotency dedup + deny-unknown-tool; kèm <b>SDK wrapper</b> tự đính idempotency key + audit.</li>
+  <li><b>[H3]</b> Release-gate PDP (chặn deploy nếu suite chưa PASS / report quá hạn) + <b>LLM-as-judge service</b> theo model ladder + <b>golden-runner</b> chuẩn.</li>
+  <li><b>[H5]</b> Approval workflow human-in-the-loop + <b>ledger anchoring</b> ra WORM/notary (biến tamper-evident thành thật sự bất biến) + compliance report.</li>
+  <li><b>[H7]</b> Workflow engine (DAG, retry/backoff, parallel, transaction+rollback) + <b>model-fallback routing</b> tại gateway + agent-to-agent protocol.</li>
+  <li><b>[Chung]</b> Vì các mục trên là <b>hạ tầng dùng chung</b>, đề nghị toolkit cung cấp dưới dạng <b>bundle bật/tắt bằng config</b> để mọi project kế thừa mà không phải tự dựng.</li>
+</ol>
+</div>
+<p class="muted">Ranh giới quyết định: nếu việc chỉ cần <b>sửa file trong repo</b> (data/policy/test/hook/DAG nội bộ) → Dự án làm. Nếu cần <b>một dịch vụ chạy ngoài repo, dùng chung nhiều project</b> (PDP/gateway/engine/notary) → Request Toolkit.</p>
+</section>
+
+<footer>
+claude-code-anyllm · Đề xuất nâng cấp Harness &amp; Agent tự động · 2026-08-03 · Bản nháp để review.
+</footer>
+</div>
