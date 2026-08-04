@@ -35,10 +35,12 @@ provider*. No custom long‑running service is added — the proxy is stock Lite
 | Component | Files | Responsibility |
 |-----------|-------|----------------|
 | **Installer** | `setup-litellm.ps1`, `setup-litellm.sh` | Create `.venv`, install `litellm[proxy]`, pin `claude` stable (FR‑SETUP). |
-| **Launcher** | `start-claude.ps1`, `start-claude.sh` | Generate config, start proxy, wait for health, wire + open editor; provider/model utilities (FR‑RUN, FR‑PROVIDER). |
+| **Launcher** | `start-claude.ps1`, `start-claude.sh` | Provider menu, generate config, start proxy, wait for health, wire + open editor (FR‑RUN, FR‑PROVIDER, FR‑ROUTE). |
+| **Provider list** | `config/providers.conf` | `id\|label\|base_url\|model\|key_env` per line; each provider's key comes from its own `key_env` var (e.g. `LLM_API_KEY_FPT`). |
+| **Routing tiers** | `config/routing.conf` | `tier\|max_tokens\|provider_id`; drives `--route` token‑aware dispatch. |
 | **Brain toggle** | `toggle-brain.ps1`, `toggle-brain.sh`, `toggle-brain.bat` | Swap `~/.claude/settings.json` between profiles (FR‑TOGGLE). |
 | **Profiles** | `profiles/claude.json`, `profiles/fpt.json` | Declarative `env` blocks applied to Claude Code. |
-| **Proxy config** | `config/litellm_config.yaml` | *Generated each run*; maps the alias → `openai/<model>` at the provider. |
+| **Proxy config** | `config/litellm_config.yaml` | *Generated each run*; maps the alias → `openai/<model>`; `--route` emits one entry per tier. |
 | **End‑user docs** | `guideline.en.html`, `guideline.vi.html`, `README.md` | How to install/run/change key & model. |
 | **Engineering docs** | `docs/SRS.md`, `docs/spec.md` | Requirements + this design. |
 | **Tests** | `tests/run-tests.ps1`, `tests/run-tests.sh` | `policy-ci` + `red-team` suites. |
@@ -49,8 +51,10 @@ kept at behavioural parity. Flags map 1:1 (`-Model` ↔ `--model`, `-Stop` ↔ `
 
 ## 3. Key runtime flow — `start-claude`
 
-1. **Resolve settings** — base URL, model, key from flags → file defaults → (key only) `LLM_API_KEY`
-   env → hidden prompt (FR‑RUN‑1, FR‑KEY‑1).
+1. **Resolve settings** — pick a provider (menu / `--provider` / direct `-BaseUrl`), then base URL,
+   model, key from flags → the provider's `key_env` (or `LLM_API_KEY` for the direct path) → hidden
+   prompt (FR‑PROVIDER, FR‑RUN‑1, FR‑KEY‑1). `--route` instead reads `routing.conf` and emits a
+   multi‑provider config (FR‑ROUTE).
 2. **Ensure LiteLLM** — if the venv/executable is missing, delegate to `setup-litellm` (FR‑RUN‑3).
 3. **Write config** — regenerate `config/litellm_config.yaml`, UTF‑8 **no BOM**, key referenced as
    `os.environ/LLM_API_KEY` only (FR‑RUN‑2, NFR‑SEC‑3).
@@ -89,9 +93,10 @@ same port + health logic as the launcher.
 
 ## 6. Secret model (NFR‑SEC)
 
-- **Boundaries.** The key exists in exactly three transient places: a runtime flag, the
-  `LLM_API_KEY` env var, or an in‑memory hidden prompt. It is handed to the proxy through the
-  environment and referenced from config as `os.environ/LLM_API_KEY`.
+- **Boundaries.** The key exists in exactly three transient places: a runtime flag, an environment
+  variable (the provider's `key_env` such as `LLM_API_KEY_FPT`, or `LLM_API_KEY` for the direct path),
+  or an in‑memory hidden prompt. It is handed to the proxy through the environment and referenced from
+  config as `os.environ/<VAR>`.
 - **Never persisted.** No script writes the key to a file; profiles and the generated config hold
   only env references; `.gitignore` excludes `.env`, `*.key`, the generated config's churn is benign
   (no secret in it).

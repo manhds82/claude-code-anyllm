@@ -322,6 +322,7 @@ setx LLM_API_KEY_GEMINI "AIza..."
 export LLM_API_KEY_NVIDIA="nvapi-..."
 export LLM_API_KEY_GEMINI="AIza..."</pre>
 <div class="fpt-callout" style="--callout-accent:#10B981"><span class="fpt-callout__icon" aria-hidden="true">&#10003;</span><div class="fpt-callout__body">Add your own provider by adding <strong>one line</strong> to <code>config/providers.conf</code> (<code>id|label|base_url|model|key_env</code>) &mdash; no code changes needed. <code>-BaseUrl</code>/<code>-Model</code>/<code>-Key</code> still override the selected provider exactly as before, so nothing else changes.</div></div>
+<div class="fpt-callout" style="--callout-accent:#7C5CFC"><span class="fpt-callout__icon" aria-hidden="true">&#9781;</span><div class="fpt-callout__body"><strong>Token-aware routing &mdash; <code>-Route</code>/<code>--route</code>.</strong> Instead of one provider, dispatch each request by estimated size to a tier defined in <code>config/routing.conf</code> (<code>tier|max_tokens|provider_id</code>, first match wins, <code>inf</code> = catch-all). Example: short pings &rarr; <code>groq</code>, normal coding &rarr; <code>fpt</code>, big diffs &rarr; <code>gemini</code>. Each tier still uses its provider's own <code>key_env</code>, so set the keys for the tiers you use.<br><code>.\start-claude.ps1 -Route</code> &nbsp;/&nbsp; <code>./start-claude.sh --route</code></div></div>
 </section>
 
 <section class="fpt-section" id="open-project">

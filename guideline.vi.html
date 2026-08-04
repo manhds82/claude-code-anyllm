@@ -322,6 +322,7 @@ setx LLM_API_KEY_GEMINI "AIza..."
 export LLM_API_KEY_NVIDIA="nvapi-..."
 export LLM_API_KEY_GEMINI="AIza..."</pre>
 <div class="fpt-callout" style="--callout-accent:#10B981"><span class="fpt-callout__icon" aria-hidden="true">&#10003;</span><div class="fpt-callout__body">Thêm provider của riêng bạn: thêm <strong>1 dòng</strong> vào <code>config/providers.conf</code> (dạng <code>id|label|base_url|model|key_env</code>) &mdash; không cần sửa code. <code>-BaseUrl</code>/<code>-Model</code>/<code>-Key</code> vẫn override provider đã chọn như trước, không gì thay đổi.</div></div>
+<div class="fpt-callout" style="--callout-accent:#7C5CFC"><span class="fpt-callout__icon" aria-hidden="true">&#9781;</span><div class="fpt-callout__body"><strong>Định tuyến theo token &mdash; <code>-Route</code>/<code>--route</code>.</strong> Thay vì 1 provider, mỗi request được đẩy tới một <strong>tier</strong> theo kích thước ước lượng, khai báo trong <code>config/routing.conf</code> (<code>tier|max_tokens|provider_id</code>, khớp đầu tiên thắng, <code>inf</code> = tier cuối). Ví dụ: câu ngắn &rarr; <code>groq</code>, code thường &rarr; <code>fpt</code>, diff lớn &rarr; <code>gemini</code>. Mỗi tier vẫn dùng <code>key_env</code> của provider đó &mdash; nhớ set key cho các tier bạn dùng.<br><code>.\start-claude.ps1 -Route</code> &nbsp;/&nbsp; <code>./start-claude.sh --route</code></div></div>
 </section>
 
 <section class="fpt-section" id="open-project">

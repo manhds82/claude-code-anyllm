@@ -75,12 +75,26 @@ IDs are stable; tests reference them (see `tests/`).
   `ANTHROPIC_API_KEY` from the session; then open VS Code (or print the env for manual use).
 - **FR‑RUN‑7** `-Stop`/`--stop` terminates the proxy on the given port.
 
-### FR‑PROVIDER — provider/model utilities (`start-claude.{ps1,sh}`)
-- **FR‑PROV‑1** `-List`/`--list` queries the endpoint's `/v1/models` and prints available model ids.
-- **FR‑PROV‑2** `-Provider`/`--provider`, `-ListProviders`/`--list-providers` select/enumerate
-  known providers; `-CheckKeys`/`--check-keys` reports which providers have a key configured.
-- **FR‑PROV‑3** `-Benchmark`/`--benchmark` runs a lightweight latency/tool‑calling probe;
-  `-Dashboard`/`--dashboard` summarises provider status. These must be read‑only and must not leak keys.
+### FR‑PROVIDER — provider selection (`start-claude.{ps1,sh}` + `config/providers.conf`)
+- **FR‑PROV‑1** Providers are declared in **`config/providers.conf`** — pipe‑delimited
+  `id | label | base_url | model | key_env` (add a line to add a provider, no code change). Each
+  provider reads its key from **its own env var** named in `key_env`, e.g. `LLM_API_KEY_FPT`,
+  `LLM_API_KEY_NVIDIA`, `LLM_API_KEY_GROQ` (**not** a single shared `LLM_API_KEY`).
+- **FR‑PROV‑2** With no `-Provider`/`-BaseUrl`, the script shows an **interactive menu** built from
+  `providers.conf`, marking which entries already have a key set. `-Provider`/`--provider <id>` skips
+  the menu; `-BaseUrl`/`-Model`/`-Key` bypass `providers.conf` entirely (that path uses `LLM_API_KEY`).
+- **FR‑PROV‑3** `-ListProviders`/`--list-providers` enumerates providers + key status;
+  `-CheckKeys`/`--check-keys` probes each configured key against its `/v1/models` (read‑only);
+  `-List`/`--list` lists the selected endpoint's model ids.
+- **FR‑PROV‑4** `-Benchmark`/`--benchmark` runs a latency/tool‑calling probe;
+  `-Dashboard`/`--dashboard` opens the LiteLLM Swagger UI. Read‑only, must not leak keys.
+
+### FR‑ROUTE — token‑aware routing (`-Route`/`--route` + `config/routing.conf`)
+- **FR‑ROUTE‑1** `routing.conf` declares tiers `tier | max_tokens | provider_id` (checked top‑to‑bottom,
+  first match wins; `inf` = catch‑all). `provider_id` must exist in `providers.conf`.
+- **FR‑ROUTE‑2** `-Route`/`--route` builds a multi‑provider proxy config so requests are dispatched by
+  estimated token size (≈4 chars/token) to the matching tier's provider (e.g. short→`groq`,
+  medium→`fpt`, heavy→`gemini`). Each tier keeps using its own `key_env`.
 
 ### FR‑TOGGLE — brain switching (`toggle-brain.{ps1,sh}`)
 - **FR‑TOGGLE‑1** A **profile** is a JSON file in `profiles/` whose `env` object is applied by
@@ -93,9 +107,12 @@ IDs are stable; tests reference them (see `tests/`).
   `localhost` ⇒ proxy; empty env ⇒ claude).
 
 ### FR‑KEY — secret handling (all scripts)
-- **FR‑KEY‑1** The API key precedence is: explicit flag → `LLM_API_KEY` env → hidden prompt.
+- **FR‑KEY‑1** Key precedence: explicit `-Key`/`--key` flag → the provider's **`key_env`** var
+  (e.g. `LLM_API_KEY_FPT`) for the menu/`--provider` path, or `LLM_API_KEY` for the direct
+  `-BaseUrl`/`-Model` path → hidden prompt.
 - **FR‑KEY‑2** The key MUST NOT be persisted to any git‑tracked file (script, config, or profile).
-- **FR‑KEY‑3** The key is passed to the proxy process only via the `LLM_API_KEY` environment variable.
+- **FR‑KEY‑3** The key is passed to the proxy process only via its environment variable
+  (`LLM_API_KEY` / the provider's `key_env`); config references it as `os.environ/<VAR>`.
 
 ## 5. Non‑functional requirements
 
