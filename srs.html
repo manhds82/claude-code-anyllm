@@ -36,8 +36,8 @@
 
 <h1>claude-code-anyllm — Software Requirements Specification</h1>
 <p class="meta">
-  Version: 1.2 &nbsp;·&nbsp;
-  Last updated: <span>2026-07-28</span> &nbsp;·&nbsp;
+  Version: <span>1.3</span> &nbsp;·&nbsp;
+  Last updated: <span>2026-08-04</span> &nbsp;·&nbsp;
   Branch: main &nbsp;·&nbsp;
   Tất cả nội dung đánh dấu <span>màu xanh</span> = mới trong version này
 </p>
@@ -52,6 +52,7 @@
   <a href="#docker">6. Docker</a>
   <a href="#files">7. Cấu trúc file</a>
   <a href="#compat">8. Tương thích editor</a>
+  <a href="#quality">9. Kiểm thử &amp; CI</a>
 </div>
 
 <!-- ═══════════════════════════════ 1. OVERVIEW ═══════════════════════════════ -->
@@ -208,6 +209,17 @@ docker run -d -p 4000:4000 -e LLM_API_KEY="..." -e BASE_URL="..." -e MODEL="..."
     <tr><td><span style="color:#2196F3;font-weight:bold">GitHub Actions CI</span></td><td><span style="color:#2196F3;font-weight:bold">Copy <code>.github/workflows/claude-review.yml</code> — tự review PR, post comment, dùng Groq free tier</span></td></tr>
   </tbody>
 </table>
+
+<!-- ═══════════════════════════════ 9. QUALITY ═══════════════════════════════ -->
+<h2 id="quality">9. Kiểm thử &amp; CI <span class="badge badge-new">mới</span></h2>
+<ul>
+  <li><span style="color:#2196F3;font-weight:bold">Test suite <code>tests/run-tests.ps1</code> + <code>tests/run-tests.sh</code>: nhóm <code>policy-ci</code> (parse, parity PS↔bash, encoding PS 5.1, config, workflow YAML) + <code>red-team</code> (không secret trong file track, key không nội suy vào lệnh, auth token dummy).</span></li>
+  <li><span style="color:#2196F3;font-weight:bold">Chạy theo vùng ảnh hưởng: <code>--changed</code>/<code>-Changed</code> qua <code>tests/impact-map.json</code> — chỉ chạy suite mà thay đổi có thể ảnh hưởng; đụng file lõi → chạy full (an toàn trước tốc độ).</span></li>
+  <li><span style="color:#2196F3;font-weight:bold">Golden fixtures <code>tests/golden/</code> ghim hành vi resolver (14 case).</span></li>
+  <li><span style="color:#2196F3;font-weight:bold">CI matrix <strong>Linux + Windows</strong> chạy 2 suite mỗi push/PR; <code>.github/CODEOWNERS</code> yêu cầu review.</span></li>
+  <li><span style="color:#2196F3;font-weight:bold">Docs kỹ thuật <code>docs/SRS.md</code>, <code>docs/spec.md</code>; đề xuất nâng Harness <code>docs/harness-uplift-proposal.html</code>.</span></li>
+  <li><span style="color:#2196F3;font-weight:bold">Fix B-01…B-04 (PS 5.1 BOM · key trong <code>-Command</code> · bash newline YAML · workflow YAML). Phát hành <code>v1.0.0</code>.</span></li>
+</ul>
 
 </div>
 </body>

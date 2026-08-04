@@ -51,6 +51,26 @@
 <tbody>
 
   <tr>
+    <td class="date">2026-08-04</td>
+    <td><code class="hash">5e5d8ea</code></td>
+    <td><span class="badge badge-feat">release</span></td>
+    <td>
+      <div class="msg">Phát hành <strong>v1.0.0</strong> + CASAN uplift (docs · tests · đồng bộ tài liệu)</div>
+      <div class="detail">
+        <ul>
+          <li><strong>Docs kỹ thuật:</strong> <code>docs/SRS.md</code> + <code>docs/spec.md</code>; đề xuất nâng Harness H2/H3/H5/H7 (<code>docs/harness-uplift-proposal.html</code>) + tách rõ việc Dự án vs Toolkit</li>
+          <li><strong>Tests:</strong> suite <code>policy-ci</code> + <code>red-team</code>, chạy <strong>theo vùng ảnh hưởng</strong> (<code>--changed</code> + <code>impact-map.json</code>), golden fixtures; CI matrix Linux+Windows (đã sửa workflow YAML nên CI mới thật sự chạy)</li>
+          <li><strong>Fix B-01…B-04:</strong> PS 5.1 parse `.ps1` không-BOM · key nội suy vào chuỗi <code>-Command</code> · bash <code>$( )</code> nuốt newline (YAML fallback hỏng) · CI workflow YAML sai cột</li>
+          <li><strong>Đồng bộ tài liệu:</strong> SRS/spec/guideline khớp <code>providers.conf</code> + key theo từng provider (<code>LLM_API_KEY_&lt;ID&gt;</code>) + định tuyến token-aware <code>--route</code></li>
+          <li><strong>Release:</strong> tag <code>v1.0.0</code> · <code>CODEOWNERS</code></li>
+        </ul>
+        <em>So với 1c3a5cf:</em> thêm toàn bộ lớp docs/tests/CI + fix 4 bug + cắt release đầu tiên.
+      </div>
+    </td>
+    <td class="status-ok">✅ v1.0.0</td>
+  </tr>
+
+  <tr>
     <td class="date">2026-07-29</td>
     <td><code class="hash">1c3a5cf</code></td>
     <td><span class="badge badge-docs">docs</span></td>
