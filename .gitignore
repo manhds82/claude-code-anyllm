@@ -27,3 +27,6 @@ desktop.ini
 
 # Harness Portal ingest key - secret, never commit (C5)
 .harness/portal-sync.key
+
+# One-time backup written when a legacy guide block is migrated
+*.pre-migration.bak
