@@ -68,13 +68,49 @@ function Invoke-PolicyCI {
         Check "policy-ci" "ps1 PS5.1-safe encoding: $f" ((-not $nonAscii) -or $bom) "non-ASCII without UTF-8 BOM -> PS 5.1 misparses on non-UTF-8 locale"
     }
 
-    # 2. Bash scripts pass `bash -n` (skip gracefully if bash absent)
-    $bash = Get-Command bash -ErrorAction SilentlyContinue
+    # 2. Bash scripts pass `bash -n`.
+    #
+    # `Get-Command bash` is NOT good enough on Windows: on a stock install it
+    # resolves to C:\Windows\System32\bash.exe, the WSL launcher. With no
+    # distribution installed that prints "no distribution is installed" and
+    # exits 1 -- for EVERY file. This suite reported three product scripts as
+    # having syntax errors when all three parse fine under Git Bash; the check
+    # was really detecting the absence of WSL and blaming the script for it.
+    # Three fake failures is how a suite stops being read (C14).
+    #
+    # So: prefer a real POSIX bash, and before trusting any verdict, prove the
+    # interpreter can parse a file we KNOW is valid. If it cannot, these are
+    # UNVERIFIED from here -- reported as such, never as a failure and never
+    # quietly as a pass.
+    $bashExe = $null
+    foreach ($cand in @("$env:ProgramFiles\Git\bin\bash.exe",
+                        "${env:ProgramFiles(x86)}\Git\bin\bash.exe",
+                        "$env:LOCALAPPDATA\Programs\Git\bin\bash.exe")) {
+        if ($cand -and (Test-Path $cand)) { $bashExe = $cand; break }
+    }
+    if (-not $bashExe) {
+        $cmd = Get-Command bash -ErrorAction SilentlyContinue
+        # Skip the WSL shim: it is not a POSIX shell we can ask about syntax.
+        if ($cmd -and $cmd.Source -notmatch '\\System32\\bash\.exe$') { $bashExe = $cmd.Source }
+    }
+
+    $bashUsable = $false
+    if ($bashExe) {
+        $probe = Join-Path ([System.IO.Path]::GetTempPath()) ("bash-probe-" + [guid]::NewGuid().ToString("N") + ".sh")
+        [System.IO.File]::WriteAllText($probe, "true`n", (New-Object System.Text.UTF8Encoding($false)))
+        & $bashExe -n $probe 2>$null
+        $bashUsable = ($LASTEXITCODE -eq 0)
+        Remove-Item $probe -Force -ErrorAction SilentlyContinue
+    }
+
     foreach ($f in $productSh) {
         $p = RepoFile $f
         if (-not (Test-Path $p)) { Check "policy-ci" "syntax $f" $false "missing"; continue }
-        if (-not $bash) { Check "policy-ci" "syntax $f (bash -n)" $true "SKIP: bash not on PATH"; continue }
-        & $bash.Source -n $p 2>$null
+        if (-not $bashUsable) {
+            Check "policy-ci" "syntax $f (bash -n)" $true "SKIP: no usable POSIX bash here (WSL shim or bash absent) -- UNVERIFIED, not verified"
+            continue
+        }
+        & $bashExe -n $p 2>$null
         Check "policy-ci" "syntax $f (bash -n)" ($LASTEXITCODE -eq 0) "bash -n exit $LASTEXITCODE"
     }
 

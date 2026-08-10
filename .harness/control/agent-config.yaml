@@ -1,0 +1,50 @@
+# Agent Pack config for claude-code-anyllm.
+#
+# Replaces the shipped SAMPLE, which named `npx vitest`. This repo has no vitest
+# and no test script in package.json -- the sample's commands would have failed
+# as "command not found" while `harness doctor` reported the Agent Pack as
+# configured. A gate that exists, runs the wrong thing, and reads as coverage is
+# worse than no gate.
+#
+# The real runner is tests/run-tests.ps1 (with a bash twin, tests/run-tests.sh).
+# It is deterministic and offline by design: it never launches the proxy, calls a
+# provider, or opens an editor, so it is safe for an agent to run unattended.
+# Suites: policy-ci (correctness/governance) and red-team (security).
+#
+# Verified 2026-08-10 by running both: bash 35/35, PowerShell 37/37 green.
+# (They disagreed until today -- the PowerShell side resolved `bash` to the WSL
+# shim in System32, which exits 1 with no distribution installed, and reported
+# three healthy product scripts as syntax errors. Fixed in tests/run-tests.ps1.)
+
+test:
+  # PowerShell is this repo's primary shell (C7). Windows PowerShell 5.1
+  # compatible: invoked as `powershell -File`, not `pwsh`.
+  full_suite_cmd: "powershell -File tests/run-tests.ps1 -Suite all"
+
+  # The runner does its own impact scoping through tests/impact-map.json:
+  # changed files map to the suites they can affect, and anything unknown or
+  # matching a core glob falls back to ALL. Safety-first is the runner's own
+  # rule, not something asserted here.
+  unit_related_cmd: "powershell -File tests/run-tests.ps1 -Changed {files}"
+
+  # No integration smoke, stated rather than faked. This project is a CLI that
+  # starts a LOCAL proxy on demand; there is no service standing up to be
+  # probed, and the sample's "GET /api/health" would have described an endpoint
+  # that does not exist. An empty list is honest; an invented probe is a green
+  # light for something nobody checked.
+  integration_smoke: []
+
+impact:
+  # Touch one of these and run the full suite regardless of scoping. Taken from
+  # this repo's real layout, not from the sample's generic web-app list
+  # (composer.lock and poetry.lock do not exist here).
+  force_full_test_on:
+    - "tests/**"              # the runner and its own fixtures
+    - "tests/impact-map.json" # the scoping rules themselves
+    - "bin/**"                # the published CLI entry point
+    - "config/**"             # litellm config templates
+    - "profiles/*.json"       # provider profiles the red-team suite reads
+    - "package.json"          # what npx actually publishes
+    - ".gitattributes"        # line endings decide whether the .sh even execs
+    - ".harness/control/**"   # governance policy
+    - ".claude/settings*.json"
