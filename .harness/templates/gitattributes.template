@@ -1,0 +1,86 @@
+# .gitattributes -- line-ending contract for a project running the governance
+# harness. Copy this block into the project's own .gitattributes at the repo
+# root (append to an existing file; do not replace rules you already have).
+#
+# WHY A PROJECT NEEDS THIS AT ALL. The harness ships its shell scripts with LF
+# and its own repo is clean. The corruption happens on YOUR side: with no
+# .gitattributes, git falls back to each developer's core.autocrlf, which on
+# Windows rewrites text files to CRLF on checkout. The installed scripts are
+# then CRLF in your working tree, get committed that way, and Docker bakes them
+# into the image. Nothing in the harness can prevent that from the outside --
+# only a .gitattributes committed in THIS repo can.
+#
+# policy-ci checks the result, not the cause: `crlf:shell-scripts-are-lf` fails
+# on any .sh whose first 400 bytes contain CRLF, and
+# `bom:powershell-has-utf8-bom` fails on any .ps1 without a UTF-8 BOM.
+#
+# NOTE: `eol=` governs the WORKING TREE. Files already committed with the wrong
+# endings keep them until they are renormalised:
+#     git add --renormalize .   &&   git status
+# Run that once after adding this file, or the rules look applied and nothing
+# on disk has actually changed.
+
+# Baseline: let git decide for anything not pinned below.
+* text=auto
+
+# --- LF, always. These are read by a Linux kernel or a Linux container. ------
+
+# CRLF here ends the shebang with \r, so Linux looks for an interpreter
+# literally named "/bin/sh\r" and exec fails with
+#   "exec /usr/local/bin/entrypoint.sh: no such file or directory"
+# The error names the INTERPRETER, not the script, and the file is present and
+# executable the whole time -- which is why this costs hours, not minutes.
+# One project crash-looped 115 times on this exact byte.
+*.sh            text eol=lf
+*.bash          text eol=lf
+
+# Dockerfile: a CRLF line ending is carried into ENV/ARG/LABEL values and into
+# every RUN command, so a trailing \r ends up inside PATH or inside a filename.
+Dockerfile      text eol=lf
+Dockerfile.*    text eol=lf
+*.dockerfile    text eol=lf
+.dockerignore   text eol=lf
+
+# YAML: CRLF makes a trailing \r part of the scalar, so "value" becomes
+# "value\r". Docker Compose commands, Kubernetes manifests and CI shell steps
+# then run with an invisible \r in an argument.
+*.yml           text eol=lf
+*.yaml          text eol=lf
+
+# Anything with a shebang but no extension: git cannot infer these, so list
+# them explicitly in your own project, e.g.
+#   entrypoint      text eol=lf
+#   scripts/deploy  text eol=lf
+
+# --- CRLF, always. These are read by Windows PowerShell / cmd.exe. -----------
+
+# PowerShell and batch stay CRLF so they behave in the shell that runs them.
+# NOTE on .ps1: eol=crlf does NOT give you a UTF-8 BOM, and Windows PowerShell
+# 5.1 reads a BOM-less .ps1 in the system ANSI codepage. On a CP932 (Japanese)
+# machine, bytes 0x81-0x9F and 0xE0-0xFC are LEAD bytes that consume the byte
+# after them, so a line ending in a Vietnamese character or an em dash swallows
+# its own newline -- and the NEXT LINE OF CODE disappears from the parsed
+# script while it still exits 0. Save .ps1 as "UTF-8 with BOM"; git cannot do
+# it for you, which is why policy-ci checks it separately.
+#
+# This rule also applies to the harness's own .ps1 under .harness/ and
+# tools/harness-bundle/, which the bundle ships as LF and the install receipt
+# hashes as LF. That is fine: doctor, harness-verify and the installer compare
+# EOL-insensitively, with the BOM kept as well as stripped (since 1.8.11; before
+# it a BOM'd .ps1 checked out as CRLF read as drift -- B-77). A project-side
+# `.harness/**/*.ps1 text eol=lf` override is harmless but no longer needed.
+*.ps1           text eol=crlf
+*.psm1          text eol=crlf
+*.psd1          text eol=crlf
+*.bat           text eol=crlf
+*.cmd           text eol=crlf
+
+# --- Binary: never munge, never diff. ---------------------------------------
+*.png           binary
+*.jpg           binary
+*.jpeg          binary
+*.gif           binary
+*.ico           binary
+*.pdf           binary
+*.gz            binary
+*.zip           binary

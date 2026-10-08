@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://harness.internal/schemas/impact-map.schema.json",
+  "title": "Impact Map Schema",
+  "description": "Maps source-path globs to the test groups a change to them affects, so the Agent Pack runs review and test on the blast radius only. One canonical format so the Portal can read coverage-per-change instead of each project inventing its own (nine did).",
+  "type": "object",
+  "required": ["version", "groups"],
+  "properties": {
+    "version": { "type": "integer", "minimum": 1 },
+    "always_run": {
+      "type": "array",
+      "description": "Cheap smoke that runs on EVERY change regardless of diff — the last line against a regression the map missed.",
+      "items": { "type": "string" }
+    },
+    "groups": {
+      "type": "object",
+      "description": "Named test groups. A changed file matching a group's sources pulls in that group's tests.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["sources", "tests"],
+        "properties": {
+          "sources": {
+            "type": "array",
+            "description": "Path globs; a changed file matching one belongs to this group.",
+            "items": { "type": "string" },
+            "minItems": 1
+          },
+          "tests": {
+            "type": "array",
+            "description": "Unit test files/ids to run when this group is affected.",
+            "items": { "type": "string" }
+          },
+          "it": {
+            "type": "array",
+            "description": "Integration/smoke/e2e cases for this group (coverage can't trace these, so they are declared).",
+            "items": { "type": "string" }
+          },
+          "risk": {
+            "type": "string",
+            "description": "Advisory risk of this area; high-risk groups may force wider testing.",
+            "enum": ["low", "medium", "high"]
+          }
+        }
+      }
+    },
+    "fallback": {
+      "type": "string",
+      "description": "What to run when a changed file matches NO group. 'ALL' (the safe default) forces the full suite — under-scoping silently is the one failure that makes selective testing unsafe.",
+      "enum": ["ALL", "none"],
+      "default": "ALL"
+    }
+  }
+}

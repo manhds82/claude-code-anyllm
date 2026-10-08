@@ -1,0 +1,61 @@
+{
+  "$schema": "session-roles.schema.json",
+  "schema_version": "1.0.0",
+  "description": "Per-agent session role bindings (D9). Issued at session start by the gateway.",
+  "default_role": "developer",
+  "roles": {
+    "admin": {
+      "priority": 100,
+      "description": "Full system access — can deploy, modify config, override guards",
+      "allowed_tools": ["*"],
+      "max_risk_level": "critical",
+      "requires_human_approval_for": ["deploy", "config_modify", "mysql_query"],
+      "session_ttl_minutes": 480
+    },
+    "reviewer": {
+      "priority": 80,
+      "description": "Review access — can approve changes, read all paths, write to approved zones",
+      "allowed_tools": ["*"],
+      "max_risk_level": "high",
+      "requires_human_approval_for": ["deploy", "config_modify"],
+      "session_ttl_minutes": 240
+    },
+    "developer": {
+      "priority": 60,
+      "description": "Standard dev access — read/write source, run tools, cannot deploy",
+      "allowed_tools": ["read", "write", "edit", "glob", "grep", "bash", "web_search", "web_fetch"],
+      "max_risk_level": "medium",
+      "requires_human_approval_for": ["deploy", "config_modify", "mysql_query", "http_fetch"],
+      "session_ttl_minutes": 120
+    },
+    "observer": {
+      "priority": 40,
+      "description": "Read-only access — can read files and search, no mutations",
+      "allowed_tools": ["read", "glob", "grep", "web_search", "web_fetch"],
+      "max_risk_level": "low",
+      "requires_human_approval_for": [],
+      "session_ttl_minutes": 60
+    },
+    "ci-bot": {
+      "priority": 50,
+      "description": "CI/CD automation — restricted to pipeline scripts, test runners, reporters",
+      "allowed_tools": ["bash", "read", "glob", "grep", "write"],
+      "max_risk_level": "medium",
+      "requires_human_approval_for": ["deploy", "config_modify"],
+      "session_ttl_minutes": 30,
+      "allowed_paths": ["contracts/**", ".harness/scripts/**", "tests/**", "docs/**"]
+    }
+  },
+  "agent_role_bindings": {
+    "boss": "admin",
+    "analyst": "reviewer",
+    "developer": "developer",
+    "reviewer": "reviewer"
+  },
+  "token_config": {
+    "algorithm": "HS256",
+    "issuer": "harness-gateway",
+    "ttl_seconds": 3600,
+    "min_key_length": 32
+  }
+}

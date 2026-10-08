@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://harness.internal/schemas/token-pricing.schema.json",
+  "title": "Token pricing table",
+  "description": "USD per 1,000,000 tokens per model, read as data by the local telemetry collectors (C2/C8).",
+  "type": "object",
+  "required": ["schema_version", "governs", "currency", "unit", "models", "default"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schema_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "description": { "type": "string" },
+    "basis": {
+      "description": "What the numbers MEAN. 'list_price_equivalent' = public list prices used as a comparable yardstick, which is what they are whenever the assistants run on subscriptions rather than metered API keys -- in that case nobody is billed these amounts and a budget built on them is a consumption budget, not a spend budget. 'billed' = the org is actually invoiced per token at these rates. Declared in a field, not a comment, so a reader (or a check) can tell the two apart.",
+      "enum": ["list_price_equivalent", "billed"]
+    },
+    "notes": { "type": "object", "additionalProperties": { "type": "string" } },
+    "governs": {
+      "description": "Plane this config belongs to. Pricing for the assistant workflow is NOT pricing for the shipped product; keep the two apart (see CLAUDE.md, plane separation).",
+      "const": "assistant_workflow"
+    },
+    "currency": { "const": "USD" },
+    "unit": { "const": "per_1m_tokens" },
+    "models": {
+      "type": "object",
+      "description": "Keyed by the model id exactly as the assistant reports it.",
+      "additionalProperties": { "$ref": "#/definitions/rates" }
+    },
+    "default": {
+      "description": "Applied to a model absent from `models`. Null rates mean UNPRICED: the collector reports 0 cost and warns, rather than inventing a number.",
+      "$ref": "#/definitions/rates"
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "rates": {
+      "type": "object",
+      "required": ["input", "output"],
+      "properties": {
+        "input": { "$ref": "#/definitions/rate" },
+        "cached_input": {
+          "description": "Rate for cache READS. Null falls back to the input rate, which OVERSTATES cost — real usage is heavily cached (one measured thread: 93% of input tokens were cache reads).",
+          "$ref": "#/definitions/rate"
+        },
+        "output": { "$ref": "#/definitions/rate" }
+      },
+      "additionalProperties": false
+    },
+    "rate": {
+      "description": "USD per 1M tokens, or null when the rate is genuinely unknown. Null is a first-class value here: a guessed rate that looks plausible is worse than a visible gap (C13/C14).",
+      "type": ["number", "null"],
+      "minimum": 0
+    }
+  }
+}

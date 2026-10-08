@@ -1,0 +1,101 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://harness.internal/schemas/workflow.schema.json",
+  "title": "Workflow Contract Schema",
+  "type": "object",
+  "required": ["schema_version", "workflow", "stages"],
+  "properties": {
+    "schema_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "workflow": {
+      "type": "object",
+      "required": ["id", "name", "description", "version"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "version": { "type": "string" }
+      }
+    },
+    "stages": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "agent", "model_profile", "description"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "agent": { "type": "string" },
+          "model_profile": { "type": "string", "enum": ["planning", "planning-light", "coding", "review", "summarization"] },
+          "description": { "type": "string" },
+          "depends_on": { "type": "array", "items": { "type": "string" } },
+          "inputs": { "type": "object", "additionalProperties": { "type": "string" } },
+          "outputs": { "type": "object", "additionalProperties": { "type": "string" } },
+          "gates": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["type", "condition", "description"],
+              "properties": {
+                "type": { "type": "string" },
+                "condition": { "type": "string" },
+                "description": { "type": "string" }
+              }
+            }
+          },
+          "retry_limit": { "type": "integer", "minimum": 0 },
+          "timeout_minutes": { "type": "integer", "minimum": 1 },
+          "fallback_agent": {
+            "type": "string",
+            "description": "Agent to re-run this stage with once retry_limit is spent on the primary `agent` — the answer to 'the stage keeps failing, then what'. Must name an agent declared in contracts/agent.yaml; this schema cannot check that (different file), so a typo here fails at run time, not at validation. DECLARATIVE: whoever drives the DAG performs the switch, nothing in this bundle does."
+          },
+          "fallback_model": {
+            "type": "string",
+            "description": "Model to fall back to for this stage when the primary is unavailable. A model ID, not a profile: `model_profile` above says which ladder, this says which rung. Deliberately not enumerated — the licensed ladder is pinned in .harness/control/power-policy.json (fallback_chain) and casan-policies orchestration.model_fallback, and a second copy of the list here would drift from those without anything noticing. Note H7-5's scorer reads those two files, not this field."
+          },
+          "compensate": {
+            "type": "string",
+            "description": "Id of the stage that undoes this one when the pipeline rolls back — the transaction boundary H7-6 asks for, expressed per stage instead of only as a global flag. DECLARATIVE: nothing here executes it. A stage whose effects cannot actually be reversed should leave this unset rather than name a compensator that only looks like a rollback."
+          }
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["from", "to"],
+        "properties": {
+          "from": { "type": "string" },
+          "to": { "type": "string" },
+          "type": {
+            "type": "string",
+            "description": "Edge semantics. Recognized vocabulary: 'data_flow' — sequential hand-off, the default; 'parallel' — fan-out, several parallel edges leaving one stage have no ordering between their targets; 'join' — fan-in, the target waits for every incoming join edge before it starts. Left as a free string rather than an enum ON PURPOSE: projects already running this bundle carry their own edge labels, and closing the set here would fail their existing workflow.yaml at the next reinstall — the same 'bundle owns the schema, project cannot fix it' trap this vocabulary was added to solve. Nothing in this bundle schedules the fan-out; these labels describe the DAG for whoever executes it.",
+            "examples": ["data_flow", "parallel", "join"]
+          }
+        }
+      }
+    },
+    "gate_rules": {
+      "type": "object",
+      "description": "What each gate outcome does to the pipeline. Declared here so the routing is inspectable config (C2) rather than control flow buried in a hook. Keys are outcome names, values are the action taken.",
+      "additionalProperties": {
+        "type": "string",
+        "enum": ["pause", "halt_for_human", "loop_to_analysis", "loop_to_implementation", "loop_to_test", "continue"]
+      }
+    },
+    "retry_policy": {
+      "type": "object",
+      "properties": {
+        "max_cycles": { "type": "integer", "minimum": 1 },
+        "backoff_seconds": { "type": "integer", "minimum": 0 },
+        "on_failure": { "type": "string" },
+        "max_attempts": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Attempts allowed for a SINGLE stage before the pipeline gives up on it — a different bound from max_cycles, which caps whole-pipeline loops (a run can stay inside max_cycles while one stage retries forever). Note H7-4's scorer reads orchestration.retry.max_attempts out of .harness/control/casan-policies.yaml, not this file: declaring it here bounds the DAG, it does not by itself move that score."
+        }
+      }
+    }
+  }
+}

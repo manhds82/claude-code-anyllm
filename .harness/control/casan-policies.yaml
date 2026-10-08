@@ -1,0 +1,262 @@
+# CASAN uplift policy pack — declarative policies that close the documented
+# H1/H2/H3/H6/H7 gaps. The RUBRIC each layer is scored against (what H7 asks
+# for, why, and its "câu hỏi chốt") is docs/casan_harness_assessment.md —
+# both it and docs/harness-rules-and-assessment-*.html now ship with the
+# bundle (bundle.yaml `provides.docs`); before this they were cited but never
+# shipped, so the document this comment points to did not exist on install.
+#
+# C2: these are DATA read by consumers (hooks, verify skill, portal, gateway) —
+#     never hardcode them in scripts.
+# C10 (honest enforcement): each section notes where it is actually enforced.
+#     Sections marked `enforced_at: gateway` are declarations the local hooks
+#     surface but cannot hard-enforce — server-side PDP does. Do not read a
+#     declared policy as a hard guarantee until its gateway rule is live.
+schema_version: "1.0.0"
+
+# ---------------------------------------------------------------- H1 Context
+context:
+  enforced_at: session_start_hook          # hook loads the pointer store
+  # Governs the ASSISTANT plane: pointer store, retrieval index and staleness of THIS repo's assistant context.
+  # NOT the product's own runtime behaviour -- see orchestration.governs.
+  governs: assistant_workflow
+  pointer_store: ".harness/context/pipeline-context.yaml"
+  staleness_ttl_minutes: 240                # context older than this = stale -> refresh
+  required_keys:                            # sub-agents must find these without re-scan
+    - "srs_path"
+    - "spec_path"
+    - "tech_stack"
+    - "artifact_paths"
+  clean_on_stale: true
+  # C2 - discovery is DATA, not hardcoded in the scan scripts. Every entry below
+  # is a path/glob relative to the repo root, evaluated IN ORDER:
+  #   no wildcard -> exact path, taken when it exists (canonical, preferred)
+  #   wildcard    -> matches are SORTED and the first wins (deterministic across runs)
+  artifact_globs:                           # structural dirs recorded when present
+    - "docs"
+    - "tests"
+    - "contracts"
+    - ".harness"
+  source_globs:                             # where the CODE lives - a match that is a
+    - "src"                                 # directory contributes itself; a match that
+    - "app"                                 # is a FILE contributes its parent dir, so
+    - "lib"                                 # "*/__init__.py" names a Python package on
+    - "*/__init__.py"                       # layouts whose package is not called "src"
+  srs_candidates:
+    # This repo has no separate SRS - harness-spec.md IS where the requirements
+    # are stated, so it legitimately serves as the SRS pointer here. A project
+    # with a real SRS keeps the canonical entries below and drops this line.
+    - "docs/harness-spec.md"
+    - "docs/SRS.md"
+    - "docs/srs.md"
+    - "SRS.md"
+    - "SRS*.md"
+    - "srs*.md"
+    - "*requirements*.md"
+  spec_candidates:
+    # Put YOUR canonical spec first - an exact path that does not exist is simply
+    # skipped, so per-project entries are safe to keep in this shared default.
+    - "docs/harness-spec.md"
+    - "docs/spec.md"
+    - "docs/SPEC.md"
+    - "spec.md"
+    - "*spec*.md"
+    - "SPEC*.md"
+    - "openapi*.y*ml"
+  retrieval:                                # RAG-lite / semantic cache (harness_rag.py)
+    sources:                                # what gets indexed for retrieval
+      - "docs/**/*.md"
+      - "*.md"
+      - "contracts/**/*.yaml"
+      - "CLAUDE.md"
+    chunk_lines: 40
+    top_k: 5
+    # Optional neural backend: set this env to a command that reads text on
+    # stdin and prints a JSON float vector. Unset => BM25 lexical (offline).
+    embed_cmd_env: "HARNESS_EMBED_CMD"
+
+# ------------------------------------------------------------------- H2 Tool
+tool:
+  enforced_at: gateway
+  # Governs the ASSISTANT plane: which tools an AGENT may call while working in this repo.
+  # NOT the product's own runtime behaviour -- see orchestration.governs.
+  governs: assistant_workflow
+  idempotency_required:                     # side-effect tools that must carry a key
+    - "deploy"
+    - "rollback_deploy"
+    - "mysql_query"
+    - "http_fetch"
+    - "run_command"
+    - "exec_in_container"
+  rate_limits:                              # calls per window (advisory to gateway)
+    http_fetch: { per_minute: 30 }
+    run_command: { per_minute: 20 }
+    deploy: { per_hour: 6 }
+
+# ------------------------------------------------------------- H3 Evaluation
+evaluation:
+  enforced_at: pdp                          # PDP denies a release unless the gate passes (v1.4.3)
+  # Governs the ASSISTANT plane: the quality gate on AGENT output before a change is accepted.
+  # NOT the product's own runtime behaviour -- see orchestration.governs.
+  governs: assistant_workflow
+  enforce: true                             # server-side release gate on/off
+  release_tools: ["deploy", "rollback_deploy"]
+  golden_dataset_path: ".harness/eval/golden/"
+  regression_suites_required:               # must PASS before a deploy/release is allowed
+    - "policy-ci"
+    - "red-team"
+    - "golden"                              # golden-set regression over the REAL deny policy
+  # Commands harness-release runs to PRODUCE the report for each required suite.
+  # Fill per project (empty => suite counted as "not run" and the gate blocks).
+  # NOTE: values must not contain a quote or '#' (the runner's line parser stops there).
+  #
+  # >>> THIS SECTION SHIPS WITH ONLY THE HARNESS'S OWN THREE SUITES. <<<
+  # policy-ci/red-team/golden prove the HARNESS's guards work — they say nothing
+  # about whether YOUR APPLICATION's code works. H3 ("evaluation") is scored
+  # from regression_suites_required above, so if you never add your project's
+  # own suite here, H3 is graded as if the project shipped zero tests, no
+  # matter how large its real suite is. Reported by a consuming project: their
+  # actual test count (3400+ tests, real coverage) was invisible to H3 until
+  # they added a fourth entry below.
+  #   my-suite: "pytest -q"                 # or: npm test --silent · go test ./...
+  # Add its name to regression_suites_required above too, or it is optional and
+  # never gates a release.
+  suite_commands:
+    # All three are shipped BY THE BUNDLE, so a freshly-onboarded project can
+    # satisfy its own release gate out of the box (no project-specific paths).
+    policy-ci: "python .harness/scripts/lib/harness_policy_check.py ."
+    red-team: "python .harness/scripts/lib/harness_redteam.py ."
+    golden: "python .harness/scripts/lib/harness_golden.py ."
+  max_report_age_hours: 24                  # a passing report older than this is "stale" -> re-run before release
+  judge:
+    min_overall_score: 70                   # below -> CHANGES_REQUIRED
+    hard_stop_verdict: "REJECTED"           # pipeline stops, routes to fix agent
+    max_fix_retries: 5
+    back_to_plan_cycles: 3
+
+# ---------------------------------------------------- H4 Security (outbound)
+security:
+  enforced_at: gateway                      # local guard has 30 deny-patterns; outbound
+  # Governs the ASSISTANT plane: scanning of AGENT input/output and the commands agents run.
+  # NOT the product's own runtime behaviour -- see orchestration.governs.
+  governs: assistant_workflow
+                                            # allowlist is a gateway PDP rule (honest C10)
+  outbound_allowlist:                       # http_fetch / network egress permitted hosts
+    - "api.anthropic.com"
+    - "api.openai.com"
+    - "github.com"
+    - "*.githubusercontent.com"
+  block_cloud_metadata: true                # 169.254.169.254 (also a local deny-pattern)
+  redact_pii_in_logs: true
+
+# --------------------------------------------------------- H5 Governance
+governance:
+  enforced_at: gateway                      # approval workflow is server-side PDP
+  # Governs the ASSISTANT plane: approval and audit of AGENT actions in this repo.
+  # NOT the product's own runtime behaviour -- see orchestration.governs.
+  governs: assistant_workflow
+  approval_required:                        # high-risk actions that need a human OK
+    - "deploy"
+    - "rollback_deploy"
+    - "mysql_query"          # writes
+    - "provider_key_rotate"
+  immutable_ledger: ".harness/ledger/chain.jsonl"   # hash-chain, tamper-evident (C9)
+  compliance_report: "monthly"
+  # H3/H5 -- the qa-gate stage's verdict gates the release-affecting tools. The
+  # 6-stage DAG writes `pipeline.qa_gate_verdict` into pipeline-context.yaml;
+  # when this is enabled, harness-post-tool-use denies the tools below on any
+  # value other than APPROVED.
+  #
+  # DEFAULT OFF on purpose (C2 -- the decision is data, not script). A project
+  # still on the legacy 3-stage DAG has no qa-gate stage and therefore no
+  # verdict at all, so shipping this on-by-default would block every commit in
+  # every such project -- a breaking change delivered as a bugfix. Turn it on
+  # once your workflow.yaml actually has the qa-gate stage.
+  #
+  # HONEST SCOPE (C10): this is a LOCAL hook, defense-in-depth, not a boundary.
+  # It raises the cost of shipping unverified work; it does not make it
+  # impossible. The real boundary for release actions is the server-side gateway
+  # PDP. Once enabled, a missing or unreadable verdict fails CLOSED and says so.
+  qa_gate:
+    enabled: false
+    blocking_tools:
+      - "run_command"
+      - "git_commit"
+      - "git_push"
+      - "deploy"
+      - "rollback_deploy"
+      - "mysql_query"
+  # Where the ONE common governance text (CLAUDE.harness.md) gets projected, so
+  # every assistant working in this repo reads the same C1-C10 rules. The
+  # installer writes a delimited managed block into each - your own content in
+  # these files is never touched. Adding a tool = adding a line here (C2).
+  #
+  # HONEST SCOPE (C10): only Claude Code ENFORCES these via .claude hooks. For
+  # every other assistant this file is guidance the model may ignore, so the
+  # real enforcement for them is server-side (gateway PDP) + policy-CI + branch
+  # protection -- not the text below.
+  guide_targets:
+    - "CLAUDE.md"                           # Claude Code
+    - "AGENTS.md"                           # the cross-tool convention: OpenAI Codex,
+                                            # Cursor, Jules and others read this one
+    - ".github/copilot-instructions.md"     # GitHub Copilot
+    # Uncomment the ones your team actually uses -- each is just another file the
+    # same text is written into. An assistant with no project-instructions file
+    # (a plain chat UI, e.g. DeepSeek chat) cannot be reached this way: paste
+    # AGENTS.md into the conversation, or drive it through an IDE tool below.
+    # - ".cursor/rules/harness-governance.mdc"   # Cursor (newer rules format)
+    # - ".windsurfrules"                         # Windsurf
+    # - ".clinerules"                            # Cline
+    # - ".continuerules"                         # Continue
+    # - ".aider.conf.md"                         # Aider (conventions file)
+    # - ".idx/airules.md"                        # Firebase Studio / Project IDX
+
+# ------------------------------------------------------------ H6 AgentOps
+agentops:
+  enforced_at: portal_and_hooks             # portal computes; hooks emit signals
+  # Governs the ASSISTANT plane: cost/latency/drift of the AGENTS working on this repo.
+  # NOT the product's own runtime behaviour -- see orchestration.governs.
+  governs: assistant_workflow
+  cost_anomaly:
+    session_multiplier: 3.0                 # session tokens/cost > 3x rolling baseline -> alert
+    absolute_usd_alert: 5.0                 # single session cost cap for alert
+  hallucination_flags:                      # captured as security/quality incidents
+    - "judge_verdict_rejected"
+    - "retry_budget_exhausted"
+    - "test_regression_after_pass"
+  drift:                                     # per-model cost/event drift detection (portal)
+    window_days: 14
+    threshold: 0.25                          # flag a >25% recent-vs-prior shift
+  # Real alert delivery (v1.4.1): email admins + POST to a webhook. The webhook
+  # URL is best set via the ALERT_WEBHOOK_URL env (ops-controlled); this is the
+  # fallback. Slack-compatible payload {"text": ...}.
+  webhook_url: ""
+  alert_routing: ["portal", "email", "webhook", "agentops.log"]
+
+# ------------------------------------------------------ H7 Orchestration
+orchestration:
+  enforced_at: workflow_engine
+  # WHICH PLANE THIS GOVERNS -- read this before wiring anything to it.
+  # It governs the ASSISTANT/CI workflow that BUILDS this repo: which Claude
+  # model an agent may plan/code/review with, and how the pipeline retries a
+  # stage. It does NOT govern the product's own LLM calls. A project whose
+  # runtime calls models keeps that chain in the product's own config, per
+  # provider.
+  #
+  # Why this warning is here: `model_fallback` below reads like "the model
+  # fallback chain", so in a repo that is itself an LLM product the obvious next
+  # step looks like wiring the product gateway to it -- and that is an outage.
+  # Sending an assistant-plane model id to a different provider's endpoint fails
+  # every call, and it surfaces as a BAD KEY rather than a bad model name, which
+  # is expensive to debug. policy-ci asserts the two planes stay separate.
+  governs: assistant_workflow
+  model_fallback:                           # primary -> fallback per profile (C4 ladder)
+    planning:      ["claude-opus-5-5", "claude-sonnet-5-5"]
+    coding:        ["claude-sonnet-5-5", "claude-opus-5-5"]
+    review:        ["claude-sonnet-5-5", "claude-opus-5-5"]
+    summarization: ["claude-haiku-4-5-20251001", "claude-sonnet-5-5"]
+  retry:
+    max_attempts: 3
+    backoff: "exponential"
+  transaction:
+    rollback_on_failure: true               # deploy workflow rolls back on mid-pipeline fail
+    boundary: "workflow"

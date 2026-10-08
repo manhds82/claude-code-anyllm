@@ -1,0 +1,34 @@
+{
+  "$schema": "https://harness.internal/schemas/token-pricing.schema.json",
+  "schema_version": "1.1.0",
+  "governs": "assistant_workflow",
+  "description": "USD per 1,000,000 tokens, per model, used by the local telemetry collectors to estimate cost. Read as DATA (C2) -- no collector hardcodes a rate. A model with a null rate is UNPRICED and the collector reports 0 cost plus a warning naming the model: a fabricated-but-plausible cost is worse than a visible gap (C14).",
+  "currency": "USD",
+  "unit": "per_1m_tokens",
+  "basis": "list_price_equivalent",
+  "notes": {
+    "READ_THIS_FIRST": "These are PUBLIC LIST PRICES, and on this machine nobody is paying them. Codex is signed in with auth_mode=chatgpt and no OPENAI_API_KEY; Claude Code is signed in with claudeAiOauth and no ANTHROPIC_API_KEY. Both run on subscriptions, so the marginal cost of a token is zero and the real constraint is the plan's rate limit. What these rates produce is a LIST-PRICE EQUIVALENT: a single comparable yardstick for 'how much work did each assistant do', not money anyone is billed. Treat a budget built on it as a consumption budget, not a spend budget.",
+    "why_price_it_at_all": "Two assistants measured on two different bases cannot be compared, and tokens alone understate an expensive model against a cheap one. One published list, applied to both, makes 'Codex did X worth of work vs Claude's Y' a meaningful sentence. Switch every rate to null if you would rather the Portal showed no money at all.",
+    "cached_input": "Cache READS, priced separately because they dominate real usage: one measured Codex thread on this fleet was 14,971,520 cache reads against 2,038,532 of new input, 7.3x. Applying the uncached rate to that number overstates by roughly an order of magnitude. A null cached_input falls back to the input rate and the collector says so in cost_basis.",
+    "token_counting": "Rates apply to the tokens the collector actually reports. Both collectors report tokens_in as NEW input only, excluding cache reads -- Claude Code by summing input+cache_creation (its input_tokens already excludes reads), Codex by subtracting cached_input_tokens (its input_tokens INCLUDES reads). Verified against 293 real token_usage_record lines: total_tokens == input_tokens + output_tokens, so cached is a subset of input.",
+    "who_reads_this": "Only the Codex collector (.harness/scripts/lib/codex_collect.py) reads this file today. The Claude sampler still hardcodes $3/M in and $15/M out, which matches NO model in the table below -- so the Claude figures on the Portal are computed from a rate that is wrong for every model, independently of anything here. Wiring the sampler to this file is a separate change; until it happens, the claude-* entries below are reference values, not the ones in force.",
+    "sources": "Anthropic and OpenAI public list prices, retrieved 14-09-2026 from cloudzero.com/blog/claude-pricing, cloudzero.com/blog/openai-pricing and benchlm.ai. Cross-checked against a second source per model where one existed. Re-check before trusting these for a decision: list prices move, and the harness cannot tell you when they have.",
+    "uncertain": "gpt-5.5 cached_input is NOT published per-model; 0.50 is derived from the stated 'cached input bills at 10% of the standard input rate' rule. codex-auto-review is a Codex-internal label, not a public billable model, so it stays null rather than being mapped to a guess -- it showed up as 4 of 7 records on the first real collection, so this gap is not hypothetical.",
+    "keys_must_match_recorded_model_ids": "A key here is matched EXACTLY against the `model` string a collector recorded, which is whatever the assistant reported -- not the family name a human would use. Measured across this fleet's agentops logs on 14-09-2026, the ids actually recorded are: claude-opus-4-8 (351), claude-opus-5 (164), claude-sonnet-5 (157), claude-haiku-4-5-20251001 (91), claude-sonnet-4-6 (46), claude-fable-5 (22), claude-opus-4-6 (8), claude-opus-4-7 (4), plus DeepSeek-V4-Flash (49) and the Codex ids. Note what that means: the fleet's MOST COMMON model, claude-opus-4-8, has no entry below, and claude-haiku-4-5-20251001 does not match the bare claude-haiku-4-5 key. Those are left absent ON PURPOSE rather than filled with guessed rates -- an absent key falls to `default` (null) and the collector reports it unpriced BY NAME. This is written down because nothing reads the claude-* entries today (see who_reads_this); whoever wires the Claude sampler to this file will otherwise see most rows go unpriced and blame the wiring rather than the table. Add a key only with a sourced rate. A key that never matches a recorded id -- claude-fable-5-1 was one, corrected to claude-fable-5 on 14-09 -- is dead data that looks like coverage."
+  },
+  "models": {
+    "claude-opus-5": { "input": 5.0, "cached_input": 0.5, "output": 25.0 },
+    "claude-sonnet-5": { "input": 2.0, "cached_input": 0.2, "output": 10.0 },
+    "claude-haiku-4-5": { "input": 1.0, "cached_input": 0.1, "output": 5.0 },
+    "claude-fable-5": { "input": 10.0, "cached_input": 0.25, "output": 50.0 },
+
+    "gpt-6-astra": { "input": 10.0, "cached_input": 1.0, "output": 50.0 },
+    "gpt-5.6-sol": { "input": 5.0, "cached_input": 0.5, "output": 30.0 },
+    "gpt-5.6-terra": { "input": 2.0, "cached_input": 0.2, "output": 12.0 },
+    "gpt-5.6-luna": { "input": 0.2, "cached_input": 0.02, "output": 1.2 },
+    "gpt-5.5": { "input": 5.0, "cached_input": 0.5, "output": 30.0 },
+
+    "codex-auto-review": { "input": null, "cached_input": null, "output": null }
+  },
+  "default": { "input": null, "cached_input": null, "output": null }
+}

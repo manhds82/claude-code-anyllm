@@ -1,0 +1,1183 @@
+{
+    "name":  "standard-governance",
+    "version":  "1.8.11",
+    "content_hash":  "979eb29b45e49e96642b3512dfb327b3e8169b044a823be1cd20a0c57aade92e",
+    "installed_at":  "2026-10-08T11:43:05.0326133+09:00",
+    "status":  "complete",
+    "counts":  {
+                   "installed":  187,
+                   "kept":  6,
+                   "conflict":  0,
+                   "skipped":  0
+               },
+    "preserve":  [
+                     "contracts/project.yaml",
+                     ".harness/control/casan-policies.yaml",
+                     ".harness/control/risk-policy.yaml",
+                     ".harness/eval/golden/golden-cases.jsonl",
+                     ".harness/control/token-pricing.json",
+                     ".harness/control/sensitive-paths.json",
+                     ".harness/control/agent-config.yaml",
+                     "contracts/impact-map.yaml"
+                 ],
+    "files":  [
+                  {
+                      "path":  ".claude/agents/README.md",
+                      "sha256":  "deb0d3d8eddae9560b8671743308aebede57bbc36bfbc821c0a4779d64770a1b",
+                      "installed_sha256":  "deb0d3d8eddae9560b8671743308aebede57bbc36bfbc821c0a4779d64770a1b",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/agents/analyst.md",
+                      "sha256":  "18fb50df7621e625d4dc29da356f3e4d0d027bf019b66d2547fb402258a541c5",
+                      "installed_sha256":  "18fb50df7621e625d4dc29da356f3e4d0d027bf019b66d2547fb402258a541c5",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/agents/architect.md",
+                      "sha256":  "50b4df19f98ce5d3186b747fb8206c0667812ab1ba6f259c2965c910d13b8972",
+                      "installed_sha256":  "50b4df19f98ce5d3186b747fb8206c0667812ab1ba6f259c2965c910d13b8972",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/agents/boss.md",
+                      "sha256":  "9841f91107b0ae9b9d07562fb7a662aba386b0586333199e6dede56c86ee9a1b",
+                      "installed_sha256":  "9841f91107b0ae9b9d07562fb7a662aba386b0586333199e6dede56c86ee9a1b",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/agents/code-reviewer.md",
+                      "sha256":  "3be54def85d141c4a6461211315b0ce815709e479a79cf78a5695b2f6f5ee5b1",
+                      "installed_sha256":  "3be54def85d141c4a6461211315b0ce815709e479a79cf78a5695b2f6f5ee5b1",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/agents/developer.md",
+                      "sha256":  "188eff7d35908a341604d80946c2ee2915a3b5afedd80bf21430cf218a8f6440",
+                      "installed_sha256":  "188eff7d35908a341604d80946c2ee2915a3b5afedd80bf21430cf218a8f6440",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/agents/devops.md",
+                      "sha256":  "eacfb62ead105ab018f4b27c441f9eaedcfc7d424b55d4be4ba1a0aeeeac74be",
+                      "installed_sha256":  "eacfb62ead105ab018f4b27c441f9eaedcfc7d424b55d4be4ba1a0aeeeac74be",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/agents/fix-agent.md",
+                      "sha256":  "2eddf37f791750381a732cce8121391cfd447fdc0a0b5eb586473ce8846f0d7d",
+                      "installed_sha256":  "2eddf37f791750381a732cce8121391cfd447fdc0a0b5eb586473ce8846f0d7d",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/agents/gatekeeper.md",
+                      "sha256":  "7101785b8460e553a795a58e91b6ceee902dd079dba5eb3a339b8182e3f11b48",
+                      "installed_sha256":  "7101785b8460e553a795a58e91b6ceee902dd079dba5eb3a339b8182e3f11b48",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/agents/impact-analyzer.md",
+                      "sha256":  "22c284640f926d4d5950a68d3c9dc2cd0cc3f784013280e4137d22abaa172bcb",
+                      "installed_sha256":  "22c284640f926d4d5950a68d3c9dc2cd0cc3f784013280e4137d22abaa172bcb",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/agents/qa-reviewer.md",
+                      "sha256":  "5b0dc59c9fc87c7111107b7c68eb5a511ff067d36684f04a767e8db7279da7da",
+                      "installed_sha256":  "5b0dc59c9fc87c7111107b7c68eb5a511ff067d36684f04a767e8db7279da7da",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/agents/researcher.md",
+                      "sha256":  "9ce3ce87c93cd243d420212f1c9dbd0312cb5d52466ab57b5c104e4eb04081c6",
+                      "installed_sha256":  "9ce3ce87c93cd243d420212f1c9dbd0312cb5d52466ab57b5c104e4eb04081c6",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/agents/reviewer.md",
+                      "sha256":  "aa817a1f0bb2acd9cc3177920aae7a4f1997ce6aa005d2095e1917fe21457da8",
+                      "installed_sha256":  "aa817a1f0bb2acd9cc3177920aae7a4f1997ce6aa005d2095e1917fe21457da8",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/agents/targeted-tester.md",
+                      "sha256":  "1ddc488f3e3c9f0f1f3f3352c39d9c099db7bf3653bfc11a95fa45ba6fa43691",
+                      "installed_sha256":  "1ddc488f3e3c9f0f1f3f3352c39d9c099db7bf3653bfc11a95fa45ba6fa43691",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/agents/tester.md",
+                      "sha256":  "e5da5112d52f40fcf711abec296d7ee9800d0ff077c17998b7249b8b91712873",
+                      "installed_sha256":  "e5da5112d52f40fcf711abec296d7ee9800d0ff077c17998b7249b8b91712873",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/agents/writer.md",
+                      "sha256":  "4591cbc4351b12adf129ef55de3261949a165bb870e128fc84ecc5bdf072a1ab",
+                      "installed_sha256":  "4591cbc4351b12adf129ef55de3261949a165bb870e128fc84ecc5bdf072a1ab",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/settings.json",
+                      "sha256":  "328c2d0ebc85176f4de4192155c9f18300dece05b6b3690917aea270242c00f1",
+                      "installed_sha256":  "32141930eb20896db3f57e957f6c85df4483bbf5ad53ff212c0a885d053eb211",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/settings.posix.json",
+                      "sha256":  "5698b4788831debb26a9f58b23224f92589569e016e911159c2dc13c5eaf6e77",
+                      "installed_sha256":  "1274d43d3ee259be5a96cd54cac81869bb6d711126073c07223efc59b1507f1c",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/skills/.gitkeep",
+                      "sha256":  "unknown",
+                      "installed_sha256":  "unknown",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/skills/README.md",
+                      "sha256":  "4a08dd3e53948cb716b3737edecf1ea51ba8473d7baf218ae215e5390c5e4869",
+                      "installed_sha256":  "4a08dd3e53948cb716b3737edecf1ea51ba8473d7baf218ae215e5390c5e4869",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/skills/analyze-requirements/SKILL.md",
+                      "sha256":  "833c4671fc8f99f58ffe629b9ad1259026089b5a85814e14e6214b076d167d42",
+                      "installed_sha256":  "833c4671fc8f99f58ffe629b9ad1259026089b5a85814e14e6214b076d167d42",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/skills/be-fe-security-audit/SKILL.md",
+                      "sha256":  "d7d4c83ed288dcb461b3fa94bfec41e06e093fa897e55baaadad710e8e5fe557",
+                      "installed_sha256":  "d7d4c83ed288dcb461b3fa94bfec41e06e093fa897e55baaadad710e8e5fe557",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/skills/commit-deploy-log/SKILL.md",
+                      "sha256":  "4b3f88e5f6f16f06c84692735621b59944c531c85dfcc0fab1dfac379c76acaf",
+                      "installed_sha256":  "4b3f88e5f6f16f06c84692735621b59944c531c85dfcc0fab1dfac379c76acaf",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/skills/deep-research/SKILL.md",
+                      "sha256":  "0b63db7cbdf3d7e3e9063b50f38dd07b17d648a9a4b9315d8b406936798098d0",
+                      "installed_sha256":  "0b63db7cbdf3d7e3e9063b50f38dd07b17d648a9a4b9315d8b406936798098d0",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/skills/deploy-to-test/SKILL.md",
+                      "sha256":  "3b802326309450bc51a296ce36a3366835d1bd2eb3a74b4c42403171233d9d04",
+                      "installed_sha256":  "3b802326309450bc51a296ce36a3366835d1bd2eb3a74b4c42403171233d9d04",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/skills/evidence-bundle/SKILL.md",
+                      "sha256":  "cac2ddaa8cbd229c90e96f7a3178e7060900d7ed165141b88a402c6993f32a6c",
+                      "installed_sha256":  "cac2ddaa8cbd229c90e96f7a3178e7060900d7ed165141b88a402c6993f32a6c",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/skills/fan/SKILL.md",
+                      "sha256":  "e2fcb372d4e4ac97cd31431168bed74310168f7f2bc50517f2ff2b67dfb4d706",
+                      "installed_sha256":  "e2fcb372d4e4ac97cd31431168bed74310168f7f2bc50517f2ff2b67dfb4d706",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/skills/fix-and-verify/SKILL.md",
+                      "sha256":  "9e20c8e98a2523751e67f908e8e3d5836718e784725520e84801eeebafbd8cde",
+                      "installed_sha256":  "9e20c8e98a2523751e67f908e8e3d5836718e784725520e84801eeebafbd8cde",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/skills/impact-review/SKILL.md",
+                      "sha256":  "eb5b91ee0c23e5542461c5fe3a85775d6acb33873419f1e9b350981f87d053e1",
+                      "installed_sha256":  "eb5b91ee0c23e5542461c5fe3a85775d6acb33873419f1e9b350981f87d053e1",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/skills/implement-change/SKILL.md",
+                      "sha256":  "23c9fb87c0c92101f481091c6b38a8910ff4aa3950f27617479851fa190b14d7",
+                      "installed_sha256":  "23c9fb87c0c92101f481091c6b38a8910ff4aa3950f27617479851fa190b14d7",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/skills/qa-gate/SKILL.md",
+                      "sha256":  "d014916343f40f2e81fccdc9119c7554b3aaa143dc856c91ebefc9c2a0c554a5",
+                      "installed_sha256":  "d014916343f40f2e81fccdc9119c7554b3aaa143dc856c91ebefc9c2a0c554a5",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/skills/run-affected-tests/SKILL.md",
+                      "sha256":  "4363081c416ac4dc38118514a4b0ccbbbd56c9110fa144b29ea57dd31724a654",
+                      "installed_sha256":  "4363081c416ac4dc38118514a4b0ccbbbd56c9110fa144b29ea57dd31724a654",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/skills/verify-implementation/SKILL.md",
+                      "sha256":  "de06fb8a83604438e3223f1a19f11cbddd10638a1a1232230e41a2b63487fe39",
+                      "installed_sha256":  "de06fb8a83604438e3223f1a19f11cbddd10638a1a1232230e41a2b63487fe39",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".claude/skills/verify-request/SKILL.md",
+                      "sha256":  "02b8c19935ac23be82217fd99e5519817ac8bea4d208a83c7a796bf849ca6df2",
+                      "installed_sha256":  "02b8c19935ac23be82217fd99e5519817ac8bea4d208a83c7a796bf849ca6df2",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/control/bundle-ownership.yaml",
+                      "sha256":  "e390e5f56cbb97f7158cddfba386ff1731b737e59b8d5821b6c46ded2f3cd91a",
+                      "installed_sha256":  "e390e5f56cbb97f7158cddfba386ff1731b737e59b8d5821b6c46ded2f3cd91a",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/control/casan-policies.yaml",
+                      "sha256":  "3a798242a535ca880e887cd58193b091c0e34177ffe9bfb724d9fb1f2cb69baa",
+                      "installed_sha256":  "21c818e96369267f6953850d082ef83d0a919cfa9d20e1cc51a1a8889b3d5e62",
+                      "state":  "kept"
+                  },
+                  {
+                      "path":  ".harness/control/comprehension-gate.json",
+                      "sha256":  "62c8fdbdaf3adaa0deb3562f5dbf8ffab1bbfa2c0c61ba4d12e37b3f56b2bd57",
+                      "installed_sha256":  "62c8fdbdaf3adaa0deb3562f5dbf8ffab1bbfa2c0c61ba4d12e37b3f56b2bd57",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/control/guard-zones.json",
+                      "sha256":  "9177e9d2a54a20b98cfff686f48f328645472fb7337d41233115717899a64d24",
+                      "installed_sha256":  "9177e9d2a54a20b98cfff686f48f328645472fb7337d41233115717899a64d24",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/control/injection-patterns.json",
+                      "sha256":  "e7dfd7aeac528f1f8bda42198ed6e08b10cde89c192f9d419fdf9bd865b58856",
+                      "installed_sha256":  "e7dfd7aeac528f1f8bda42198ed6e08b10cde89c192f9d419fdf9bd865b58856",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/control/kpi.yaml",
+                      "sha256":  "1bf6070b4b5d0dc67b553473de0d96e0c73d61de264d7ddaaad51089526cf873",
+                      "installed_sha256":  "1bf6070b4b5d0dc67b553473de0d96e0c73d61de264d7ddaaad51089526cf873",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/control/machine-state-paths.yaml",
+                      "sha256":  "f50d55d6197e3ceeae87156c5eec6e4679542716edab233a7363877b32b5c2fc",
+                      "installed_sha256":  "f50d55d6197e3ceeae87156c5eec6e4679542716edab233a7363877b32b5c2fc",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/control/power-policy.json",
+                      "sha256":  "8fac00cd5958cb20ac04ab1b14509adfe1bced940033b48be6d69056d8a30261",
+                      "installed_sha256":  "8fac00cd5958cb20ac04ab1b14509adfe1bced940033b48be6d69056d8a30261",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/control/release-index.json",
+                      "sha256":  "6405ec4a44231a918052435e0fe833fad5e7f5a230167110f606c535f6528146",
+                      "installed_sha256":  "6405ec4a44231a918052435e0fe833fad5e7f5a230167110f606c535f6528146",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/control/risk-policy.yaml",
+                      "sha256":  "0bb3259c7a4de0a3c5fd7aba83e4108dd59e5a0fa5f5ce859189596314c54cfe",
+                      "installed_sha256":  "75ce0cf8b8127c402e1bd334d968bfaac59b7ab80b8299455afe9c58a923fcd3",
+                      "state":  "kept"
+                  },
+                  {
+                      "path":  ".harness/control/risk-registry.yaml",
+                      "sha256":  "132d67562962be5a70b51b2be42dc864b18fcbca56af17973ad34b8c8e370dab",
+                      "installed_sha256":  "132d67562962be5a70b51b2be42dc864b18fcbca56af17973ad34b8c8e370dab",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/control/secret-patterns.json",
+                      "sha256":  "d4f48d131e2fe364ae44d8027c09f69a3499d478eefe47b629fdc4f42232f95d",
+                      "installed_sha256":  "d4f48d131e2fe364ae44d8027c09f69a3499d478eefe47b629fdc4f42232f95d",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/control/sensitive-paths.json",
+                      "sha256":  "2458bbc92910b7cf3a38e15c51c4f9b5964d0c7f2bbe0d28d355d27d0cdbe2a1",
+                      "installed_sha256":  "1677bbdfe0dba5042acdd5c7763ce840100c70af0a993604a23ce31e5d0a59ec",
+                      "state":  "kept"
+                  },
+                  {
+                      "path":  ".harness/control/session-roles.json",
+                      "sha256":  "dcfb63bd95489295eeda16976f03be329f7a9bca0d26acfe015c235729b45214",
+                      "installed_sha256":  "dcfb63bd95489295eeda16976f03be329f7a9bca0d26acfe015c235729b45214",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/control/token-pricing.json",
+                      "sha256":  "a4cefbee518df67cea4125ef79fa09e398f1c9cdcd1cee76b98ab91eb2291f48",
+                      "installed_sha256":  "a4cefbee518df67cea4125ef79fa09e398f1c9cdcd1cee76b98ab91eb2291f48",
+                      "state":  "kept"
+                  },
+                  {
+                      "path":  ".harness/control/tool-registry.json",
+                      "sha256":  "d11bbbf116c58ee34e89505d095103ac1891bf472cfb30744f7b1e8c4de614ee",
+                      "installed_sha256":  "edfb74907a406f46bbbc855cfa9faa1ee1125b14617b43686a6322037fc813be",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/eval/golden/README.md",
+                      "sha256":  "a25fe1b68033f37bdd0a82bb51e51b5d49842e177b1b1e7e2575987c0e11577e",
+                      "installed_sha256":  "a25fe1b68033f37bdd0a82bb51e51b5d49842e177b1b1e7e2575987c0e11577e",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/eval/golden/baseline-guard-cases.jsonl",
+                      "sha256":  "0e93b84ff5b9dbd5cfe8d34959ea5aded9a1c454b45cd1634547467164e99c22",
+                      "installed_sha256":  "0e93b84ff5b9dbd5cfe8d34959ea5aded9a1c454b45cd1634547467164e99c22",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/eval/golden/golden-cases.jsonl",
+                      "sha256":  "ef02a2c8e9bc89195a462ff0f0b5eaa18cd44bc8a3a3b7872f7d65d4d266e94f",
+                      "installed_sha256":  "885ba75bffbd1b5a5708c5aa6811ecdf8efae4c895c7e87f642e99cf4cfe0eb4",
+                      "state":  "kept"
+                  },
+                  {
+                      "path":  ".harness/eval/judge/judge-rubric.md",
+                      "sha256":  "a6c98849305cc5cbfc15e2e037c9c2b49ad5057042509aabe2dbab4889dd9ace",
+                      "installed_sha256":  "a6c98849305cc5cbfc15e2e037c9c2b49ad5057042509aabe2dbab4889dd9ace",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/memory/constitution.md",
+                      "sha256":  "eddfe069907d79d381b4bf2b60bd85341383b75c4c68dfa5cf10d5ea91b28945",
+                      "installed_sha256":  "eddfe069907d79d381b4bf2b60bd85341383b75c4c68dfa5cf10d5ea91b28945",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/schemas/agent-config.schema.json",
+                      "sha256":  "22625042ac33f2fbe91a9e422eb170e4922b5df54424f22744ba187690805b8a",
+                      "installed_sha256":  "22625042ac33f2fbe91a9e422eb170e4922b5df54424f22744ba187690805b8a",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/schemas/agent.schema.json",
+                      "sha256":  "86a8649abd7c1d121dd0faae9e06b357a6bde9d628db20d073fd770505c58786",
+                      "installed_sha256":  "86a8649abd7c1d121dd0faae9e06b357a6bde9d628db20d073fd770505c58786",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/schemas/approval-flow.schema.json",
+                      "sha256":  "bc141a5442296682cadc25fdaf70ed58a547f5afc2f839cdbe69412508e6111b",
+                      "installed_sha256":  "bc141a5442296682cadc25fdaf70ed58a547f5afc2f839cdbe69412508e6111b",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/schemas/baseline-w0.schema.json",
+                      "sha256":  "64f4bc2c73057353df36619046174fd713c8ca055500ba7662118d23d3593102",
+                      "installed_sha256":  "64f4bc2c73057353df36619046174fd713c8ca055500ba7662118d23d3593102",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/schemas/bundle-manifest.schema.json",
+                      "sha256":  "03e53e41466dff46b21f790ab55c3cb11760a2ad70ef97fe777c4e252d12d07d",
+                      "installed_sha256":  "03e53e41466dff46b21f790ab55c3cb11760a2ad70ef97fe777c4e252d12d07d",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/schemas/bundle-ownership.schema.json",
+                      "sha256":  "258a2fa541f106e3178f18796144cb8e9e8a1ba02d51db90045574d5d41b3ab8",
+                      "installed_sha256":  "258a2fa541f106e3178f18796144cb8e9e8a1ba02d51db90045574d5d41b3ab8",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/schemas/bundle.schema.json",
+                      "sha256":  "1d7d820e1fabc54fa721b0d5775ae38b040c8fd047ad4686a099d083b0817243",
+                      "installed_sha256":  "1d7d820e1fabc54fa721b0d5775ae38b040c8fd047ad4686a099d083b0817243",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/schemas/casan-criteria.schema.json",
+                      "sha256":  "a355c1be11357c48bbb4dac2a74a1e5c15c674809b20a06c04975c97b736ee04",
+                      "installed_sha256":  "a355c1be11357c48bbb4dac2a74a1e5c15c674809b20a06c04975c97b736ee04",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/schemas/casan-policies.schema.json",
+                      "sha256":  "31df53409f17b9dfa4746fca1683ca6dc1883aa018d935b8bff161370db0523f",
+                      "installed_sha256":  "31df53409f17b9dfa4746fca1683ca6dc1883aa018d935b8bff161370db0523f",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/schemas/comprehension-gate.schema.json",
+                      "sha256":  "e88a0744ce1af28376d2f8d285226a6e5dcdec0dda91f015d3482b116349c5db",
+                      "installed_sha256":  "e88a0744ce1af28376d2f8d285226a6e5dcdec0dda91f015d3482b116349c5db",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/schemas/evidence-bundle.schema.json",
+                      "sha256":  "2ca48ef053ae5e8977c641f3f3bb1343d74e1d6c4d046a6df62f5bf4f5d9c0b1",
+                      "installed_sha256":  "2ca48ef053ae5e8977c641f3f3bb1343d74e1d6c4d046a6df62f5bf4f5d9c0b1",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/schemas/guard-zones.schema.json",
+                      "sha256":  "c302b3448013eb7fa93639903bd4349819d39cf937787f89d5c889b9da920f14",
+                      "installed_sha256":  "c302b3448013eb7fa93639903bd4349819d39cf937787f89d5c889b9da920f14",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/schemas/impact-map.schema.json",
+                      "sha256":  "3fda65ff3eaff9d0699ce9baa6efd27f9f74a61e83921992f9245388d737d724",
+                      "installed_sha256":  "3fda65ff3eaff9d0699ce9baa6efd27f9f74a61e83921992f9245388d737d724",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/schemas/ledger-entry.schema.json",
+                      "sha256":  "41708a0fd624b8bc1861f9b13694d812cd801aba0c0a27081db4be1b8b7fdc56",
+                      "installed_sha256":  "41708a0fd624b8bc1861f9b13694d812cd801aba0c0a27081db4be1b8b7fdc56",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/schemas/machine-state-paths.schema.json",
+                      "sha256":  "f6e10e8b8af38a52c016fb99e2e6324338d7cc18e93e8b5528ec295cf4adf73e",
+                      "installed_sha256":  "f6e10e8b8af38a52c016fb99e2e6324338d7cc18e93e8b5528ec295cf4adf73e",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/schemas/pipeline-context.schema.json",
+                      "sha256":  "c5531a7296ff942b7e547814b2fdd4c09fa5b7c87f9470034882164a7710b640",
+                      "installed_sha256":  "c5531a7296ff942b7e547814b2fdd4c09fa5b7c87f9470034882164a7710b640",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/schemas/power-policy.schema.json",
+                      "sha256":  "85cb1b7e8a26aa519ea67db5e824c4b3601a583115094329d3cc546b9065bf54",
+                      "installed_sha256":  "85cb1b7e8a26aa519ea67db5e824c4b3601a583115094329d3cc546b9065bf54",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/schemas/project.schema.json",
+                      "sha256":  "f011d3a8f6cdbf1bf8050ff7aa787afca58fc67d026e4f82b804badc4cf10cb0",
+                      "installed_sha256":  "f011d3a8f6cdbf1bf8050ff7aa787afca58fc67d026e4f82b804badc4cf10cb0",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/schemas/release-index.schema.json",
+                      "sha256":  "4f509a7c106baf01fbcca79a34b4aea946245e0277b15122df3322af160acdb7",
+                      "installed_sha256":  "4f509a7c106baf01fbcca79a34b4aea946245e0277b15122df3322af160acdb7",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/schemas/risk-policy.schema.json",
+                      "sha256":  "631996131b29b634faae9dd8ad7df734f9b5cea90e6723f2a8a58736dcc48f72",
+                      "installed_sha256":  "631996131b29b634faae9dd8ad7df734f9b5cea90e6723f2a8a58736dcc48f72",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/schemas/risk-registry.schema.json",
+                      "sha256":  "dd09b33252a20622ce28fe34942fcef329ec2620ae396e8d331fbdf3c747ac2b",
+                      "installed_sha256":  "dd09b33252a20622ce28fe34942fcef329ec2620ae396e8d331fbdf3c747ac2b",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/schemas/sensitive-paths.schema.json",
+                      "sha256":  "480ca1f988e0233d9d6e5ee7386106d54df63b3ade07ec6c2690a19c790fec20",
+                      "installed_sha256":  "480ca1f988e0233d9d6e5ee7386106d54df63b3ade07ec6c2690a19c790fec20",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/schemas/session-roles.schema.json",
+                      "sha256":  "a84afce9670d0006cba38b37e8570423cc7aa3625789a4d496c3c9e277458376",
+                      "installed_sha256":  "a84afce9670d0006cba38b37e8570423cc7aa3625789a4d496c3c9e277458376",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/schemas/skill.schema.json",
+                      "sha256":  "14c53c8b3194fd239065e56b104066437a8ea8163d5a93a88b5cf9fb86b303b3",
+                      "installed_sha256":  "14c53c8b3194fd239065e56b104066437a8ea8163d5a93a88b5cf9fb86b303b3",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/schemas/token-pricing.schema.json",
+                      "sha256":  "78f7b7c2655debecf580908f0dce92008fff8a6bf98cbb9b611e8262f9bbeb76",
+                      "installed_sha256":  "78f7b7c2655debecf580908f0dce92008fff8a6bf98cbb9b611e8262f9bbeb76",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/schemas/tool-registry-contract.schema.json",
+                      "sha256":  "a65aa69a74aecce2d0ae5cd362928247f405a6cc85ef5968a8579443b9f34f36",
+                      "installed_sha256":  "a65aa69a74aecce2d0ae5cd362928247f405a6cc85ef5968a8579443b9f34f36",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/schemas/tool-registry.schema.json",
+                      "sha256":  "5ba3466cd2575f2b64aa8d7193ace142f0a4742f8e06d7eddbf4f1856ecece43",
+                      "installed_sha256":  "5ba3466cd2575f2b64aa8d7193ace142f0a4742f8e06d7eddbf4f1856ecece43",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/schemas/workflow.schema.json",
+                      "sha256":  "9bcb6296e2313b16c229dcc2651f14ce0979d50c3e311946aadfa140740f7193",
+                      "installed_sha256":  "9bcb6296e2313b16c229dcc2651f14ce0979d50c3e311946aadfa140740f7193",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/bash/agentops-sampler.sh",
+                      "sha256":  "1ffe08bb4a15d45431a638e3fa72e655f248b58d513fb0cd9fa74cf82882ad40",
+                      "installed_sha256":  "1ffe08bb4a15d45431a638e3fa72e655f248b58d513fb0cd9fa74cf82882ad40",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/bash/collect-codex.sh",
+                      "sha256":  "464d8c2923cbf7f0ae488f4548f8813e0323d2fc321636540b6f0d7b2c31e1f3",
+                      "installed_sha256":  "464d8c2923cbf7f0ae488f4548f8813e0323d2fc321636540b6f0d7b2c31e1f3",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/bash/comprehension-gate.sh",
+                      "sha256":  "5243c40354fee75bf3c872e9ba84f6df50eb1e905a1928a7c548390b97e8019d",
+                      "installed_sha256":  "5243c40354fee75bf3c872e9ba84f6df50eb1e905a1928a7c548390b97e8019d",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/bash/domain-firewall.sh",
+                      "sha256":  "51f8ed8c016abbbdbb181c2c6933ebff0cb677d02d8687566efa0b3fc52ed8f0",
+                      "installed_sha256":  "51f8ed8c016abbbdbb181c2c6933ebff0cb677d02d8687566efa0b3fc52ed8f0",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/bash/evidence-ledger.sh",
+                      "sha256":  "5df2d604e61c9c2a713c8e7253dac27bc33a2d6989ca8ca7cfff6a26d98f9fc5",
+                      "installed_sha256":  "5df2d604e61c9c2a713c8e7253dac27bc33a2d6989ca8ca7cfff6a26d98f9fc5",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/bash/harness-context-build.sh",
+                      "sha256":  "91c28c231f909306d8da9e7af634573344fa0a70631f1967319ee6054bff9af7",
+                      "installed_sha256":  "91c28c231f909306d8da9e7af634573344fa0a70631f1967319ee6054bff9af7",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/bash/harness-context-query.sh",
+                      "sha256":  "855a709b5cdf00e2cdd08a3dc73b17c9af1fe5eb33c14889369b33bbf2b25705",
+                      "installed_sha256":  "855a709b5cdf00e2cdd08a3dc73b17c9af1fe5eb33c14889369b33bbf2b25705",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/bash/harness-doctor.sh",
+                      "sha256":  "0d37a991822ca09809be133f4f8dcb3365b02d82717e1b5b040e85c7e9b8a77a",
+                      "installed_sha256":  "0d37a991822ca09809be133f4f8dcb3365b02d82717e1b5b040e85c7e9b8a77a",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/bash/harness-eval.sh",
+                      "sha256":  "84d3929c9068131896660d2a437a36240ad25b82b3d8241701c4e9212e17f4f4",
+                      "installed_sha256":  "84d3929c9068131896660d2a437a36240ad25b82b3d8241701c4e9212e17f4f4",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/bash/harness-fingerprint.sh",
+                      "sha256":  "55fbd2879370d0d7b7d5908f064a97842aaee994d0fd214f59510938198fff9c",
+                      "installed_sha256":  "55fbd2879370d0d7b7d5908f064a97842aaee994d0fd214f59510938198fff9c",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/bash/harness-handoff-check.sh",
+                      "sha256":  "283e0117e921ebac2f0da46d36bb00db5894a8b3147393b5b0988aee24fe54d5",
+                      "installed_sha256":  "283e0117e921ebac2f0da46d36bb00db5894a8b3147393b5b0988aee24fe54d5",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/bash/harness-model-fallback.sh",
+                      "sha256":  "8e93944cd49718b612e0a7e608ccb601da70c7334f197487c1038ee0642e0210",
+                      "installed_sha256":  "8e93944cd49718b612e0a7e608ccb601da70c7334f197487c1038ee0642e0210",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/bash/harness-pipeline-log.sh",
+                      "sha256":  "fd9874fb6e95541928b2e8ba0ef6311c78f606e249c0a563194923460c91b143",
+                      "installed_sha256":  "fd9874fb6e95541928b2e8ba0ef6311c78f606e249c0a563194923460c91b143",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/bash/harness-post-tool-use.sh",
+                      "sha256":  "fb96cfcd876190d2a5f2d45062b357c85a0e82ffd359d93dd515e3f856d005f5",
+                      "installed_sha256":  "fb96cfcd876190d2a5f2d45062b357c85a0e82ffd359d93dd515e3f856d005f5",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/bash/harness-release.sh",
+                      "sha256":  "752d78828a03230d00355843bad9b42d3f3c927109cb32f5b2d7732c2f0139f0",
+                      "installed_sha256":  "752d78828a03230d00355843bad9b42d3f3c927109cb32f5b2d7732c2f0139f0",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/bash/harness-rollback.sh",
+                      "sha256":  "b90ccb7160bcba128b976eb0f25c27e343458949b963664a3a7ebf1801045448",
+                      "installed_sha256":  "b90ccb7160bcba128b976eb0f25c27e343458949b963664a3a7ebf1801045448",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/bash/harness-runtime-guard.sh",
+                      "sha256":  "2fa0d8aff92d20998e669e0fcb6ce81b93beb1dd218b53679b6219dedeeaf13b",
+                      "installed_sha256":  "2fa0d8aff92d20998e669e0fcb6ce81b93beb1dd218b53679b6219dedeeaf13b",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/bash/harness-session-end.sh",
+                      "sha256":  "be700e1c2475cecf018d942aadbfd7c91d57a4ff2abfcce1d558072acd4a689f",
+                      "installed_sha256":  "be700e1c2475cecf018d942aadbfd7c91d57a4ff2abfcce1d558072acd4a689f",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/bash/harness-session-start.sh",
+                      "sha256":  "aa7b435bd2955df2004a4fc0373abc2b75345b339cfa7bf5dad4536eb6b16743",
+                      "installed_sha256":  "aa7b435bd2955df2004a4fc0373abc2b75345b339cfa7bf5dad4536eb6b16743",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/bash/harness-switch-account.sh",
+                      "sha256":  "7d33b86fdb9869ca4935ddc900b4c695ca1a5606b491f9c59a706ad2c4e57d63",
+                      "installed_sha256":  "7d33b86fdb9869ca4935ddc900b4c695ca1a5606b491f9c59a706ad2c4e57d63",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/bash/injection-scan.sh",
+                      "sha256":  "3f6c5ae5fdab416175ada436463ee87464beda07487f9e6a82de4c2ac314430f",
+                      "installed_sha256":  "3f6c5ae5fdab416175ada436463ee87464beda07487f9e6a82de4c2ac314430f",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/bash/kpi-report.sh",
+                      "sha256":  "d2556c6f1b0de092ebf97694da89e384c11641f0e8cf484bc8c2e36324f1a09f",
+                      "installed_sha256":  "d2556c6f1b0de092ebf97694da89e384c11641f0e8cf484bc8c2e36324f1a09f",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/bash/log-human.sh",
+                      "sha256":  "1f8e37cbb6bda6bbc37c61f2daac58153d9da1ee9fc9ba5aa056ccc5236effbb",
+                      "installed_sha256":  "1f8e37cbb6bda6bbc37c61f2daac58153d9da1ee9fc9ba5aa056ccc5236effbb",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/bash/push-telemetry.sh",
+                      "sha256":  "529a74675efe47b11307fa3e56e13fa168aabd67486e7f38f0d762ebc68d6940",
+                      "installed_sha256":  "529a74675efe47b11307fa3e56e13fa168aabd67486e7f38f0d762ebc68d6940",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/bash/rotate-logs.sh",
+                      "sha256":  "3f8df55bd26e966b59f8f2700f4712375946c64d405da06b3d6f214325c1804f",
+                      "installed_sha256":  "3f8df55bd26e966b59f8f2700f4712375946c64d405da06b3d6f214325c1804f",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/bash/rtm-check.sh",
+                      "sha256":  "61eb83dad6eb0715945c7d0929a0c5933d840b0572c874ee3f7f501dfc6480bc",
+                      "installed_sha256":  "61eb83dad6eb0715945c7d0929a0c5933d840b0572c874ee3f7f501dfc6480bc",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/bash/secret-scan.sh",
+                      "sha256":  "e0f93daecf42fcc77b66ce345d2ed5c229429420ea33a1916b5417d51beabf81",
+                      "installed_sha256":  "e0f93daecf42fcc77b66ce345d2ed5c229429420ea33a1916b5417d51beabf81",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/bash/sensitivity-enforce.sh",
+                      "sha256":  "419f0b636b789f6f5d220f1d796bdeb807e77c58d63499915989e6e67355c00a",
+                      "installed_sha256":  "419f0b636b789f6f5d220f1d796bdeb807e77c58d63499915989e6e67355c00a",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/bash/tool-idempotency.sh",
+                      "sha256":  "3170db5e1b841227d1b9521cbcca5294f7e0ae35763a8c7660c18e489f02405c",
+                      "installed_sha256":  "3170db5e1b841227d1b9521cbcca5294f7e0ae35763a8c7660c18e489f02405c",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/lib/codex_collect.py",
+                      "sha256":  "735661c07b2c59d83c9b0491bf7270e925868b2315bc1f0b91fdf823fd3b7820",
+                      "installed_sha256":  "735661c07b2c59d83c9b0491bf7270e925868b2315bc1f0b91fdf823fd3b7820",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/lib/harness_casan_snapshot.py",
+                      "sha256":  "63ca19c065bc742b3d024ef588136ec7a6450c963b86e60dbb3c3d302356a54f",
+                      "installed_sha256":  "63ca19c065bc742b3d024ef588136ec7a6450c963b86e60dbb3c3d302356a54f",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/lib/harness_checkout_facts.py",
+                      "sha256":  "7c7f9a91e8f29d9a9c962671bc6a5e62a2da3d3459e3df061135ae09f8b7d950",
+                      "installed_sha256":  "7c7f9a91e8f29d9a9c962671bc6a5e62a2da3d3459e3df061135ae09f8b7d950",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/lib/harness_comprehension.py",
+                      "sha256":  "0309b2af473f6b06c8e7f93645120d48ff366551200edbf7c608cce6f1f856c5",
+                      "installed_sha256":  "0309b2af473f6b06c8e7f93645120d48ff366551200edbf7c608cce6f1f856c5",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/lib/harness_docscan.py",
+                      "sha256":  "ec30a5a0187d8817ccb959fb3584baa95c2f4b9eb251650ff92cf98ad4c68047",
+                      "installed_sha256":  "ec30a5a0187d8817ccb959fb3584baa95c2f4b9eb251650ff92cf98ad4c68047",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/lib/harness_doctor.py",
+                      "sha256":  "bcf8f36bf3d2af831e149ed81e3bd34f6c42f9adc8f9af4187000d4000439f88",
+                      "installed_sha256":  "bcf8f36bf3d2af831e149ed81e3bd34f6c42f9adc8f9af4187000d4000439f88",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/lib/harness_fingerprint.py",
+                      "sha256":  "e601054397793595bc2feee06941ea914cdde200b053f90fea59ba7886d026de",
+                      "installed_sha256":  "e601054397793595bc2feee06941ea914cdde200b053f90fea59ba7886d026de",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/lib/harness_golden.py",
+                      "sha256":  "466585927b998c2d066dd76b455f88ca1c253e90d4936230abfeaaf1ee3ca94b",
+                      "installed_sha256":  "466585927b998c2d066dd76b455f88ca1c253e90d4936230abfeaaf1ee3ca94b",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/lib/harness_golden_gen.py",
+                      "sha256":  "b2843f8b3c0bf9f70bd3bf4aaa1f3d74866bd9c82b57082d34360260b2d87321",
+                      "installed_sha256":  "b2843f8b3c0bf9f70bd3bf4aaa1f3d74866bd9c82b57082d34360260b2d87321",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/lib/harness_handoff.py",
+                      "sha256":  "5efcde91d2bd4074ca0d62d420720ebbd728986deece731cd67bc468b9a983ea",
+                      "installed_sha256":  "5efcde91d2bd4074ca0d62d420720ebbd728986deece731cd67bc468b9a983ea",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/lib/harness_human_log.py",
+                      "sha256":  "125a018397b83e726aad8d9e9d469b0b85eba5c03a125d19f0f925dbf784e94e",
+                      "installed_sha256":  "125a018397b83e726aad8d9e9d469b0b85eba5c03a125d19f0f925dbf784e94e",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/lib/harness_kpi.py",
+                      "sha256":  "9a0ea9a791b18e41302934a6db0ed204d319e802c5e9c7a1f4923dd494f00e86",
+                      "installed_sha256":  "9a0ea9a791b18e41302934a6db0ed204d319e802c5e9c7a1f4923dd494f00e86",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/lib/harness_ledger_anchor.py",
+                      "sha256":  "7dac762016a3247bcb7c7ff9874d70ef0ae0c37937f86a5e2e9369d0f23880b4",
+                      "installed_sha256":  "7dac762016a3247bcb7c7ff9874d70ef0ae0c37937f86a5e2e9369d0f23880b4",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/lib/harness_local_state.py",
+                      "sha256":  "4197be336f8ea2477209c33af545bb2a4f4067fdba05a76709faec6d5f35c7aa",
+                      "installed_sha256":  "4197be336f8ea2477209c33af545bb2a4f4067fdba05a76709faec6d5f35c7aa",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/lib/harness_pipeline_log.py",
+                      "sha256":  "b8627909809c506fb0d2e5df9c765929a1ea23a9f172314e665f34a86a9f030f",
+                      "installed_sha256":  "b8627909809c506fb0d2e5df9c765929a1ea23a9f172314e665f34a86a9f030f",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/lib/harness_policy_check.py",
+                      "sha256":  "e3a30351ba9b07421e1dadab23178567f531b3f240f37c797edaee1b1dfc8edd",
+                      "installed_sha256":  "e3a30351ba9b07421e1dadab23178567f531b3f240f37c797edaee1b1dfc8edd",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/lib/harness_rag.py",
+                      "sha256":  "549821399b10496598d34ace44e069cf623832ec0412dc7b5d33d4431a2bac59",
+                      "installed_sha256":  "549821399b10496598d34ace44e069cf623832ec0412dc7b5d33d4431a2bac59",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/lib/harness_redteam.py",
+                      "sha256":  "ef7cc9246252a8b17bfb7e0c33a3d1a8073fe202e176afd983e22594794c053d",
+                      "installed_sha256":  "ef7cc9246252a8b17bfb7e0c33a3d1a8073fe202e176afd983e22594794c053d",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/lib/harness_rtm.py",
+                      "sha256":  "a36b87601741a09adcf2c3acc79e9ec5833bd8d939efbf9632f849b7ac1cc6f6",
+                      "installed_sha256":  "a36b87601741a09adcf2c3acc79e9ec5833bd8d939efbf9632f849b7ac1cc6f6",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/lib/harness_sensitivity.py",
+                      "sha256":  "e0e03f8ee633cd1e0dc152430bca806897a360f621286213104cc69cbcad0314",
+                      "installed_sha256":  "e0e03f8ee633cd1e0dc152430bca806897a360f621286213104cc69cbcad0314",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/agentops-baseline.ps1",
+                      "sha256":  "69899b6bd5ff4085faf0ae71fa37c7b2466536adee99a534920caf67094aa755",
+                      "installed_sha256":  "69899b6bd5ff4085faf0ae71fa37c7b2466536adee99a534920caf67094aa755",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/agentops-sampler.ps1",
+                      "sha256":  "8812fb98d895f5aad5bdc954b39a2bf8a729e3463c4d5439c9396481fc5ca5cc",
+                      "installed_sha256":  "8812fb98d895f5aad5bdc954b39a2bf8a729e3463c4d5439c9396481fc5ca5cc",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/approval-gate.ps1",
+                      "sha256":  "e5ac09c25e2af7e22ab2338fc79fabe057d0e108eb4304d4bc032b5c8d9d5129",
+                      "installed_sha256":  "e5ac09c25e2af7e22ab2338fc79fabe057d0e108eb4304d4bc032b5c8d9d5129",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/budget-meter.ps1",
+                      "sha256":  "f8cffb29163655cd0bbde14235cf736eaad68e842b83b7bef59cba4f1c098a4c",
+                      "installed_sha256":  "f8cffb29163655cd0bbde14235cf736eaad68e842b83b7bef59cba4f1c098a4c",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/collect-codex.ps1",
+                      "sha256":  "7c1d14d93c3bb484d7a40193ffda873ae845a1775e190b503db0eb911b28c75a",
+                      "installed_sha256":  "7c1d14d93c3bb484d7a40193ffda873ae845a1775e190b503db0eb911b28c75a",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/comprehension-gate.ps1",
+                      "sha256":  "ecedcf5b639567cbaf0220daff9cbd0dfc02ebe40a2cdbd1c679a8c875bebf75",
+                      "installed_sha256":  "ecedcf5b639567cbaf0220daff9cbd0dfc02ebe40a2cdbd1c679a8c875bebf75",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/domain-firewall.ps1",
+                      "sha256":  "1e65d4f189f38b610b04a95610a5803c5dba1d35cafad0b4da469661c0ce948f",
+                      "installed_sha256":  "1e65d4f189f38b610b04a95610a5803c5dba1d35cafad0b4da469661c0ce948f",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/drift-detect.ps1",
+                      "sha256":  "b552b20665e9fd1df73ef11832febc286d53ffaaae2a3aeb1349710e3fbc00c5",
+                      "installed_sha256":  "b552b20665e9fd1df73ef11832febc286d53ffaaae2a3aeb1349710e3fbc00c5",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/evidence-ledger.ps1",
+                      "sha256":  "9e843e5eaf7476d7e27a2718fedf6a87249c491f9aceca9b0f3aaa648e244adb",
+                      "installed_sha256":  "9e843e5eaf7476d7e27a2718fedf6a87249c491f9aceca9b0f3aaa648e244adb",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/hard-gate.ps1",
+                      "sha256":  "667019f28b287066e9d31c01b6bb799682ad6faa1f2cc75c6ab56943abf1584a",
+                      "installed_sha256":  "667019f28b287066e9d31c01b6bb799682ad6faa1f2cc75c6ab56943abf1584a",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/harness-context-build.ps1",
+                      "sha256":  "35fc8b4bd26e005a734796b58305b4d65f5f83349ff548b329ad32bc17421051",
+                      "installed_sha256":  "35fc8b4bd26e005a734796b58305b4d65f5f83349ff548b329ad32bc17421051",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/harness-context-query.ps1",
+                      "sha256":  "48f1f4bca11a941aeb813ff84e772a66403752ad7603f8b1e1a884f2dce4dfb9",
+                      "installed_sha256":  "48f1f4bca11a941aeb813ff84e772a66403752ad7603f8b1e1a884f2dce4dfb9",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/harness-doctor.ps1",
+                      "sha256":  "85399fe1544e5b1b8054374ebe1dddd79abb9fdd8b45eb1d6510c14087f4443b",
+                      "installed_sha256":  "85399fe1544e5b1b8054374ebe1dddd79abb9fdd8b45eb1d6510c14087f4443b",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/harness-eval.ps1",
+                      "sha256":  "d0044a88881bbee3cf137c63b5f7b59622e26e697d64972da7daab2a433c6e3f",
+                      "installed_sha256":  "d0044a88881bbee3cf137c63b5f7b59622e26e697d64972da7daab2a433c6e3f",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/harness-fingerprint.ps1",
+                      "sha256":  "b493ac105fdfd0e7533e201a9df0b00705ec225d66cf4cbd030f3c83f64c0892",
+                      "installed_sha256":  "b493ac105fdfd0e7533e201a9df0b00705ec225d66cf4cbd030f3c83f64c0892",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/harness-handoff-check.ps1",
+                      "sha256":  "975a9beb2466229e1a36710709ee6d4898e96a5f6efcbad3d62111fa68f9a540",
+                      "installed_sha256":  "975a9beb2466229e1a36710709ee6d4898e96a5f6efcbad3d62111fa68f9a540",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/harness-model-fallback.ps1",
+                      "sha256":  "d4d32523933b7ca5c957a5a4de7c14fde30a173f97a61b8d64c533e2d1729c02",
+                      "installed_sha256":  "d4d32523933b7ca5c957a5a4de7c14fde30a173f97a61b8d64c533e2d1729c02",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/harness-pipeline-log.ps1",
+                      "sha256":  "7d9918aced817ff163c87945971db98d0672ff02a860f54d7fbdf5ffa049183b",
+                      "installed_sha256":  "7d9918aced817ff163c87945971db98d0672ff02a860f54d7fbdf5ffa049183b",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/harness-post-tool-use.ps1",
+                      "sha256":  "c2eeb5bde35ad8663074a394eccd0da5bf6f6c42e0d173d4b10a6547077daa7e",
+                      "installed_sha256":  "c2eeb5bde35ad8663074a394eccd0da5bf6f6c42e0d173d4b10a6547077daa7e",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/harness-release.ps1",
+                      "sha256":  "21b56f84e75515875b436294c96ae718355d9353966f5a51fb1682329f6b430c",
+                      "installed_sha256":  "21b56f84e75515875b436294c96ae718355d9353966f5a51fb1682329f6b430c",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/harness-rollback.ps1",
+                      "sha256":  "7f5cf509d47bbbee2544838d3cbebed192899509bdc9b3a0cf41f3621646c794",
+                      "installed_sha256":  "7f5cf509d47bbbee2544838d3cbebed192899509bdc9b3a0cf41f3621646c794",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/harness-runtime-guard.ps1",
+                      "sha256":  "9f20590704c532ab3be604dc6a1f84e72883d256770bcf0630aec44b0fdb8b31",
+                      "installed_sha256":  "9f20590704c532ab3be604dc6a1f84e72883d256770bcf0630aec44b0fdb8b31",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/harness-session-end.ps1",
+                      "sha256":  "3a3fade053952fc4a55bc0005fc2dc5ce476fe511715fa0325d8b95d893ac849",
+                      "installed_sha256":  "3a3fade053952fc4a55bc0005fc2dc5ce476fe511715fa0325d8b95d893ac849",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/harness-session-start.ps1",
+                      "sha256":  "fadb6b80ea13c4356615db06cadf3bd5e464cdf175142735567aa12a67c5d152",
+                      "installed_sha256":  "fadb6b80ea13c4356615db06cadf3bd5e464cdf175142735567aa12a67c5d152",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/harness-switch-account.ps1",
+                      "sha256":  "4b16abdd6255e6b0bfb8b839f6b6eca9911265cfec9173c32a2af73c857185cd",
+                      "installed_sha256":  "4b16abdd6255e6b0bfb8b839f6b6eca9911265cfec9173c32a2af73c857185cd",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/injection-scan.ps1",
+                      "sha256":  "754eb2ef793d052a2644ee41593c0c3c32ef4f86b0df3e61d957477168d8d01f",
+                      "installed_sha256":  "754eb2ef793d052a2644ee41593c0c3c32ef4f86b0df3e61d957477168d8d01f",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/kpi-report.ps1",
+                      "sha256":  "fcb085199a4502ef1b8644dadb43ebc030197de789b2225f8bcf418bff20bd0c",
+                      "installed_sha256":  "fcb085199a4502ef1b8644dadb43ebc030197de789b2225f8bcf418bff20bd0c",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/lib-security-log.ps1",
+                      "sha256":  "f0cf9dfc2e33ad0aac3327a6c534721807455de39e95024dfc2f5ea60a70bf89",
+                      "installed_sha256":  "f0cf9dfc2e33ad0aac3327a6c534721807455de39e95024dfc2f5ea60a70bf89",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/log-human.ps1",
+                      "sha256":  "39367f349be2814914287e6933147306351227769c6f8236df75248d7f0ee673",
+                      "installed_sha256":  "39367f349be2814914287e6933147306351227769c6f8236df75248d7f0ee673",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/push-telemetry.ps1",
+                      "sha256":  "def3b4beee3606e71e6565b62d2e9d3193347e7f0f829e84c7280277938c0254",
+                      "installed_sha256":  "def3b4beee3606e71e6565b62d2e9d3193347e7f0f829e84c7280277938c0254",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/rotate-logs.ps1",
+                      "sha256":  "16cffb5caa578030c36bfa2130a89213f14feae387c3120f0bf89a1c1e7487c3",
+                      "installed_sha256":  "16cffb5caa578030c36bfa2130a89213f14feae387c3120f0bf89a1c1e7487c3",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/rtm-check.ps1",
+                      "sha256":  "a4bd6213cde3a6cd48186082bb6cf4f53be36cf5cba7e17660e726cbb6fa45fc",
+                      "installed_sha256":  "a4bd6213cde3a6cd48186082bb6cf4f53be36cf5cba7e17660e726cbb6fa45fc",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/secret-scan.ps1",
+                      "sha256":  "dec32e9da175157b33db4b29b86777881e8c5663c165df9d21f1c5408fc1d274",
+                      "installed_sha256":  "dec32e9da175157b33db4b29b86777881e8c5663c165df9d21f1c5408fc1d274",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/sensitivity-enforce.ps1",
+                      "sha256":  "25fa9a8a0aa93b26e45e56b3750dbf38dd1112118613de82dbcb28c76001e112",
+                      "installed_sha256":  "25fa9a8a0aa93b26e45e56b3750dbf38dd1112118613de82dbcb28c76001e112",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/test-hooks.ps1",
+                      "sha256":  "0fd763bc9b3bcad33b4c115bff678690da65cdf9ed29fcd1c72e10f228610046",
+                      "installed_sha256":  "0fd763bc9b3bcad33b4c115bff678690da65cdf9ed29fcd1c72e10f228610046",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/scripts/powershell/tool-idempotency.ps1",
+                      "sha256":  "e774f1379c77a15f9a005e3e49eb884f4e6eab2b622cd6cdc0c2d02f338da92b",
+                      "installed_sha256":  "e774f1379c77a15f9a005e3e49eb884f4e6eab2b622cd6cdc0c2d02f338da92b",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/templates/agent-pack/agent-config.yaml.sample",
+                      "sha256":  "abf5724244b04842332c49bbb0fcc06b577af2d4e7b7d5154b0c3124c157929e",
+                      "installed_sha256":  "abf5724244b04842332c49bbb0fcc06b577af2d4e7b7d5154b0c3124c157929e",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/templates/agent-pack/impact-map.yaml.sample",
+                      "sha256":  "0651726d6c2949bb24fdf834faea546d599bc637651c9efdfb16e8c16cb378e2",
+                      "installed_sha256":  "0651726d6c2949bb24fdf834faea546d599bc637651c9efdfb16e8c16cb378e2",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/templates/baseline-w0.json.sample",
+                      "sha256":  "76fffee6db0678786c77611f6e9fab86e1635eb4a74835be376d427b2fe13b06",
+                      "installed_sha256":  "76fffee6db0678786c77611f6e9fab86e1635eb4a74835be376d427b2fe13b06",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/templates/buglist.md",
+                      "sha256":  "ee8cdc65d7419cf1daaaccdd822f1a6bd469b07dafc80fcda0c47cff422315e0",
+                      "installed_sha256":  "ee8cdc65d7419cf1daaaccdd822f1a6bd469b07dafc80fcda0c47cff422315e0",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/templates/ci/CODEOWNERS.template",
+                      "sha256":  "90858fde7094be3bfbda3b78700167104c545047e475b51d29158bd903dc0dd2",
+                      "installed_sha256":  "90858fde7094be3bfbda3b78700167104c545047e475b51d29158bd903dc0dd2",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/templates/ci/harness-gate.yml.template",
+                      "sha256":  "94ce555037c4e68875db5dc9a1243a7144ad111b710d1b19c3576d04b5ea7e5f",
+                      "installed_sha256":  "94ce555037c4e68875db5dc9a1243a7144ad111b710d1b19c3576d04b5ea7e5f",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/templates/ci/tests.yml.template",
+                      "sha256":  "653de2cdf1d29e05d2076884ce98f02946a4ccaff417b679caa90ae481c67a00",
+                      "installed_sha256":  "653de2cdf1d29e05d2076884ce98f02946a4ccaff417b679caa90ae481c67a00",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  ".harness/templates/gitattributes.template",
+                      "sha256":  "c319b859a71b68b55be7eae6121f43fc33ee95c83cb2f49eabecfdf0c32f8728",
+                      "installed_sha256":  "c319b859a71b68b55be7eae6121f43fc33ee95c83cb2f49eabecfdf0c32f8728",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  "CLAUDE.harness.md",
+                      "sha256":  "98a36dc2fb5dd823a3b08a2afc811746644b361cb886c2284bfcdfdda3e72892",
+                      "installed_sha256":  "98a36dc2fb5dd823a3b08a2afc811746644b361cb886c2284bfcdfdda3e72892",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  "contracts/agent.yaml",
+                      "sha256":  "5f19d1bb956311f730a759711bd6e53c7067c73208b5be605f28985367341746",
+                      "installed_sha256":  "5f19d1bb956311f730a759711bd6e53c7067c73208b5be605f28985367341746",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  "contracts/approval-flow.yaml",
+                      "sha256":  "5c458fec19ca02297f0c066846727bd8331609874651c5d76249db76a09a9c67",
+                      "installed_sha256":  "5c458fec19ca02297f0c066846727bd8331609874651c5d76249db76a09a9c67",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  "contracts/project.yaml",
+                      "sha256":  "87dc5dc36bbd19cb9bf94389ee25888f57381c5c7b955c972429ee9d7157132d",
+                      "installed_sha256":  "26d002a92691ec5ae156a40431e625bf06f4f301526f20dc9d8ef6026b130f8c",
+                      "state":  "kept"
+                  },
+                  {
+                      "path":  "contracts/tool-contracts.yaml",
+                      "sha256":  "7324ea47af7b855d1542f795aefd1878ec88cecb1b133c01115fe69750d7b1cf",
+                      "installed_sha256":  "7324ea47af7b855d1542f795aefd1878ec88cecb1b133c01115fe69750d7b1cf",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  "contracts/tool-registry.yaml",
+                      "sha256":  "feb2555b97601a3faee4403bac306194442a22bdfeff6e9470f807522f490ad8",
+                      "installed_sha256":  "feb2555b97601a3faee4403bac306194442a22bdfeff6e9470f807522f490ad8",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  "contracts/workflow.yaml",
+                      "sha256":  "5c6c349f3e73d932ab442f5149e902ed513327d80332c1143e3eccd8f9b41fd9",
+                      "installed_sha256":  "5c6c349f3e73d932ab442f5149e902ed513327d80332c1143e3eccd8f9b41fd9",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  "docs/casan_harness_assessment.md",
+                      "sha256":  "515b50a54f33f46fe2b2d2c6378c15f690ad417ed020cd708e745373c12e70d9",
+                      "installed_sha256":  "515b50a54f33f46fe2b2d2c6378c15f690ad417ed020cd708e745373c12e70d9",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  "docs/harness-rules-and-assessment-20260719.html",
+                      "sha256":  "044d6c4d3ec66745eda89254c9ef684f79d32e81b31cc50003f3e0a657e6474c",
+                      "installed_sha256":  "044d6c4d3ec66745eda89254c9ef684f79d32e81b31cc50003f3e0a657e6474c",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  "tools/harness-bundle/harness-lock.ps1",
+                      "sha256":  "0f39ee7a7f5c81b0c57593b8adbdeeefed2d65a5bdc2868e8898ce7bd7faea43",
+                      "installed_sha256":  "0f39ee7a7f5c81b0c57593b8adbdeeefed2d65a5bdc2868e8898ce7bd7faea43",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  "tools/harness-bundle/harness-lock.sh",
+                      "sha256":  "1e91a3decc49890bf5f356691e671fc5846e08b9848a3d3c9d30acc6981356f1",
+                      "installed_sha256":  "1e91a3decc49890bf5f356691e671fc5846e08b9848a3d3c9d30acc6981356f1",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  "tools/harness-bundle/harness-verify.ps1",
+                      "sha256":  "30c7c1055ab2bd22d227521c39b126d602ae27d1b8bbbd41fe85da84bccfc296",
+                      "installed_sha256":  "30c7c1055ab2bd22d227521c39b126d602ae27d1b8bbbd41fe85da84bccfc296",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  "tools/harness-bundle/harness-verify.sh",
+                      "sha256":  "e1104110e9baa78375fb80536d8b2f4fab83c8ae1d4c1cd038dc7f359416b65c",
+                      "installed_sha256":  "e1104110e9baa78375fb80536d8b2f4fab83c8ae1d4c1cd038dc7f359416b65c",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  "tools/harness-bundle/install.ps1",
+                      "sha256":  "a15abd3667e0e7e8102be4914f61f55301efe0a1ca12ab004e2eaf7c9249a892",
+                      "installed_sha256":  "a15abd3667e0e7e8102be4914f61f55301efe0a1ca12ab004e2eaf7c9249a892",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  "tools/harness-bundle/install.sh",
+                      "sha256":  "c4bf2386948a20222f003ef1b682d802130e34876b3545d3af463bdb5b3a1edd",
+                      "installed_sha256":  "c4bf2386948a20222f003ef1b682d802130e34876b3545d3af463bdb5b3a1edd",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  "tools/harness-bundle/uninstall.ps1",
+                      "sha256":  "56995967f6152a96d053593fb5d9ed245579ae23bbfd4130179abeaed422736d",
+                      "installed_sha256":  "56995967f6152a96d053593fb5d9ed245579ae23bbfd4130179abeaed422736d",
+                      "state":  "installed"
+                  },
+                  {
+                      "path":  "tools/harness-bundle/uninstall.sh",
+                      "sha256":  "d7cebd18da3537f2f4700632ef92bed2cc2428189b6cc9712dbdce42f7946dae",
+                      "installed_sha256":  "d7cebd18da3537f2f4700632ef92bed2cc2428189b6cc9712dbdce42f7946dae",
+                      "state":  "installed"
+                  }
+              ]
+}

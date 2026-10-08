@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://harness.internal/schemas/ledger-entry.schema.json",
+  "title": "Ledger Entry Schema",
+  "description": "Single entry in the immutable hash-chain ledger (D11). Append-only. Tamper-evident via prev_hash chain.",
+  "type": "object",
+  "required": [
+    "index", "prev_hash", "entry_hash", "timestamp",
+    "actor", "action", "decision", "payload_ref"
+  ],
+  "properties": {
+    "index": { "type": "integer", "minimum": 0, "description": "Sequential index, starting from 0 (genesis block)" },
+    "prev_hash": { "type": "string", "description": "SHA-256 hex digest of the previous entry's entry_hash. 'GENESIS' for index 0." },
+    "entry_hash": { "type": "string", "description": "SHA-256 hex digest of this entry's canonical fields (excluding entry_hash itself)" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "actor": {
+      "type": "object",
+      "required": ["agent", "user", "session_id"],
+      "properties": {
+        "agent": { "type": "string" },
+        "user": { "type": "string" },
+        "session_id": { "type": "string" },
+        "role": { "type": "string" }
+      }
+    },
+    "action": {
+      "type": "object",
+      "required": ["type", "tool", "description"],
+      "properties": {
+        "type": { "type": "string", "enum": ["tool_call", "approval", "decision", "pipeline_event", "config_change", "seal"], "description": "'seal' closes a chain segment: the final entry written before the file is archived and a fresh segment starts. Exists because a poisoned entry (pre-b730629 doubling bug) is permanent once written -- the honest way out is to close the segment around it, never to rewrite history." },
+        "tool": { "type": "string" },
+        "description": { "type": "string" },
+        "input_hash": { "type": "string" },
+        "output_hash": { "type": "string" }
+      }
+    },
+    "decision": {
+      "type": "object",
+      "properties": {
+        "result": { "type": "string", "enum": ["allow", "deny", "ask", "approved", "rejected", "skipped"] },
+        "reason": { "type": "string" },
+        "risk_level": { "type": "string", "enum": ["none", "low", "medium", "high", "critical"] }
+      }
+    },
+    "payload_ref": { "type": "string", "description": "Path to the evidence bundle or detailed payload for this entry" },
+    "signature": { "type": "string", "description": "Future: cryptographic signature of entry_hash" },
+
+    "prev_segment": { "type": "string", "description": "On a genesis entry only: filename of the sealed segment this chain continues from (e.g. chain-001.jsonl). Together with prev_segment_head it keeps continuity ACROSS files: an auditor verifies the named archive's seal entry hash equals prev_segment_head, so rotating segments never becomes a way to quietly drop history." },
+    "prev_segment_head": { "type": "string", "description": "On a genesis entry only: entry_hash of the sealed segment's final (seal) entry. See prev_segment." },
+
+    "per_agent_cost_usd": { "type": "number", "minimum": 0, "description": "Cost attributable to the agent that produced this entry. Optional: an entry written by a hook has no model call behind it and must stay valid without this." },
+    "token_count": { "type": "integer", "minimum": 0, "description": "Total tokens for the call behind this entry (in + out)" },
+    "token_count_in": { "type": "integer", "minimum": 0 },
+    "token_count_out": { "type": "integer", "minimum": 0 },
+    "model_id": { "type": "string", "description": "Concrete model that produced this entry, e.g. claude-opus-4-8. Free string, not an enum: a project on a different vendor's ladder must be able to record its own ids honestly rather than be forced into this repo's." },
+    "stage_id": { "type": "string", "description": "Workflow stage this entry belongs to, so cost and decisions can be attributed per stage of the DAG" }
+  }
+}

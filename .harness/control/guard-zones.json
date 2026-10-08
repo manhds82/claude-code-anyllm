@@ -1,0 +1,78 @@
+{
+  "$schema": "https://harness.internal/schemas/guard-zones.schema.json",
+  "schema_version": "1.0.0",
+  "description": "Domain firewall zones — agents may only read/write within allowed zones (H4). Outside zone = blocked.",
+  "default_action": "deny",
+  "zones": [
+    {
+      "name": "harness-config",
+      "description": "Harness runtime configuration files",
+      "paths": [".harness/**/*", ".claude/**/*", "contracts/**/*"],
+      "allowed_agents": ["*"],
+      "allowed_operations": ["read", "write"],
+      "risk_level": "medium",
+      "notes": "Config changes require review — risk_level medium"
+    },
+    {
+      "name": "source-code",
+      "description": "Application source code and tests",
+      "paths": ["src/**/*", "tests/**/*", "docs/**/*", "scripts/**/*"],
+      "allowed_agents": ["developer", "analyst", "reviewer"],
+      "allowed_operations": ["read", "write"],
+      "risk_level": "low"
+    },
+    {
+      "name": "contracts-readonly",
+      "description": "Contract YAML files — read-only for most agents",
+      "paths": ["contracts/*.yaml"],
+      "allowed_agents": ["developer", "analyst", "reviewer"],
+      "allowed_operations": ["read"],
+      "risk_level": "low"
+    },
+    {
+      "name": "pipeline-context",
+      "description": "Pipeline context file — Boss updates, specialists read",
+      "paths": ["pipeline-context.yaml"],
+      "allowed_agents": ["boss", "developer", "analyst", "reviewer"],
+      "allowed_operations": ["read"],
+      "risk_level": "low",
+      "exceptions": [
+        { "agent": "boss", "operation": "write", "reason": "Boss updates context after each stage" }
+      ]
+    },
+    {
+      "name": "project-root",
+      "description": "Project root files (CLAUDE.md, README.md, etc.)",
+      "paths": ["*.md", "*.txt"],
+      "allowed_agents": ["*"],
+      "allowed_operations": ["read", "write"],
+      "risk_level": "low"
+    },
+    {
+      "name": "gateway",
+      "description": "Gateway MCP server (Phase 3)",
+      "paths": ["gateway/**/*"],
+      "allowed_agents": ["admin"],
+      "allowed_operations": ["read", "write"],
+      "risk_level": "high",
+      "notes": "Gateway changes need admin approval"
+    },
+    {
+      "name": "tools-init",
+      "description": "Onboarding generator (Phase 4)",
+      "paths": ["tools/**/*"],
+      "allowed_agents": ["admin"],
+      "allowed_operations": ["read", "write"],
+      "risk_level": "medium"
+    },
+    {
+      "name": "system-restricted",
+      "description": "System paths outside project — ALWAYS blocked",
+      "paths": ["C:/Windows/**/*", "C:/Program Files/**/*", "/etc/**/*", "/usr/**/*"],
+      "allowed_agents": [],
+      "allowed_operations": [],
+      "risk_level": "critical",
+      "notes": "Never allow access to system paths"
+    }
+  ]
+}

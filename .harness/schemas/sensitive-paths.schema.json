@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://harness.internal/schemas/sensitive-paths.schema.json",
+  "title": "Sensitive Paths",
+  "description": "Input to the risk-registry modifier `target_matches_sensitive_path` (F2): raises an action's risk score by what the action TOUCHES, not only by what the action is called.",
+  "type": "object",
+  "required": ["schema_version", "enforced_at", "default_score_delta", "rules"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schema_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "description": { "type": "string" },
+    "governs": {
+      "type": "string",
+      "enum": ["assistant_workflow", "product_runtime"],
+      "description": "Which plane this policy governs (C10). Sensitivity scoring is an assistant-plane concern."
+    },
+    "enforce_at_pretooluse": {
+      "type": "boolean",
+      "description": "Turn on HARD enforcement in the PreToolUse guard. Ships false: enabling it changes runtime behaviour for every session in that project, so it is opted into per project rather than inherited from the bundle."
+    },
+    "enforced_at": {
+      "type": "string",
+      "enum": ["gatekeeper_agent", "gatekeeper_agent+pretooluse_optin", "hook", "gateway"],
+      "description": "Where this file is actually consumed today. Declaring a stronger value than reality is the failure C10 exists to prevent."
+    },
+    "enforcement_note": { "type": "string" },
+    "why_this_exists": { "type": "string" },
+    "why_delta_is_60": { "type": "string" },
+    "default_score_delta": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Applied when a rule omits score_delta. Must be large enough to cross into a tier whose approver is not the default role — see why_delta_is_60."
+    },
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "globs", "reason"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+          "globs": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "exclude_globs": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 },
+            "description": "Paths that match `globs` but must NOT escalate. Checked after globs; an exclusion wins. Added from real measurement, not theory: the first scan of a live repo escalated a test file, an ADR that discusses secrets, and .env.example — none of which is the thing the rule is guarding."
+          },
+          "score_delta": { "type": "integer", "minimum": 0, "maximum": 100 },
+          "approvable": {
+            "type": "boolean",
+            "default": false,
+            "description": "P1 1.0: a write blocked by this rule may be approved through the Portal (needs approval_path.enabled). Default false: opt-in per rule."
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 10,
+            "description": "Why this path is sensitive. A rule nobody can justify is a rule that gets deleted the first time it is inconvenient."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "approval_path": {
+      "type": "object",
+      "description": "P1 1.0: lets a blocked write be approved in Portal Approvals (one file, one use, time-limited) instead of only hard-blocked. Absent or enabled=false means hard-block only.",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "note": { "type": "string" }
+      },
+      "required": ["enabled"],
+      "additionalProperties": false
+    },
+    "notes": { "type": "object" }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Power Policy (D4)",
+  "description": "Power Level 1-10 model band mapping and capability gates",
+  "type": "object",
+  "required": ["power_levels", "model_tier_map", "fallback_chain"],
+  "properties": {
+    "schema_version": { "type": "string" },
+    "power_levels": {
+      "type": "object",
+      "patternProperties": {
+        "^(1[0]|[1-9])$": {
+          "type": "object",
+          "required": ["max_model_tier", "allowed_profiles", "max_tokens_per_call"],
+          "properties": {
+            "description": { "type": "string" },
+            "max_model_tier": { "type": "string", "enum": ["haiku", "sonnet", "opus", "fable"] },
+            "allowed_profiles": { "type": "array", "items": { "type": "string" } },
+            "max_tokens_per_call": { "type": "integer" },
+            "max_cost_per_call_usd": { "type": "number" }
+          }
+        }
+      }
+    },
+    "agent_power_defaults": {
+      "type": "object",
+      "patternProperties": { "^[a-z_]+$": { "type": "integer", "minimum": 1, "maximum": 10 } }
+    },
+    "model_tier_map": {
+      "type": "object",
+      "patternProperties": { "^(haiku|sonnet|opus|fable)$": { "type": "array" } }
+    },
+    "fallback_chain": { "type": "object" },
+    "local_tier": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "provider": { "type": "string" },
+        "power_map": { "type": "object" }
+      }
+    }
+  }
+}

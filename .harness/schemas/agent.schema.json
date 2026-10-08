@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://harness.internal/schemas/agent.schema.json",
+  "title": "Agent Contract Schema",
+  "description": "SSOT for agent fleet definitions, model profiles, and power level mappings.",
+  "type": "object",
+  "required": ["schema_version", "model_profiles", "agents"],
+  "properties": {
+    "schema_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "model_profiles": {
+      "type": "object",
+      "description": "Abstract capability profiles mapped to concrete Claude models (D4)",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["description", "primary", "fallback", "power_map"],
+        "properties": {
+          "description": { "type": "string" },
+          "primary": {
+            "type": "string",
+            "enum": ["claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-4-5-20251001", "claude-haiku-4-5"]
+          },
+          "fallback": {
+            "type": "string",
+            "enum": ["claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-4-5-20251001", "claude-haiku-4-5"]
+          },
+          "power_map": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "enum": ["claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-4-5-20251001", "claude-haiku-4-5"]
+            }
+          }
+        }
+      }
+    },
+    "agents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "description", "model_profile", "authority"],
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "model_profile": { "type": "string" },
+          "authority": { "type": "string", "enum": ["orchestration_only", "specialist"] },
+          "allowed_tools": { "type": "array", "items": { "type": "string" } },
+          "blocked_tools": { "type": "array", "items": { "type": "string" } },
+          "definition": { "type": "string" },
+          "intake_clarity_score": {
+            "type": "integer", "minimum": 0, "maximum": 100,
+            "description": "Rolling quality of this agent's intake verdicts, for the intake_clarity rubric dimension. Optional: only the gatekeeper produces intake verdicts, so requiring it would invalidate every other agent's entry."
+          },
+          "qa_gate_audit_roles": {
+            "type": "array", "items": { "type": "string" },
+            "description": "Roles this agent's qa-gate verdict may be audited by. Optional and empty by default — an agent that never reaches the qa-gate has nothing to audit."
+          }
+        }
+      }
+    },
+    "local_tier": {
+      "type": "object",
+      "description": "Separate ladder for on-prem OSS models — never called Claude (D4)",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "provider": { "type": "string" },
+        "models": { "type": "array", "items": { "type": "string" } },
+        "power_map": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    }
+  }
+}

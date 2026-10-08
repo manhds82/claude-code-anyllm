@@ -1,0 +1,76 @@
+# Harness release gate — governance suites that must be green before a release.
+# Copy to .github/workflows/harness-gate.yml (the installer's -WithCiGates does
+# this for you). Stack-agnostic on purpose: it runs only the harness's OWN suites,
+# which ship with the bundle and need nothing but Python. Your project's tests
+# live in tests.yml.template, which detects your runner.
+#
+# Why this calls harness_policy_check.py rather than listing individual checks:
+# checks get added every release, and a workflow that enumerates them silently
+# stops covering the new ones. One entry point cannot go stale.
+name: harness-gate
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  policy-ci:
+    name: Policy CI (schemas, C4/C5/C8/C10, plane separation)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pyyaml jsonschema
+      # .harness/context/ is machine-local (machine-state-paths.yaml), so a fresh
+      # checkout has none, and H1:pointer-store reads it. It is derived data: build
+      # it here exactly as session-start does on a workstation (B-78).
+      - name: build H1 pointer store
+        run: bash .harness/scripts/bash/harness-context-build.sh
+      # The positional root argument is required -- without it the script cannot
+      # find .harness/ and reports a layout failure that looks like a real one.
+      - name: harness policy-ci
+        run: python .harness/scripts/lib/harness_policy_check.py . --ci
+
+  doctor:
+    name: Harness doctor (evidence pipeline health)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      # --strict makes a FAIL line fail the build. --ci (B-78): the ledger chain,
+      # telemetry and context are machine-local (machine-state-paths.yaml) and
+      # never committed, so on a fresh runner the checks that read them are
+      # reported as "not checkable here" (INFO -- unproven, not passing) instead of
+      # failing every run. Bundle integrity and the repo-level checks stay graded.
+      # Run doctor WITHOUT --ci on a workstation for the evidence-pipeline lines.
+      - name: harness doctor
+        run: python .harness/scripts/lib/harness_doctor.py . --ci --strict
+
+  secret-scan:
+    name: Secret scan (C5)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: secret-scan
+        run: bash .harness/scripts/bash/secret-scan.sh --ci
+
+  golden:
+    name: Golden dataset regression (H3)
+    runs-on: ubuntu-latest
+    needs: [policy-ci]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: harness golden
+        run: python .harness/scripts/lib/harness_golden.py .

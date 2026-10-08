@@ -1,0 +1,1028 @@
+{
+  "$schema": "https://harness.internal/schemas/tool-registry.schema.json",
+  "schema_version": "1.0.0",
+  "description": "SSOT for ALL tools (built-in + codeprovider-mcp). Entries are maintained HERE; contract fields (input/output/error/idempotency) are merged from contracts/tool-contracts.yaml by tools/harness-registry/apply-contracts.py. This file is NOT generated from contracts/tool-registry.yaml -- that file is a partial, older subset (20 of these tools).",
+  "generated_at": "2026-07-09T00:00:00Z",
+  "tools": {
+    "Read": {
+      "surface": "builtin",
+      "side_effect": false,
+      "risk_level": "none",
+      "allowed_roles": [
+        "developer",
+        "reviewer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Read file contents",
+      "input_contract": "{ file_path: string(absolute), offset?: int, limit?: int, pages?: string }",
+      "output_contract": "{ content: string(cat -n format), truncated?: bool }",
+      "error_contract": "not_found | is_directory | empty_file | permission_denied",
+      "contract_source": "builtin-schema"
+    },
+    "Glob": {
+      "surface": "builtin",
+      "side_effect": false,
+      "risk_level": "none",
+      "allowed_roles": [
+        "developer",
+        "reviewer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Fast file pattern matching",
+      "input_contract": "{ pattern: string(glob), path?: string(dir) }",
+      "output_contract": "{ paths: string[] (sorted by mtime) }",
+      "error_contract": "invalid_pattern | path_not_a_directory",
+      "contract_source": "builtin-schema"
+    },
+    "Grep": {
+      "surface": "builtin",
+      "side_effect": false,
+      "risk_level": "none",
+      "allowed_roles": [
+        "developer",
+        "reviewer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Content search",
+      "input_contract": "{ pattern: string(regex), path?: string, glob?: string, type?: string, output_mode?: content|files_with_matches|count, -i?: bool, -n?: bool, -o?: bool, -A?: int, -B?: int, -C?: int, context?: int, multiline?: bool, head_limit?: int, offset?: int }",
+      "output_contract": "{ matches: string[] } | { files: string[] } | { counts: map<string,int> }",
+      "error_contract": "invalid_regex | path_not_found",
+      "contract_source": "builtin-schema"
+    },
+    "WebSearch": {
+      "surface": "builtin",
+      "side_effect": false,
+      "risk_level": "low",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Web search",
+      "input_contract": "{ query: string, allowed_domains?: string[], blocked_domains?: string[] }",
+      "output_contract": "{ results: [{ title, url, snippet }] }",
+      "error_contract": "network_error | rate_limited | no_results",
+      "contract_source": "builtin-schema"
+    },
+    "WebFetch": {
+      "surface": "builtin",
+      "side_effect": false,
+      "risk_level": "low",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Fetch web content",
+      "input_contract": "{ url: string, prompt: string }",
+      "output_contract": "{ content: string(extracted) }",
+      "error_contract": "network_error | http_error | robots_denied | too_large",
+      "contract_source": "builtin-schema"
+    },
+    "Write": {
+      "surface": "builtin",
+      "side_effect": true,
+      "risk_level": "medium",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "idempotency_key_pattern": "write:{file_path}:sha256({content})",
+      "description": "Write file contents",
+      "input_contract": "{ file_path: string(absolute), content: string }",
+      "output_contract": "{ written: bool, path: string }",
+      "error_contract": "not_read_first(overwrite guard) | permission_denied | path_is_directory",
+      "idempotency_note": "Same path + same content is a true no-op; same path + different content is a DIFFERENT operation and must not dedupe.",
+      "contract_source": "builtin-schema"
+    },
+    "Edit": {
+      "surface": "builtin",
+      "side_effect": true,
+      "risk_level": "medium",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "idempotency_key_pattern": "edit:{file_path}:sha256({old_string}|{new_string})",
+      "description": "Edit file with string replacement",
+      "input_contract": "{ file_path: string(absolute), old_string: string, new_string: string, replace_all?: bool }",
+      "output_contract": "{ replaced: int, path: string }",
+      "error_contract": "file_not_read_first | old_string_not_found | old_string_not_unique | no_change",
+      "idempotency_note": "Not replayable by design: after a successful edit old_string no longer matches, so a repeat fails loudly rather than double-applying.",
+      "contract_source": "builtin-schema"
+    },
+    "Bash": {
+      "surface": "builtin",
+      "side_effect": true,
+      "risk_level": "medium",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "ask",
+      "idempotency_key_pattern": "bash:sha256({command})",
+      "enforcing_script": "harness-runtime-guard.ps1",
+      "description": "Execute bash command",
+      "input_contract": "{ command: string, timeout?: int(ms, max 600000), run_in_background?: bool, dangerouslyDisableSandbox?: bool, description?: string }",
+      "output_contract": "{ stdout: string, stderr: string, exit_code: int }",
+      "error_contract": "timeout | non_zero_exit | denied_by_guard | interactive_prompt_blocked",
+      "idempotency_note": "A shell command's safety on replay is unknowable from its text; the key detects the repeat and hands the decision to a human.",
+      "contract_source": "builtin-schema",
+      "contract_note": "`dangerouslyDisableSandbox` was missing from the first version. It is the only input on this tool that changes what the call is ALLOWED to touch — omitting it from the contract hides the one field a reviewer would look for."
+    },
+    "PowerShell": {
+      "surface": "builtin",
+      "side_effect": true,
+      "risk_level": "medium",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "ask",
+      "idempotency_key_pattern": "pwsh:sha256({command})",
+      "enforcing_script": "harness-runtime-guard.ps1",
+      "description": "Execute PowerShell command",
+      "input_contract": "{ command: string, timeout?: int(ms, max 600000), run_in_background?: bool, dangerouslyDisableSandbox?: bool, description?: string }",
+      "output_contract": "{ stdout: string, stderr: string, exit_code: int }",
+      "error_contract": "timeout | non_zero_exit | denied_by_guard | parse_error",
+      "idempotency_note": "Same reasoning as Bash.",
+      "contract_source": "builtin-schema"
+    },
+    "Agent": {
+      "surface": "builtin",
+      "side_effect": false,
+      "risk_level": "low",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Spawn subagent",
+      "input_contract": "{ description: string, prompt: string, subagent_type?: string, model?: sonnet|opus|haiku|fable, isolation?: worktree|remote, run_in_background?: bool }",
+      "output_contract": "{ agent_id: string, final_text: string }",
+      "error_contract": "unknown_subagent_type | agent_died | budget_exhausted",
+      "idempotency_key_pattern": "agent:{subagent_type}:sha256({prompt})",
+      "idempotency_note": "An agent run is non-deterministic; the key catches an accidental duplicate dispatch, not an equivalent result.",
+      "contract_source": "builtin-schema",
+      "contract_note": "`model` is an ENUM, not a free string — writing it as `string` threw away the one place this registry could have expressed the C4 model ladder as a machine-checkable constraint."
+    },
+    "Workflow": {
+      "surface": "builtin",
+      "side_effect": false,
+      "risk_level": "low",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Execute workflow script",
+      "input_contract": "{ script?: string, scriptPath?: string, name?: string, args?: any, resumeFromRunId?: string }",
+      "output_contract": "{ runId: string, result: any, transcriptDir: string }",
+      "error_contract": "script_syntax_error | unknown_workflow_name | agent_cap_exceeded | budget_exhausted",
+      "idempotency_key_pattern": "workflow:{name|scriptPath}:sha256({args})",
+      "contract_source": "builtin-schema"
+    },
+    "harness-switch-account": {
+      "surface": "builtin",
+      "side_effect": true,
+      "risk_level": "low",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "idempotency_key_pattern": "switch-account:{account}",
+      "description": "Switch active-account pointer for per-machine H6 attribution (local file write, no network)",
+      "input_contract": "{ account: string(profile name in power-policy) }",
+      "output_contract": "{ switched_to: string, previous: string }",
+      "error_contract": "unknown_account | credential_missing",
+      "idempotency_note": "Switching to the account already active is a genuine no-op.",
+      "contract_source": "repo-script"
+    },
+    "codeprovider-mcp.apply_patch": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "medium",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "ask",
+      "idempotency_key_pattern": "patch:{server_id}:{app_id}:sha256({patch})",
+      "enforcing_script": "harness-runtime-guard.ps1",
+      "description": "Apply patch to file",
+      "input_contract": "{ server_id: string, app_id: string, patch: string(unified diff with ---/+++/@@), strip?: int=1 }",
+      "output_contract": "{ applied: bool, files_changed: string[], dry_run_output: string }",
+      "error_contract": "dry_run_failed(nothing changed) | malformed_diff | context_mismatch",
+      "idempotency_note": "Dry-runs first, so a re-apply fails on context mismatch instead of double-applying. The key exists to prevent the pointless retry, not to protect the file.",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.edit_file": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "low",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Edit file content",
+      "input_contract": "{ server_id: string, app_id: string, path: string, ... } (unverified)",
+      "output_contract": "{ edited: bool } (unverified)",
+      "error_contract": "unverified",
+      "contract_source": "registry-description",
+      "contract_note": "NOT exposed by the live MCP server — the registry lists it but no schema is available, so this contract is from the registry description only. Verify or remove the entry. NO idempotency_key_pattern on purpose: a key over field names nobody has verified exist cannot be computed, and counting it toward the H2-3 threshold would inflate a criterion with a guess. Same reason `deploy:{target}:{version}` in tool-registry.yaml was useless.",
+      "idempotency_key_pattern": "edit:{file}:{content_hash}"
+    },
+    "codeprovider-mcp.write_file": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "medium",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "idempotency_key_pattern": "mcp-write:{server_id}:{app_id}:{path}:sha256({content})",
+      "enforcing_script": "tool-idempotency.ps1",
+      "description": "Write file",
+      "input_contract": "{ server_id: string, app_id: string, path: string(relative), content: string(max 1MB) }",
+      "output_contract": "{ written: bool, path: string }",
+      "error_contract": "content_too_large(>1MB) | unknown_app | permission_denied | ssh_error",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.read_file": {
+      "surface": "mcp",
+      "side_effect": false,
+      "risk_level": "none",
+      "allowed_roles": [
+        "developer",
+        "reviewer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Read file",
+      "input_contract": "{ server_id: string, app_id: string, path: string(relative to app workDir) }",
+      "output_contract": "{ content: string }",
+      "error_contract": "unknown_server | unknown_app | not_found | ssh_error",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.read_files": {
+      "surface": "mcp",
+      "side_effect": false,
+      "risk_level": "none",
+      "allowed_roles": [
+        "developer",
+        "reviewer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Read multiple files"
+    },
+    "codeprovider-mcp.find_files": {
+      "surface": "mcp",
+      "side_effect": false,
+      "risk_level": "none",
+      "allowed_roles": [
+        "developer",
+        "reviewer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Find files by pattern"
+    },
+    "codeprovider-mcp.search_code": {
+      "surface": "mcp",
+      "side_effect": false,
+      "risk_level": "none",
+      "allowed_roles": [
+        "developer",
+        "reviewer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Search codebase",
+      "input_contract": "{ server_id: string, app_id: string, pattern: string(POSIX ERE), file_glob?: string, case_sensitive?: bool, max_results?: int=50 }",
+      "output_contract": "{ matches: [{ file, line, content }] }",
+      "error_contract": "invalid_regex | unknown_app | ssh_error",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.code_outline": {
+      "surface": "mcp",
+      "side_effect": false,
+      "risk_level": "none",
+      "allowed_roles": [
+        "developer",
+        "reviewer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Get code outline"
+    },
+    "codeprovider-mcp.run_command": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "high",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "deny",
+      "unless_in_workflow": true,
+      "idempotency_key_pattern": "cmd:{server_id}:sha256({command})",
+      "enforcing_script": "harness-runtime-guard.ps1",
+      "description": "Run arbitrary command",
+      "input_contract": "{ server_id: string, command: string(allow-listed binaries), confirm?: bool, timeout_sec?: int=120 }",
+      "output_contract": "{ stdout: string, stderr: string, exit_code: int }",
+      "error_contract": "binary_not_allow_listed | destructive_verb_needs_confirm | timeout | ssh_error",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.exec_in_container": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "high",
+      "allowed_roles": [
+        "admin"
+      ],
+      "default_action": "deny",
+      "unless_in_workflow": true,
+      "idempotency_key_pattern": "exec:{server_id}:{container}:sha256({command})",
+      "enforcing_script": "harness-runtime-guard.ps1",
+      "description": "Execute command in container",
+      "input_contract": "{ server_id: string, container: string, command: string, workdir?: string, timeout_sec?: int=60 }",
+      "output_contract": "{ stdout: string, stderr: string, exit_code: int }",
+      "error_contract": "container_not_found | timeout | ssh_error",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.test_run": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "low",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "idempotency_key_pattern": "test:{server_id}:{app_id}:{runner}:{filter}",
+      "description": "Run test suite",
+      "input_contract": "{ server_id: string, app_id: string, runner?: auto|npm|pnpm|composer|pytest|artisan, filter?: string, timeout_sec?: int=600 }",
+      "output_contract": "{ runner: string, exit_code: int, duration_sec: number, tail: string }",
+      "error_contract": "no_runner_detected | timeout | unknown_app",
+      "idempotency_note": "Re-running tests is safe; the key exists so the pack does not re-run a 10-minute suite on an unchanged tree.",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.lint_run": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "low",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Run linter",
+      "input_contract": "{ server_id: string, app_id: string, mode?: check|fix (default check), runner?: auto|eslint|prettier|ruff|shellcheck|php-syntax, paths?: string='.', timeout_sec?: int=120 }",
+      "output_contract": "{ runner: string, issues: int, exit_code: int, output: string }",
+      "error_contract": "no_linter_detected | timeout | unknown_app",
+      "idempotency_key_pattern": "lint:{server_id}:{app_id}:{mode}:{runner}:{paths}",
+      "idempotency_note": "mode=fix WRITES to the tree; mode=check does not. The mode is in the key because they are different operations.",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.quick_fix": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "medium",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "ask",
+      "description": "Quick fix code issues",
+      "input_contract": "{ server_id: string, app_id: string, file_path: string(relative), old_string: string(must match EXACTLY once), new_string: string, commit_msg: string, deploy?: bool=true }",
+      "output_contract": "{ committed: bool, pushed: bool, deployed: bool, commit_sha?: string }",
+      "error_contract": "old_string_missing | old_string_multiple_matches | commit_failed | deploy_failed",
+      "idempotency_key_pattern": "quickfix:{server_id}:{app_id}:{file_path}:sha256({old_string}|{new_string})",
+      "idempotency_note": "deploy defaults to TRUE, so a duplicate call is a duplicate DEPLOY. This is the highest-value key in the file.",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.deploy": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "critical",
+      "allowed_roles": [
+        "admin"
+      ],
+      "default_action": "deny",
+      "unless_in_workflow": true,
+      "idempotency_key_pattern": "deploy:{server_id}:{app_id}",
+      "enforcing_script": "harness-runtime-guard.ps1",
+      "description": "Deploy to environment",
+      "input_contract": "{ server_id: string, app_id: string, skip_build?: bool }",
+      "output_contract": "{ pulled: string(commit), built: bool, restarted: bool, health: pass|fail }",
+      "error_contract": "git_pull_failed | build_failed | health_check_failed | unknown_app | ssh_error",
+      "idempotency_note": "Deliberately NOT including a commit: the tool takes none, it pulls whatever is at HEAD. So two identical calls can deploy different code — the key identifies an accidental repeat, it does not promise the same result.",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.deploy_safe": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "high",
+      "allowed_roles": [
+        "admin"
+      ],
+      "default_action": "deny",
+      "unless_in_workflow": true,
+      "idempotency_key_pattern": "deploy_safe:{server_id}:{app_id}",
+      "enforcing_script": "harness-runtime-guard.ps1",
+      "description": "Safe deploy with pre-checks",
+      "input_contract": "{ server_id: string, app_id: string, agent_id?: string='deploy_safe', run_tests?: bool, ready_pattern?: string }",
+      "output_contract": "{ lock_acquired: bool, images_snapshotted: bool, tests?: pass|fail, health_checks: 3, rolled_back: bool }",
+      "error_contract": "lock_held_by_other_agent | tests_failed(auto-rollback) | ready_pattern_timeout(auto-rollback) | health_failed(auto-rollback)",
+      "idempotency_note": "Takes an app lock itself, so a concurrent duplicate is refused by the lock rather than by this key.",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.rollback_deploy": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "high",
+      "allowed_roles": [
+        "admin"
+      ],
+      "default_action": "deny",
+      "unless_in_workflow": true,
+      "idempotency_key_pattern": "rollback:{server_id}:{app_id}",
+      "enforcing_script": "harness-runtime-guard.ps1",
+      "description": "Rollback a deployment",
+      "input_contract": "{ server_id: string, app_id: string, confirm?: bool — OPTIONAL in the schema, enforced at runtime: the call fails without it }",
+      "output_contract": "{ revert_commit: string, redeployed: bool }",
+      "error_contract": "confirm_not_set | nothing_to_revert | redeploy_failed",
+      "idempotency_note": "NOT a no-op on repeat: each call reverts the NEW most-recent commit, so calling twice reverts the revert. The key is what stops that.",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.git_branch": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "low",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Git branch operations",
+      "input_contract": "{ action: list|current|create|switch|delete|sync (required), server_id: string, app_id: string, name?: string }",
+      "output_contract": "{ branches?: string[], current?: string, created?: bool, switched?: bool, deleted?: bool }",
+      "error_contract": "unknown_action | branch_exists | branch_not_found | dirty_tree_blocks_switch",
+      "idempotency_key_pattern": "git-branch:{server_id}:{app_id}:{action}:{name}",
+      "idempotency_note": "list/current/sync are read-only; create/switch/delete mutate. delete is FORCE, so a repeat on a recreated branch destroys different work — hence name is in the key.",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.git_commit": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "medium",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "ask",
+      "idempotency_key_pattern": "commit:{server_id}:{app_id}:sha256({message}|{files})",
+      "description": "Git commit",
+      "input_contract": "{ server_id: string, app_id: string, message: string, files?: string[]=['.'] }",
+      "output_contract": "{ commit_sha: string, pushed: bool }",
+      "error_contract": "nothing_to_commit | push_rejected(behind remote) | hook_failed",
+      "idempotency_note": "This tool commits AND pushes. A repeat with the same message on a changed tree creates a second commit — not a no-op.",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.git_diff": {
+      "surface": "mcp",
+      "side_effect": false,
+      "risk_level": "none",
+      "allowed_roles": [
+        "developer",
+        "reviewer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Git diff",
+      "input_contract": "{ server_id: string, app_id: string, file?: string, staged?: bool }",
+      "output_contract": "{ diff: string(unified) }",
+      "error_contract": "unknown_app | file_not_found",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.git_log": {
+      "surface": "mcp",
+      "side_effect": false,
+      "risk_level": "none",
+      "allowed_roles": [
+        "developer",
+        "reviewer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Git log",
+      "input_contract": "{ server_id: string, app_id: string, count?: int=10 }",
+      "output_contract": "{ commits: [{ sha, author, date, subject }] }",
+      "error_contract": "unknown_app | not_a_git_repo",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.git_status": {
+      "surface": "mcp",
+      "side_effect": false,
+      "risk_level": "none",
+      "allowed_roles": [
+        "developer",
+        "reviewer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Git status",
+      "input_contract": "{ server_id: string, app_id: string }",
+      "output_contract": "{ branch: string, changed: string[], untracked: string[] }",
+      "error_contract": "unknown_app | not_a_git_repo",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.git_push": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "medium",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "ask",
+      "enforcing_script": "harness-runtime-guard.ps1",
+      "description": "Git push",
+      "input_contract": "{ server_id: string, app_id: string, branch?: string } (unverified)",
+      "output_contract": "{ pushed: bool } (unverified)",
+      "error_contract": "unverified",
+      "contract_source": "registry-description",
+      "contract_note": "NOT exposed by the live MCP server — git_commit already pushes. The registry entry may be legacy; verify or remove it. NO idempotency_key_pattern on purpose, same reason as edit_file: an unverified key counted toward H2-3 inflates the criterion it is supposed to measure.",
+      "idempotency_key_pattern": "push:{branch}:{commit_hash}"
+    },
+    "codeprovider-mcp.mysql_query": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "critical",
+      "allowed_roles": [
+        "admin"
+      ],
+      "default_action": "deny",
+      "unless_in_workflow": true,
+      "idempotency_key_pattern": "mysql:{server_id}:{database}:sha256({query})",
+      "enforcing_script": "harness-runtime-guard.ps1",
+      "description": "Execute MySQL query",
+      "input_contract": "{ server_id: string, query: string, confirm_write?: bool, app_id?: string(credentials from .env), database?: string, host?: string, port?: number, user?: string, password?: string, format?: table|tsv|vertical, row_limit?: int=100 }",
+      "output_contract": "{ rows: any[], row_count: int, format: string }",
+      "error_contract": "dml_without_confirm_write | sql_error | credentials_not_found | connection_refused",
+      "idempotency_note": "SELECT is safe to repeat; INSERT/UPDATE/DELETE is not. The tool separates them with confirm_write, and this key catches the repeated write.",
+      "contract_source": "mcp-schema",
+      "contract_note": "`confirm_write` was missing from the first version of this contract even though the error_contract and idempotency_note below both name it. It is the flag that gates INSERT/UPDATE/DELETE/DROP — leaving the one destructive gate out of the input description is the worst single omission this file could have."
+    },
+    "codeprovider-mcp.db_snapshot": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "high",
+      "allowed_roles": [
+        "admin"
+      ],
+      "default_action": "ask",
+      "idempotency_key_pattern": "snapshot:{server_id}:{app_id}",
+      "enforcing_script": "harness-runtime-guard.ps1",
+      "description": "Create database snapshot",
+      "input_contract": "{ server_id: string, app_id: string, description?: string }",
+      "output_contract": "{ path: string(.sql.gz) }",
+      "error_contract": "credentials_not_found | mysqldump_failed | disk_full",
+      "idempotency_note": "Repeating is harmless but wastes disk; snapshots are timestamped so a repeat does not overwrite.",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.backup_create": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "medium",
+      "allowed_roles": [
+        "admin"
+      ],
+      "default_action": "ask",
+      "idempotency_key_pattern": "backup:{server_id}:{app_id}:{target}:{dir_path}",
+      "description": "Create backup",
+      "input_contract": "{ server_id: string, app_id: string, target?: volume|db|dir (default volume), dir_path?: string }",
+      "output_contract": "{ path: string(/opt/_backups/...), rotated: int }",
+      "error_contract": "unknown_target | disk_full | unknown_app",
+      "idempotency_note": "Keeps only the 7 most recent — so repeated calls silently ROTATE OUT older backups. A duplicate is not free.",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.backup_restore": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "high",
+      "allowed_roles": [
+        "admin"
+      ],
+      "default_action": "deny",
+      "unless_in_workflow": true,
+      "idempotency_key_pattern": "restore:{server_id}:{app_id}:{backup_file}",
+      "enforcing_script": "harness-runtime-guard.ps1",
+      "description": "Restore from backup",
+      "input_contract": "{ server_id: string, app_id: string, backup_file: string(abs path or name in /opt/_backups/), confirm?: bool — OPTIONAL in the schema, enforced at runtime: the call fails without it }",
+      "output_contract": "{ restored: bool, target: volume|db }",
+      "error_contract": "confirm_not_set | backup_not_found | restore_failed(app data may be partial)",
+      "idempotency_note": "OVERWRITES current app data. Restoring the same file twice is closer to a no-op than most, but a repeat after new writes destroys them again — hence the key.",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.http_fetch": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "medium",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "deny",
+      "unless_in_workflow": true,
+      "idempotency_key_pattern": "http:{method}:{url}:sha256({body})",
+      "enforcing_script": "harness-runtime-guard.ps1",
+      "description": "HTTP fetch to external host",
+      "input_contract": "{ url: string, method?: GET|POST|PUT|PATCH|DELETE|HEAD (default GET), headers?: map<string,string>, body?: string, timeout_sec?: int=30, max_response_bytes?: int=500000 }",
+      "output_contract": "{ status: int, headers: map, body: string|object(json auto-parsed) }",
+      "error_contract": "dns_error | timeout | tls_error | response_too_large | host_not_in_allowlist(PDP)",
+      "idempotency_note": "GET/HEAD are safe to repeat; POST/PUT/PATCH/DELETE are not, and the method is in the key for exactly that reason.",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.docker_status": {
+      "surface": "mcp",
+      "side_effect": false,
+      "risk_level": "none",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Docker status",
+      "input_contract": "{ server_id?: string (omit = all servers) }",
+      "output_contract": "{ containers: [{ name, image, status, ports }] }",
+      "error_contract": "unknown_server | docker_unavailable",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.container_stats": {
+      "surface": "mcp",
+      "side_effect": false,
+      "risk_level": "none",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Container stats",
+      "input_contract": "{ server_id: string(required per description) }",
+      "output_contract": "{ containers: [{ name, cpu_pct, mem, net_io, block_io }] }",
+      "error_contract": "unknown_server | docker_unavailable",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.server_health": {
+      "surface": "mcp",
+      "side_effect": false,
+      "risk_level": "none",
+      "allowed_roles": [
+        "developer",
+        "reviewer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Server health check",
+      "input_contract": "{ server_id: string }",
+      "output_contract": "{ apps: [{ app_id, url, status, latency_ms }] }",
+      "error_contract": "unknown_server | ssh_error",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.task_create": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "low",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Create async task",
+      "input_contract": "{ server_id: string, command: string, label?: string='background-task' }",
+      "output_contract": "{ task_id: string }",
+      "error_contract": "max_concurrent_reached(50) | ssh_error",
+      "idempotency_key_pattern": "task:{server_id}:sha256({command})",
+      "idempotency_note": "A duplicate call starts a SECOND background process; nothing downstream notices two builds racing.",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.task_get": {
+      "surface": "mcp",
+      "side_effect": false,
+      "risk_level": "none",
+      "allowed_roles": [
+        "developer",
+        "reviewer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Get task status",
+      "input_contract": "{ task_id: string }",
+      "output_contract": "{ state: running|done, exit_code?: int, elapsed_sec: number, buffered_output_bytes: int }",
+      "error_contract": "unknown_task | task_lost(MCP container restarted)",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.task_list": {
+      "surface": "mcp",
+      "side_effect": false,
+      "risk_level": "none",
+      "allowed_roles": [
+        "developer",
+        "reviewer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "List tasks",
+      "input_contract": "{} (no parameters)",
+      "output_contract": "{ tasks: [{ task_id, label, state, elapsed_sec }] } — running plus finished within the last hour",
+      "error_contract": "none",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.task_kill": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "medium",
+      "allowed_roles": [
+        "admin"
+      ],
+      "default_action": "ask",
+      "description": "Kill running task",
+      "input_contract": "{ task_id: string }",
+      "output_contract": "{ killed: bool, signal: SIGTERM|SIGKILL }",
+      "error_contract": "unknown_task | already_exited",
+      "idempotency_key_pattern": "task-kill:{task_id}",
+      "idempotency_note": "Killing an already-dead task is a genuine no-op.",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.worktree_create": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "low",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Create git worktree",
+      "input_contract": "{ server_id: string, app_id: string, agent_id: string, branch?: string(defaults to source HEAD) }",
+      "output_contract": "{ path: string(/opt/_worktrees/<app_id>-<agent_id>) }",
+      "error_contract": "worktree_exists | unknown_app | branch_not_found",
+      "idempotency_key_pattern": "worktree:{server_id}:{app_id}:{agent_id}",
+      "idempotency_note": "The path is derived from app+agent, so a repeat targets the same directory — the key matches that reality.",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.worktree_remove": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "low",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Remove git worktree",
+      "input_contract": "{ server_id: string, app_id: string, agent_id: string }",
+      "output_contract": "{ removed: bool }",
+      "error_contract": "worktree_not_found",
+      "idempotency_key_pattern": "worktree-rm:{server_id}:{app_id}:{agent_id}",
+      "idempotency_note": "FORCE-cleans if dirty, so a repeat after new work in a recreated worktree destroys it. Not as harmless as it looks.",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.note_post": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "low",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Post note (A2A protocol)",
+      "input_contract": "{ tag: string(free-form, e.g. app_id or topic), body: string, agent_id?: string }",
+      "output_contract": "{ id: string }",
+      "error_contract": "none",
+      "idempotency_key_pattern": "note:{tag}:sha256({body})",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.note_consume": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "low",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Consume note (A2A protocol)",
+      "input_contract": "{ id: string }",
+      "output_contract": "{ consumed: bool }",
+      "error_contract": "unknown_id",
+      "idempotency_key_pattern": "note-consume:{id}",
+      "idempotency_note": "Consuming an already-consumed note is a no-op; notes are deleted after 24h.",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.note_list": {
+      "surface": "mcp",
+      "side_effect": false,
+      "risk_level": "none",
+      "allowed_roles": [
+        "developer",
+        "reviewer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "List notes",
+      "input_contract": "{ tag?: string, include_consumed?: bool, limit?: int=50 }",
+      "output_contract": "{ notes: [{ id, tag, body, agent_id, consumed }] } — newest first",
+      "error_contract": "none",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.kv_set": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "low",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Set KV store value",
+      "input_contract": "{ key: string, value: string, ttl_sec?: number }",
+      "output_contract": "{ set: bool }",
+      "error_contract": "none(in-memory; lost on MCP restart)",
+      "idempotency_key_pattern": "kv-set:{key}:sha256({value})",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.kv_get": {
+      "surface": "mcp",
+      "side_effect": false,
+      "risk_level": "none",
+      "allowed_roles": [
+        "developer",
+        "reviewer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Get KV store value",
+      "input_contract": "{ key: string }",
+      "output_contract": "{ value: string | '(not set)' }",
+      "error_contract": "none",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.app_lock": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "low",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "idempotency_key_pattern": "lock:{app_id}:{agent_id}",
+      "description": "Acquire mutual exclusion lock",
+      "input_contract": "{ app_id: string, agent_id: string, label?: string, ttl_sec?: int=600 }",
+      "output_contract": "{ token: string, expires_at: timestamp }",
+      "error_contract": "already_locked_by_other_agent(409) | unknown_app",
+      "idempotency_note": "Must NOT be deduped across agents — the whole point is that a second agent gets refused. Keyed by agent so one agent re-asking is the only case treated as a repeat.",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.app_unlock": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "low",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Release mutual exclusion lock",
+      "input_contract": "{ token: string(from app_lock) }",
+      "output_contract": "{ released: bool }",
+      "error_contract": "unknown_token | already_released | token_expired",
+      "idempotency_key_pattern": "unlock:{token}",
+      "idempotency_note": "Releasing twice is a genuine no-op.",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.webhook_trigger": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "high",
+      "allowed_roles": [
+        "admin"
+      ],
+      "default_action": "deny",
+      "unless_in_workflow": true,
+      "idempotency_key_pattern": "webhook:{server_id}:{app_id}:{action}:{branch}:{commit_sha}",
+      "enforcing_script": "harness-runtime-guard.ps1",
+      "description": "Trigger webhook",
+      "input_contract": "{ server_id: string, app_id: string, action?: test|test-and-deploy (default test), branch?: string='master', commit_sha?: string, author?: string }",
+      "output_contract": "{ tests: pass|fail, deployed?: bool }",
+      "error_contract": "unknown_app | tests_failed | deploy_failed",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.cron_manage": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "medium",
+      "allowed_roles": [
+        "admin"
+      ],
+      "default_action": "ask",
+      "description": "Manage cron jobs",
+      "input_contract": "{ action: list|add|remove (required), server_id: string, key?: string(## MCP:<key> marker), schedule?: string(cron expr), command?: string, description?: string }",
+      "output_contract": "{ entries?: [{ key, schedule, command }], added?: bool, removed?: bool }",
+      "error_contract": "unknown_action | key_missing | invalid_schedule",
+      "idempotency_key_pattern": "cron:{server_id}:{action}:{key}",
+      "idempotency_note": "Keyed by marker, so add-with-same-key replaces rather than duplicating. Unmarked crons are never touched.",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.smoke_check": {
+      "surface": "mcp",
+      "side_effect": false,
+      "risk_level": "low",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Run smoke check",
+      "input_contract": "{ url: string, expect_status?: int=200, expect_text?: string, timeout_sec?: int=10, server_id?: string }",
+      "output_contract": "{ status: int, matched_text: bool, elapsed_ms: int }",
+      "error_contract": "timeout | dns_error | status_mismatch | text_not_found",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.log_scan": {
+      "surface": "mcp",
+      "side_effect": false,
+      "risk_level": "low",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Scan logs",
+      "input_contract": "{ server_id: string, containers?: string, pattern?: string(default ERROR|FATAL|exception|panic|Segmentation|Traceback|Fatal|CRITICAL), since?: string='24h', case_sensitive?: bool }",
+      "output_contract": "{ by_container: map<string, { count, top: string[] }> }",
+      "error_contract": "unknown_server | invalid_regex | docker_unavailable",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.disk_usage": {
+      "surface": "mcp",
+      "side_effect": false,
+      "risk_level": "none",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Check disk usage",
+      "input_contract": "{ server_id: string, path?: string='/' }",
+      "output_contract": "{ filesystems: [{ mount, size, used, avail, pct }], heavy_dirs: [{ path, size }] }",
+      "error_contract": "unknown_server | path_not_found",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.cert_status": {
+      "surface": "mcp",
+      "side_effect": false,
+      "risk_level": "none",
+      "allowed_roles": [
+        "developer",
+        "admin"
+      ],
+      "default_action": "allow",
+      "description": "Check certificate status",
+      "input_contract": "{ server_id: string }",
+      "output_contract": "{ certs: [{ domain, expires_at, days_left }], certbot_timer: string, warnings: string[] }",
+      "error_contract": "unknown_server | certbot_not_installed",
+      "contract_source": "mcp-schema"
+    },
+    "codeprovider-mcp.nginx_vhost": {
+      "surface": "mcp",
+      "side_effect": true,
+      "risk_level": "high",
+      "allowed_roles": [
+        "admin"
+      ],
+      "default_action": "deny",
+      "unless_in_workflow": true,
+      "enforcing_script": "harness-runtime-guard.ps1",
+      "description": "Manage nginx vhost",
+      "input_contract": "{ action: list|get|set (required), server_id: string, domain?: string, content?: string }",
+      "output_contract": "{ vhosts?: string[], content?: string, tested: bool, reloaded: bool, reverted?: bool }",
+      "error_contract": "nginx_test_failed(auto-revert, NO reload) | path_outside_sites_enabled | unknown_domain",
+      "idempotency_key_pattern": "nginx:{server_id}:{action}:{domain}:sha256({content})",
+      "idempotency_note": "Guards itself: backup → write → nginx -t → auto-revert on failure. Same content twice is a real no-op.",
+      "contract_source": "mcp-schema"
+    }
+  }
+}

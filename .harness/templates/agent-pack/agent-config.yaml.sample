@@ -1,0 +1,39 @@
+# Agent Pack — project config (Layer 2). Copy to .harness/control/agent-config.yaml
+# and fill in for YOUR stack. The bundle ships the agents + skills; this file is
+# the only thing the project supplies (C2). It is project-owned: re-install never
+# overwrites it. Schema: .harness/schemas/agent-config.schema.json
+#
+# {files} is replaced with the changed file paths at run time.
+
+test:
+  # --- pick the line for your stack, delete the rest ---
+  # Node / Vitest:
+  unit_related_cmd: "npx vitest related --run {files}"
+  full_suite_cmd:   "npx vitest run"
+  # Node / Jest:
+  #   unit_related_cmd: "npx jest --findRelatedTests {files}"
+  #   full_suite_cmd:   "npx jest"
+  # Python / pytest (+ testmon traces coverage → auto-selects):
+  #   unit_related_cmd: "pytest --testmon -q"
+  #   full_suite_cmd:   "pytest -q"
+  # PHP / Laravel:
+  #   unit_related_cmd: "php artisan test --filter {files}"
+  #   full_suite_cmd:   "php artisan test"
+
+  # Cheap checks run on EVERY change regardless of diff — the last net for a
+  # regression the impact map missed. Endpoints or scripts.
+  integration_smoke:
+    - "GET /api/health"
+
+impact:
+  # A change touching any of these forces the FULL suite, because these files
+  # ripple everywhere and import-analysis under-counts them. Under-scoping one of
+  # them is how a regression ships. Tune to your repo.
+  force_full_test_on:
+    - "**/migrations/**"
+    - "**/schema.*"
+    - "**/middleware.*"
+    - "**/router.*"
+    - "package-lock.json"
+    - "composer.lock"
+    - "poetry.lock"

@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "machine-state-paths.schema.json",
+  "title": "machine-state-paths",
+  "description": "Files that describe one machine or one person and must never be committed (Portal v2 P1 1.7).",
+  "type": "object",
+  "required": ["version", "governs", "machine_local"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "type": "integer", "minimum": 1 },
+    "governs": { "const": "assistant_workflow" },
+    "committable": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "allowed_fields"],
+        "additionalProperties": false,
+        "properties": {
+          "path": { "type": "string", "minLength": 1 },
+          "allowed_fields": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+        }
+      }
+    },
+    "machine_local": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["path", "kind", "status", "reason"],
+        "additionalProperties": false,
+        "properties": {
+          "path": { "type": "string", "minLength": 1, "description": "repo-relative glob, forward slashes; ** crosses folders" },
+          "kind": { "enum": ["credential", "secret", "identity", "cursor", "telemetry", "ledger", "generated"] },
+          "status": { "enum": ["relocated", "stays_in_place"] },
+          "reason": { "type": "string", "minLength": 1 },
+          "grade": { "enum": ["fail", "warn"], "description": "how the policy check grades a TRACKED file of this entry; absent = fail" },
+          "needs_flag": { "enum": ["include-ledger"], "description": "the repair refuses to untrack this entry unless that explicit flag is given" }
+        }
+      }
+    },
+    "moved_fields": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["file", "field", "moved_to", "reason"],
+        "additionalProperties": false,
+        "properties": {
+          "file": { "type": "string", "minLength": 1 },
+          "field": { "type": "string", "minLength": 1 },
+          "moved_to": { "type": "string", "minLength": 1 },
+          "reason": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://harness.internal/schemas/skill.schema.json",
+  "title": "Harness Skill Frontmatter (L2 knowledge layer)",
+  "description": "Validates the YAML frontmatter of a .claude/skills/<name>/SKILL.md. The body after the frontmatter is free-form guidance.",
+  "type": "object",
+  "required": ["name", "description", "stage", "agents", "prompt_template"],
+  "properties": {
+    "name": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "description": { "type": "string", "minLength": 10 },
+    "stage": {
+      "type": "string",
+      "description": "Workflow stage this skill serves. 'intake'/'analysis'/'implementation'/'test'/'verification'/'qa-gate' are the DAG stage ids in contracts/workflow.yaml; the others are broader lifecycle phases. 'implement' is a legacy alias of 'implementation'. The 3-stage DAG (analysis/implementation/verification) stays valid — v1.6.0 adds stages, it does not retire any.",
+      "enum": [
+        "planning",
+        "requirement",
+        "intake",
+        "analysis",
+        "implement",
+        "implementation",
+        "test",
+        "security",
+        "verification",
+        "qa-gate",
+        "release",
+        "governance"
+      ]
+    },
+    "agents": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "enum": ["boss", "architect", "analyst", "researcher", "developer", "tester", "devops", "reviewer", "writer", "gatekeeper", "qa-reviewer", "impact-analyzer", "code-reviewer", "fix-agent", "targeted-tester"]
+      }
+    },
+    "prompt_template": { "type": "string", "minLength": 10 },
+    "inputs": { "type": "object" },
+    "output": { "type": "string" }
+  }
+}

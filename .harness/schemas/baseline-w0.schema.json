@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://harness.internal/schemas/baseline-w0.schema.json",
+  "title": "Baseline W0",
+  "description": "Pre-AI effort references — the numerator of the Nen (compression) metric defined in kpi.yaml.",
+  "type": "object",
+  "required": ["schema_version", "references"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schema_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "description": { "type": "string" },
+    "governs": { "type": "string", "enum": ["assistant_workflow", "product_runtime"] },
+    "enforced_at": { "type": "string" },
+    "why_frozen": { "type": "string" },
+    "how_to_use": { "type": "string" },
+    "captured_at": { "type": "string" },
+    "captured_by": { "type": "string" },
+    "references": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "description", "traditional_hours", "basis"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+          "description": { "type": "string", "minLength": 5 },
+          "traditional_hours": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 2000,
+            "description": "Hours this kind of work took before AI-first. An estimate, declared once."
+          },
+          "basis": {
+            "type": "string",
+            "minLength": 5,
+            "description": "Where the number came from. Required: a figure with no stated basis cannot be audited later, and an unauditable numerator turns Nen into marketing."
+          },
+          "frozen": {
+            "type": "boolean",
+            "description": "Set true once captured. A change after this point must be justified in DEVBOOK.md."
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

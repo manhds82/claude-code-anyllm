@@ -1,0 +1,150 @@
+# Bundle ownership rules — WHO owns which installed file (C2: the rule is data,
+# not a branch inside install.ps1).
+#
+# Why this file exists: all four consuming-project teams independently reported
+# the same thing — they hand-fix something under .harness/ or contracts/, then a
+# bundle re-install destroys the edit. The installer already had a `preserve`
+# list, but it only answered "never touch this file at all". It could not answer
+# the two cases that actually bit people:
+#
+#   1. A file the BUNDLE owns that the project edited anyway. Overwriting is
+#      correct in principle, but doing it silently is how work disappears.
+#   2. A file the bundle owns whose CONTENT the project extended -- contracts/
+#      agent.yaml with an extra agent, contracts/workflow.yaml with an extra
+#      stage. Overwriting the file is correct for the shipped entries and
+#      destructive for the project's own.
+#
+# Plane: these rules govern the assistant-plane install process, not the
+# product's runtime.
+#
+# Where installers read this file FROM: the copy inside the bundle payload (so
+# an install is governed by the rules that shipped with its files), UNIONED with
+# the copy beside the installer (../../.harness/control/ relative to it). The
+# union exists because a bundle packed before a rule did must not reopen the
+# loss that rule prevents -- v1.6.0 predates merge_json_maps, and reading only
+# its payload would replay the tool-registry overwrite this file now forbids.
+# A union can only protect more than the bundle asked, never less, and the
+# bundle stays authoritative wherever both copies define the same path.
+governs: assistant_workflow
+schema_version: "1.0.0"
+
+# Paths the project owns outright. Never written once they exist, not even with
+# -Force; the shipped copy lands beside them as <file>.new so new keys can be
+# adopted deliberately. Seeded from bundle.yaml's own `preserve` list so default
+# behaviour is unchanged -- this file adds cases, it removes none.
+project_owned:
+  - "contracts/project.yaml"
+  - ".harness/control/casan-policies.yaml"
+  - ".harness/control/risk-policy.yaml"
+  - ".harness/eval/golden/golden-cases.jsonl"
+  # Agent Pack layer-2 config (C2): the bundle ships the agents/skills, the
+  # project supplies how to run ITS tests and its impact map. Both are tuned
+  # per-repo, so a re-install must never overwrite them.
+  - ".harness/control/agent-config.yaml"
+  - "contracts/impact-map.yaml"
+
+# Glob conventions for project-owned paths. A project can create any of these
+# without coordinating with the bundle, and an install will not touch them.
+# `*.local.*` is the override convention: casan-policies.local.yaml sits beside
+# casan-policies.yaml and is yours.
+project_owned_globs:
+  - "*.local.*"
+  - ".claude/settings.local.json"
+  - ".harness/project/*"
+  - "project-*"
+  - ".harness/eval/golden/*-product.jsonl"
+
+# Files whose CONTENT is a keyed list the project may extend. Before overwriting
+# one, the installer compares the item keys on disk against the shipped copy. If
+# the project has entries the bundle does not ship, the file is NOT overwritten:
+# it is reported as a conflict, kept as-is, and the shipped copy is written as
+# <file>.new naming the entries at risk.
+#
+# Deliberately a CONFLICT rather than an automatic merge. Auto-merging YAML for a
+# governance contract means guessing -- at which position, under which parent,
+# with whose indentation -- and a wrong guess in agent.yaml or workflow.yaml is a
+# broken pipeline that validates. Telling the human exactly which entries to
+# carry over is slower and correct (C10: no confident wrong answer).
+#
+# Format: "<list key>:<item key>" — the YAML list to scan, and the field that
+# identifies an item within it.
+keyed_lists:
+  "contracts/agent.yaml": "agents:name"
+  "contracts/workflow.yaml": "stages:id"
+  "contracts/tool-registry.yaml": "tools:name"
+
+# Files whose content is a flat JSON object map -- `<map key>: { "<entry>": {...} }`
+# -- that the project may extend in two directions: extra FIELDS inside entries
+# the bundle ships, and entries of its own. The installer rebuilds such a file
+# entry by entry, field by field, instead of overwriting it.
+#
+# The loss this prevents: installing v1.6.0 overwrote
+# .harness/control/tool-registry.json wholesale. One project had raised its own
+# CASAN score by annotating the SAME 62 tools the bundle ships --
+# input_contract/output_contract across the registry, timeout_seconds on the
+# high/critical tools -- and the install took contracts 62 -> 0, timeout 10 -> 0,
+# idempotency 36 -> 23. No tool was added or removed, so nothing looked wrong;
+# they got the work back only because they had committed it first.
+#
+# Why a MERGE here when keyed_lists above is deliberately a CONFLICT: that
+# comment's objection is to guessing a POSITION in a YAML sequence -- under which
+# parent, at which indent, beside whose comments. A JSON object map has no
+# position to guess and no comments to carry: the entry key IS the identity and
+# the parse is exact, so the merge is mechanical rather than a guess. The
+# conflict path could not have caught this defect anyway -- the project's
+# additions were extra fields INSIDE shipped entries, so a key-set comparison
+# sees two identical key sets and reports nothing.
+#
+# What this deliberately does NOT preserve: a project's edit to a field the
+# bundle itself ships (risk_level, default_action, allowed_roles). Those are the
+# fleet policy this bundle exists to set, and a local edit that survived every
+# install would mean a fleet-wide correction never lands anywhere. Each such
+# override is printed by name at install time -- never silently. To hold a local
+# deviation permanently, move the path up into project_owned and accept that it
+# then stops receiving newly shipped tools.
+#
+# Format: "<path>": "<top-level key holding the entry map>".
+merge_json_maps:
+  ".harness/control/tool-registry.json": "tools"
+
+# Claude Code settings files. Structurally neither of the shapes above: `hooks`
+# is an EVENT MAP of matcher-entry lists --
+#   hooks: { "<Event>": [ { "matcher": "...", "hooks": [...] }, ... ] }
+# -- with sibling top-level keys (permissions, env, ...) beside it.
+#
+# The loss this prevents: a re-install overwrote .claude/settings.json wholesale,
+# and a project that had ADDED its own hook entry lost enforcement with zero
+# warning -- nothing errored, the hook simply stopped existing. A silently
+# dropped guard hook is the worst loss this file governs: the project believes
+# it is enforcing and is not (C10). Same defect class as the tool-registry
+# overwrite above, so it gets the same answer: rebuild the file instead of
+# replacing it.
+#
+# Merge semantics, per settings file:
+#   - matcher entries the bundle ships update to the shipped version, so fleet
+#     hook fixes land on every re-install;
+#   - matcher entries only the project has SURVIVE, placed after the shipped
+#     ones of their event;
+#   - whole events only the project has survive untouched;
+#   - top-level keys the bundle ships stay the bundle's (a project edit there is
+#     replaced and NAMED in the report -- to hold a local deviation, use
+#     .claude/settings.local.json, already project-owned via the glob above);
+#   - top-level keys only the project has ride along unchanged.
+#
+# Entry identity is the `matcher` STRING, compared within one event. Claude Code
+# permits several entries with the same matcher, so identity by matcher alone is
+# a convention, not a fact: shipped and on-disk entries sharing a matcher pair
+# up BY POSITION, and unpaired disk entries count as the project's own and are
+# kept. Deterministic, and honest about its limit: a project entry that shadows
+# a shipped matcher at an earlier position swaps labels with the shipped one,
+# but no entry is ever dropped either way.
+#
+# On POSIX, install.sh substitutes the settings.posix.json payload as the
+# shipped side wherever it touches .claude/settings.json, so the merge selects
+# the bash hook variant file-by-file (the old end-of-script cp, run with
+# --force, re-clobbered exactly the entries this rule preserves).
+#
+# Format: "<path>": "<top-level key holding the event map>".
+merge_hook_settings:
+  ".claude/settings.json": "hooks"
+  ".claude/settings.posix.json": "hooks"

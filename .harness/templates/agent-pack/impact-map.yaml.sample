@@ -1,0 +1,30 @@
+# Impact map — copy to contracts/impact-map.yaml and adapt to your layout.
+# Source-path globs → the test groups a change to them affects. The Agent Pack's
+# impact-analyzer reads this to scope review + test to the blast radius.
+# Schema: .harness/schemas/impact-map.schema.json  ·  project-owned (never overwritten).
+version: 1
+
+# Runs on every change, cheapest net first.
+always_run:
+  - "smoke"
+
+groups:
+  # name each cohesive area; sources = globs that belong to it, tests = what to run.
+  auth:
+    sources: ["src/auth/**", "src/middleware/auth.*"]
+    tests:   ["test/auth/**"]
+    it:      ["smoke: login"]
+    risk:    high
+  api:
+    sources: ["src/api/**", "src/routes/**"]
+    tests:   ["test/api/**"]
+    it:      ["smoke: health"]
+    risk:    medium
+  core:
+    sources: ["src/lib/**", "src/core/**"]
+    tests:   ["test/core/**"]
+    risk:    medium
+
+# A changed file matching NO group runs the full suite. This is the safe default:
+# under-scoping silently is the one failure that makes selective testing unsafe.
+fallback: ALL

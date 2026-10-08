@@ -1,0 +1,104 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://harness.internal/schemas/risk-registry.schema.json",
+  "title": "Risk Registry Schema",
+  "description": "SSOT for risk classification, scoring rules, and dependency gate policies (H5).",
+  "type": "object",
+  "required": ["schema_version", "risk_tiers", "risk_scoring"],
+  "properties": {
+    "schema_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "risk_tiers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["level", "threshold", "requires_approval", "description"],
+        "properties": {
+          "level": { "type": "string", "enum": ["none", "low", "medium", "high", "critical"] },
+          "threshold": { "type": "integer", "minimum": 0 },
+          "requires_approval": { "type": "boolean" },
+          "approval_roles": { "type": "array", "items": { "type": "string" } },
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "risks": {
+      "type": "array",
+      "description": "The registered risks themselves: which concrete actions are banned or need review (H5-3's actual question). risk_tiers and risk_scoring only say how to CLASSIFY an action — until this list existed there was nowhere to record the classifications anyone had made, so a file named 'risk registry' registered nothing and each reviewer kept their own list. PORTAL NOTE: H5-3 counts whatever `risk_registry.action_path` in the Portal's criteria catalogue points at, which defaults to 'risk_scoring.base_scores'; set it to 'risks' if you want these entries counted instead of the scoring table.",
+      "items": {
+        "type": "object",
+        "required": ["id", "action", "tier", "requires_approval"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1, "description": "Stable handle for the risk, so a review or an approval record can cite it and still mean the same thing after the list is reordered." },
+          "action": { "type": "string", "minLength": 1, "description": "The action being registered, in the vocabulary you already classify by — a risk_scoring.base_scores action_type, or a tool name from the tool registry. One or the other consistently; a registry that mixes 'deploy_production' with 'the deploy script' cannot be matched against anything by machine." },
+          "tier": {
+            "type": "string",
+            "enum": ["none", "low", "medium", "high", "critical"],
+            "description": "Severity, from the same closed set as risk_tiers[].level and the tool registry's risk_level. The enum can only check the value is a real level — it cannot check that YOUR risk_tiers actually declares that level, so keep the two lists together."
+          },
+          "requires_approval": { "type": "boolean", "description": "Does this specific action need a human before it runs? Required, because it is the entry's whole point: 'bị cấm hoặc cần review' is unanswerable for a risk that records no verdict. Tier alone does not say it — tier gates on score, this records the decision taken about this action. DECLARATIVE: approval-gate.ps1 decides from risk_scoring/risk_tiers, so setting this true does not by itself block anything." },
+          "owner": { "type": "string", "description": "Who answers for this risk. A name here is what turns an unmitigated entry into someone's task instead of a shared shrug." },
+          "mitigation": { "type": "string", "description": "The control that makes the residual risk acceptable, and honestly — if the mitigation is 'we intend to', say that, because an aspirational entry read as a live control is worse than an empty field." }
+        }
+      }
+    },
+    "risk_scoring": {
+      "type": "object",
+      "required": ["base_scores"],
+      "properties": {
+        "base_scores": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["action_type", "base_score"],
+            "properties": {
+              "action_type": { "type": "string" },
+              "base_score": { "type": "integer", "minimum": 0, "maximum": 100 }
+            }
+          }
+        },
+        "modifiers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["condition", "score_delta"],
+            "properties": {
+              "condition": { "type": "string" },
+              "score_delta": { "type": "integer" }
+            }
+          }
+        }
+      }
+    },
+    "dependency_gate": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "approval_required_for": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["category", "risk_level", "reason"],
+            "properties": {
+              "category": { "type": "string" },
+              "risk_level": { "type": "string" },
+              "reason": { "type": "string" }
+            }
+          }
+        },
+        "allow_without_approval": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["category", "risk_level", "reason"],
+            "properties": {
+              "category": { "type": "string" },
+              "risk_level": { "type": "string" },
+              "reason": { "type": "string" }
+            }
+          }
+        },
+        "allowed_registries": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

@@ -1,0 +1,61 @@
+# Project test suite in CI — the piece six of nine consuming projects said was
+# missing: the bundle shipped a weekly audit workflow but nothing that ran the
+# project's OWN tests per PR, so H3 scored low across the fleet.
+#
+# Copy to .github/workflows/tests.yml. UNCOMMENT the block for your stack and
+# delete the others -- the bundle cannot pick for you, and a workflow that
+# guesses wrong fails on every PR until someone reads it.
+#
+# Prefer to source the commands from .harness/control/agent-config.yaml
+# (test.full_suite_cmd) so CI and the Agent Pack's targeted-tester run the same
+# suite. Two places declaring "how to test this project" drift apart.
+name: tests
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    name: Project test suite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # ---------------- Node (Vitest / Jest) ----------------
+      # - uses: actions/setup-node@v4
+      #   with:
+      #     node-version: '20'
+      #     cache: 'npm'
+      # - run: npm ci
+      # - run: npm test -- --run
+      # # Coverage gate: uncomment once the suite is broad enough that the floor
+      # # is meaningful. A threshold set above current coverage blocks every PR;
+      # # start at the number you already have and raise it deliberately.
+      # # - run: npx vitest run --coverage --coverage.thresholds.lines=70
+
+      # ---------------- Python (pytest) ----------------
+      # - uses: actions/setup-python@v5
+      #   with:
+      #     python-version: '3.12'
+      # - run: pip install -r requirements.txt -r requirements-dev.txt
+      # - run: python -m pytest -q
+
+      # ---------------- PHP (Laravel / PHPUnit) ----------------
+      # - uses: shivammathur/setup-php@v2
+      #   with:
+      #     php-version: '8.2'
+      # - run: composer install --no-interaction --prefer-dist
+      # - run: cp .env.testing .env && php artisan key:generate
+      # - run: php artisan test
+
+      - name: No stack selected
+        run: |
+          echo "tests.yml.template was copied but no stack block was uncommented."
+          echo "Edit .github/workflows/tests.yml and enable the block for your stack."
+          # Fail rather than report a green build that ran nothing -- a workflow
+          # that passes without testing is worse than no workflow, because the
+          # badge says the opposite of the truth.
+          exit 1

@@ -1,0 +1,40 @@
+{
+  "$schema": "../schemas/comprehension-gate.schema.json",
+  "schema_version": "1.0.0",
+  "description": "Comprehension gate (F6) — the only gate a machine cannot stand in for. Asks the PERSON two questions before a high-risk change is released.",
+
+  "governs": "assistant_workflow",
+
+  "enabled": false,
+  "enforced_at": "not_wired",
+  "enforcement_note": "HONEST STATUS (C10): shipped DISABLED and wired to nothing. The mechanism runs (comprehension-gate.ps1 exits 0/1 and records answers), but no hook consults it and no workflow stage depends on it. Wiring belongs with the open B0 decision about approval-gate.ps1 and domain-firewall.ps1: if those get wired into settings.json, this goes in the same place. Do not read `enabled: true` alone as enforcement — it only makes the standalone checker refuse to pass.",
+
+  "why_this_exists": "Every existing gate is judged by a machine or an AI: gatekeeper, qa-gate, the judge's min_overall_score. With 15 agents, max_fix_retries 5 and back_to_plan_cycles 3, this pipeline can produce a change that is approved, tested and deployed while the person never understood it — and it will look clean against every policy. Rubber-stamping and understanding emit the identical artefact: one word, `approve`. Nothing automated distinguishes them, because the difference is not in the output.",
+
+  "when_it_should_be_asked": "Only on risk tier high or critical (after F2 that set is the right one). Asked on every change it becomes friction, gets resented, and is switched off inside a fortnight — which is worse than never having it, because the switch-off also removes the record that it once existed.",
+  "trigger_tiers": ["high", "critical"],
+
+  "questions": [
+    {
+      "id": "restate",
+      "prompt": "Noi lai BANG LOI CUA BAN: thay doi nay lam gi, va vi sao no dung?",
+      "min_chars": 80,
+      "rule": "Khong dan lai tom tat AI viet. Neu ban khong dien dat lai duoc thi ban chua hieu no."
+    },
+    {
+      "id": "ai_error",
+      "prompt": "Chi ra it nhat MOT cho AI lam sai / thieu / thua ma ban da sua.",
+      "min_chars": 30,
+      "rule": "Khong phan bien duoc diem nao tren mot thay doi rui ro cao la tin hieu ban dang rubber-stamp, khong phai tin hieu AI hoan hao.",
+      "reject_non_answers": ["khong co", "khong", "none", "n/a", "na", "-", "nothing", "no issues", "ok", "tot"]
+    }
+  ],
+
+  "records_to": ".harness/telemetry/comprehension.jsonl",
+
+  "notes": {
+    "what_it_cannot_do": "It cannot tell a considered answer from a plausible one typed to get past it. There is no technical fix for that and pretending otherwise would be the same false assurance this gate exists to prevent. Its value is the forced pause and the written record, not the text.",
+    "byproduct": "Each recorded ai_error is a real defect the agents produced, with the human correction attached — the cheapest source of golden cases there is, and unlike hand-written ones they reflect what this system actually gets wrong.",
+    "how_to_read_it_later": "If recorded answers start repeating a template, the gate has become a formality. That shows up in the record before it shows up anywhere else."
+  }
+}

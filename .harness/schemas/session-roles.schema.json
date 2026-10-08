@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Session Roles Configuration (D9)",
+  "description": "Defines per-role permissions, risk ceilings, and agent-to-role bindings for JWT-based identity",
+  "type": "object",
+  "required": ["roles", "agent_role_bindings"],
+  "properties": {
+    "schema_version": { "type": "string" },
+    "default_role": { "type": "string" },
+    "roles": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-z-]+$": {
+          "type": "object",
+          "required": ["priority", "allowed_tools", "max_risk_level"],
+          "properties": {
+            "priority": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "description": { "type": "string" },
+            "allowed_tools": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "max_risk_level": {
+              "type": "string",
+              "enum": ["none", "low", "medium", "high", "critical"]
+            },
+            "requires_human_approval_for": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "session_ttl_minutes": { "type": "integer", "minimum": 1 },
+            "allowed_paths": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "agent_role_bindings": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z0-9_-]+$": { "type": "string" }
+      }
+    },
+    "token_config": {
+      "type": "object",
+      "required": ["algorithm", "issuer", "ttl_seconds"],
+      "properties": {
+        "algorithm": { "type": "string", "enum": ["HS256"] },
+        "issuer": { "type": "string" },
+        "ttl_seconds": { "type": "integer", "minimum": 60 },
+        "min_key_length": { "type": "integer", "minimum": 16 }
+      }
+    }
+  }
+}

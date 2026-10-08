@@ -1,0 +1,135 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "WebSearch",
+      "WebFetch",
+      "Bash",
+      "PowerShell",
+      "Edit",
+      "Write",
+      "NotebookEdit"
+    ],
+    "ask": [
+      "Agent",
+      "Workflow",
+      "Skill",
+      "CronCreate",
+      "CronDelete",
+      "TodoWrite"
+    ],
+    "deny": [
+      "Bash: rm -rf",
+      "Bash: sudo",
+      "Bash: chmod -R",
+      "Bash: git reset --hard",
+      "Bash: git push --force",
+      "Bash: git push --force-with-lease",
+      "Bash: del /F /S",
+      "PowerShell: Remove-Item -Recurse -Force",
+      "PowerShell: Start-Process -Verb RunAs"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.harness/scripts/bash/harness-session-start.sh"
+            ]
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.harness/scripts/bash/injection-scan.sh"
+            ]
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.harness/scripts/bash/harness-runtime-guard.sh"
+            ]
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.harness/scripts/bash/harness-post-tool-use.sh"
+            ]
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.harness/scripts/bash/agentops-sampler.sh"
+            ]
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.harness/scripts/bash/harness-handoff-check.sh"
+            ]
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.harness/scripts/bash/harness-session-end.sh"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

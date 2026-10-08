@@ -1,0 +1,255 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "casan-policies.schema.json",
+  "title": "CASAN uplift policy pack",
+  "type": "object",
+  "required": [
+    "schema_version"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "enforced_at": {
+          "type": "string"
+        },
+        "governs": {
+          "type": "string",
+          "enum": [
+            "assistant_workflow",
+            "product_runtime"
+          ],
+          "description": "Which PLANE this layer governs. assistant_workflow = the AI/CI workflow that BUILDS this repo (agents, their models, their tools). product_runtime = the shipped product's own behaviour. The two are separate: an assistant-plane model id sent to the product's provider fails every call and surfaces as a bad key, not a bad model. policy-ci asserts the separation."
+        },
+        "pointer_store": {
+          "type": "string"
+        },
+        "staleness_ttl_minutes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "required_keys": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "clean_on_stale": {
+          "type": "boolean"
+        }
+      }
+    },
+    "tool": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "enforced_at": {
+          "type": "string"
+        },
+        "governs": {
+          "type": "string",
+          "enum": [
+            "assistant_workflow",
+            "product_runtime"
+          ],
+          "description": "Which PLANE this layer governs. assistant_workflow = the AI/CI workflow that BUILDS this repo (agents, their models, their tools). product_runtime = the shipped product's own behaviour. The two are separate: an assistant-plane model id sent to the product's provider fails every call and surfaces as a bad key, not a bad model. policy-ci asserts the separation."
+        },
+        "idempotency_required": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "rate_limits": {
+          "type": "object"
+        }
+      }
+    },
+    "evaluation": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "enforced_at": {
+          "type": "string"
+        },
+        "governs": {
+          "type": "string",
+          "enum": [
+            "assistant_workflow",
+            "product_runtime"
+          ],
+          "description": "Which PLANE this layer governs. assistant_workflow = the AI/CI workflow that BUILDS this repo (agents, their models, their tools). product_runtime = the shipped product's own behaviour. The two are separate: an assistant-plane model id sent to the product's provider fails every call and surfaces as a bad key, not a bad model. policy-ci asserts the separation."
+        },
+        "golden_dataset_path": {
+          "type": "string"
+        },
+        "regression_suites_required": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "judge": {
+          "type": "object"
+        },
+        "require_golden_per_bug": {
+          "type": "boolean",
+          "description": "R-4. When true, harness doctor FAILS if a bug logged in buglist.md has no golden case referencing it (a case whose `bug` field names the bug id). Default false: a check that turns every existing project red the day it ships is the cry-wolf failure C14 forbids, so a project opts in once it has caught up."
+        },
+        "require_pipeline_record_for_release": {
+          "type": "boolean",
+          "description": "When true, the PDP release gate (deploy/rollback_deploy) FAILS unless a PipelineRun was logged for the exact commit being released (head_ref matched against the hook's own `git rev-parse HEAD`). Closes the gap where RECORD is a prompted SKILL.md step, not a hook, so 'ran the pipeline but forgot to log it' looks identical to '0 runs'. Default false, same reasoning as require_golden_per_bug: every project starts with zero PipelineRun history, so shipping this ON turns every release red on day one -- the cry-wolf failure C14 forbids. Opt in per project once its release workflow actually logs pipeline runs."
+        },
+        "buglist_path": {
+          "type": "string",
+          "description": "R-4. Where the bug log lives, if not the default buglist.md at the project root. Read from config rather than hardcoded so a project that keeps it elsewhere is not silently reported as having no bugs (C2)."
+        },
+        "golden_exempt_bugs": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "R-4. Bug ids that cannot be expressed as a golden case, mapped to the REASON. This harness's golden runner evaluates one thing: whether an input string is denied by the guard policy. A parser bug, an encoding bug or an ingest 422 has no such input, so demanding a golden case for it would be demanding something the runner cannot represent -- and the usual result is a fake case written to clear a check. doctor can verify an exemption is DECLARED; it cannot verify the reason is true or that a regression test exists (C12)."
+        }
+      }
+    },
+    "security": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "enforced_at": {
+          "type": "string"
+        },
+        "governs": {
+          "type": "string",
+          "enum": [
+            "assistant_workflow",
+            "product_runtime"
+          ],
+          "description": "Which PLANE this layer governs. assistant_workflow = the AI/CI workflow that BUILDS this repo (agents, their models, their tools). product_runtime = the shipped product's own behaviour. The two are separate: an assistant-plane model id sent to the product's provider fails every call and surfaces as a bad key, not a bad model. policy-ci asserts the separation."
+        },
+        "outbound_allowlist": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "block_cloud_metadata": {
+          "type": "boolean"
+        },
+        "redact_pii_in_logs": {
+          "type": "boolean"
+        }
+      }
+    },
+    "governance": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "enforced_at": {
+          "type": "string"
+        },
+        "governs": {
+          "type": "string",
+          "enum": [
+            "assistant_workflow",
+            "product_runtime"
+          ],
+          "description": "Which PLANE this layer governs. assistant_workflow = the AI/CI workflow that BUILDS this repo (agents, their models, their tools). product_runtime = the shipped product's own behaviour. The two are separate: an assistant-plane model id sent to the product's provider fails every call and surfaces as a bad key, not a bad model. policy-ci asserts the separation."
+        },
+        "approval_required": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "immutable_ledger": {
+          "type": "string"
+        },
+        "compliance_report": {
+          "type": "string"
+        }
+      }
+    },
+    "handoff": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "C15 Handoff after every task. Missing section = defaults; only enabled:false disables.",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "path": { "type": "string", "minLength": 1 },
+        "remind_on_stop": { "type": "boolean" },
+        "max_age_days": { "type": "integer", "minimum": 1 },
+        "dated_glob": { "type": "string" },
+        "ignore_paths": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "agentops": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "enforced_at": {
+          "type": "string"
+        },
+        "governs": {
+          "type": "string",
+          "enum": [
+            "assistant_workflow",
+            "product_runtime"
+          ],
+          "description": "Which PLANE this layer governs. assistant_workflow = the AI/CI workflow that BUILDS this repo (agents, their models, their tools). product_runtime = the shipped product's own behaviour. The two are separate: an assistant-plane model id sent to the product's provider fails every call and surfaces as a bad key, not a bad model. policy-ci asserts the separation."
+        },
+        "cost_anomaly": {
+          "type": "object"
+        },
+        "hallucination_flags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "drift_window_days": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "alert_routing": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "orchestration": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "enforced_at": {
+          "type": "string"
+        },
+        "governs": {
+          "type": "string",
+          "enum": [
+            "assistant_workflow",
+            "product_runtime"
+          ],
+          "description": "Which PLANE this layer governs. assistant_workflow = the AI/CI workflow that BUILDS this repo (agents, their models, their tools). product_runtime = the shipped product's own behaviour. The two are separate: an assistant-plane model id sent to the product's provider fails every call and surfaces as a bad key, not a bad model. policy-ci asserts the separation."
+        },
+        "model_fallback": {
+          "type": "object"
+        },
+        "retry": {
+          "type": "object"
+        },
+        "transaction": {
+          "type": "object"
+        }
+      }
+    }
+  }
+}

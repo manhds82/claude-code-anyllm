@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://harness.internal/schemas/agent-config.schema.json",
+  "title": "Agent Pack Project Config Schema",
+  "description": "Layer 2 of the Agent Pack (C2): the bundle ships the agents and skills; the project supplies ONLY this — how to run its tests and which files force a full run. Keeps one common pipeline working for a Vitest, pytest or PHPUnit repo without hardcoding any of them. Project-owned: never overwritten on re-install.",
+  "type": "object",
+  "required": ["test"],
+  "properties": {
+    "test": {
+      "type": "object",
+      "required": ["unit_related_cmd", "full_suite_cmd"],
+      "properties": {
+        "unit_related_cmd": {
+          "type": "string",
+          "description": "Command to run only the tests related to changed files. {files} is substituted with the changed paths. E.g. 'npx vitest related --run {files}', 'pytest --testmon', 'php artisan test --filter {files}'."
+        },
+        "full_suite_cmd": {
+          "type": "string",
+          "description": "Command to run the whole suite (used on hub changes and at the release gate)."
+        },
+        "integration_smoke": {
+          "type": "array",
+          "description": "Always-run smoke checks (endpoints or scripts), cheap enough to run every change.",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "impact": {
+      "type": "object",
+      "properties": {
+        "force_full_test_on": {
+          "type": "array",
+          "description": "Path globs that always force the full suite when touched — DB schema/migrations, routers, middleware, shared config, lockfiles. Under-scoping a change to one of these is how a regression ships.",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

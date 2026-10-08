@@ -1,0 +1,78 @@
+# KPI leverage definitions (F5) — the two numbers this system could not produce.
+#
+# Every metric in docs/dashboard-spec.md measures the MACHINE: cost by agent,
+# tool error rate, workflow success, security block rate. All four answer "what
+# did the agents do". None answers "what did we get out of it", because until F4
+# there was no record of what a person spent.
+#
+# C2: these are DATA. harness_kpi.py reads them; no formula is hardcoded in the
+# script. Change the ratio here, not in code.
+schema_version: "1.0.0"
+
+# Governs the ASSISTANT plane: leverage of the agents working on this repo.
+governs: assistant_workflow
+
+# HONEST STATUS (C10): computed on demand by harness_kpi.py and printed. Nothing
+# enforces on these numbers, nothing alerts on them, and they are NOT pushed to
+# the Portal yet — push-telemetry ships an explicit payload list and human-effort
+# is deliberately not on it (see F4). Do not read a KPI here as a dashboard.
+enforced_at: kpi_report
+
+hours_per_md: 8
+
+# A metric computed on too little data is worse than no metric: it reads as
+# measurement and gets quoted. Below this share of eligible entries the report
+# prints INSUFFICIENT and no number at all.
+min_coverage_percent: 30
+
+metrics:
+  - id: compression
+    name: "Nen"
+    industry_name: "Productivity Ratio / Effort Multiplier"
+    formula: "sum(baseline_hours) / sum(human_hours)"
+    unit: "x"
+    higher_is_better: true
+    requires: ["baseline_ref on the human-effort entry", "matching id in baseline-w0.json"]
+    reads:
+      - ".harness/telemetry/human-effort.jsonl"
+      - ".harness/control/baseline-w0.json"
+    note: >-
+      The leverage number, and the only one a person outside the team asks for.
+      Numerator is an ESTIMATE declared once at baseline time, not a measurement;
+      that is why baseline-w0.json is frozen after capture and a change to it must
+      be justified in DEVBOOK. A moving numerator makes this marketing.
+
+  - id: md_per_million_tokens
+    name: "Hieu qua token"
+    industry_name: "Token / Cost Efficiency"
+    formula: "(sum(baseline_hours) / hours_per_md) / (tokens_total / 1e6)"
+    unit: "MD/1M-token"
+    higher_is_better: true
+    requires: ["same baseline_ref coverage as compression", "daily-*.jsonl for the same dates"]
+    reads:
+      - ".harness/telemetry/human-effort.jsonl"
+      - ".harness/telemetry/daily-*.jsonl"
+      - ".harness/control/baseline-w0.json"
+    note: >-
+      Connects token spend to delivered value rather than to cost. Cost alone
+      answers "how much did AI consume"; this answers "what did the consumption buy".
+
+  - id: human_edit_rate
+    name: "So lan nguoi sua AI / gio"
+    formula: "sum(human_edits) / sum(human_hours)"
+    unit: "edits/h"
+    higher_is_better: null
+    reads:
+      - ".harness/telemetry/human-effort.jsonl"
+    note: >-
+      Deliberately has no good direction. Falling can mean the agents improved or
+      that the person stopped reading; the two look identical on this line alone.
+      Read it against DEVBOOK: agents improving leaves entries that thin out but
+      keep their severity, rubber-stamping leaves entries that thin out AND go
+      vague. This metric exists to prompt that check, not to be optimised.
+
+# Entries flagged matches_machine_duration by log-human are counted, but reported
+# separately: a row whose human_minutes equals the machine clock may have been
+# read off the clock rather than counted, and a leverage ratio built on those is
+# circular.
+report_suspect_entries_separately: true

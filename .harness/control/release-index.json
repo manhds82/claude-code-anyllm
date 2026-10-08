@@ -1,0 +1,3764 @@
+{
+ "schema_version": "1.0.0",
+ "bundle": "standard-governance",
+ "normalisation": "strip leading UTF-8 BOM; CRLF to LF (binary left as read); sha256 hex",
+ "generated_from": "bundles/standard-governance/standard-governance-<version>.bundle.json (one per packed release)",
+ "versions": [
+  {
+   "version": "1.0.0",
+   "content_hash": "715f91632bab06d5d3f42b09e240f4e695558a4e3a6b3d5999d69ffe8b295338",
+   "file_count": 89
+  },
+  {
+   "version": "1.1.0",
+   "content_hash": "91d498442f06e46499b54ccfff03e15be7ddc91c4bb2d60e1361860d3d95b849",
+   "file_count": 90
+  },
+  {
+   "version": "1.2.0",
+   "content_hash": "03422fbd912d23ac300caa7ea8c2cdd0063f0a502a7266bd8fb6106fb66fd2a2",
+   "file_count": 90
+  },
+  {
+   "version": "1.2.1",
+   "content_hash": "cd0ce0b34d83e70044392f966b4a2934813aa186f16f89c361d329eaca5cba3f",
+   "file_count": 92
+  },
+  {
+   "version": "1.2.2",
+   "content_hash": "41ce850fdbb1ac66047e7a9823a585324c1f77cb2ab8a15c1fa9e1a407f88c39",
+   "file_count": 92
+  },
+  {
+   "version": "1.2.3",
+   "content_hash": "559ead306531b5b85b77b1f83189128527f4188649f42cd9b19a699f40159e55",
+   "file_count": 92
+  },
+  {
+   "version": "1.2.4",
+   "content_hash": "278415c5316c0ac1f5f9bf9af69e03c480593fecae541b844ebe0e18ab9637a3",
+   "file_count": 92
+  },
+  {
+   "version": "1.2.5",
+   "content_hash": "8187f0ef1d6dbbafffdc602fb15e5598873ecf501c566f0b926383e5507d087e",
+   "file_count": 92
+  },
+  {
+   "version": "1.2.6",
+   "content_hash": "8a83c0df2d9ba5c9831e479fd4eadc246032d62e61564aa829f1115268df6562",
+   "file_count": 92
+  },
+  {
+   "version": "1.2.7",
+   "content_hash": "d11103a08b4580540f6c9d02e49d95b07e1f20c37d0ffeb324c960b78c905fb8",
+   "file_count": 92
+  },
+  {
+   "version": "1.3.0",
+   "content_hash": "30e9bd511394b250755d171ce394b4573246fa8ad6663ddf4157da35f77d328a",
+   "file_count": 94
+  },
+  {
+   "version": "1.4.0",
+   "content_hash": "a71a99e4fe696e956ba23c33c2cccaa555e36947f501691a24cf8307c3a4f55d",
+   "file_count": 94
+  },
+  {
+   "version": "1.4.1",
+   "content_hash": "494a1e89e1938df12facc85d8eedf2ce0ae57413d1c9970acb755073e9125f9d",
+   "file_count": 100
+  },
+  {
+   "version": "1.4.2",
+   "content_hash": "0ce85f2ba9eac876e293099beaf2c5dfcf6ee7d87b398ad2d2b5fc8c3533f489",
+   "file_count": 103
+  },
+  {
+   "version": "1.4.3",
+   "content_hash": "b2fd7216bab9a6dcbaf56a128c17444fb403d754fe49fb1d29489c975f649a1c",
+   "file_count": 103
+  },
+  {
+   "version": "1.4.4",
+   "content_hash": "bfe27602939808e50ea42e47e762bfdb7f1560bd88b92807504da656f57d7a80",
+   "file_count": 103
+  },
+  {
+   "version": "1.4.5",
+   "content_hash": "20c8653f5f0a30765c9da5dc9f7fb73af8078edd81804f2c4c1f05c1882dcfa5",
+   "file_count": 105
+  },
+  {
+   "version": "1.4.6",
+   "content_hash": "005e7cde1590c8114cb05c810e850093f1d4b21420083f90cf8d84d249b39bb3",
+   "file_count": 105
+  },
+  {
+   "version": "1.4.7",
+   "content_hash": "84a0b2554d8a6773fc4426605a70cc9377fcc446db68d99cb047e585512bb3c2",
+   "file_count": 106
+  },
+  {
+   "version": "1.4.8",
+   "content_hash": "317e094fea7f3cadc0ebb46dc26bfa90e1871f143f89f0f8db2507a4a413dc95",
+   "file_count": 108
+  },
+  {
+   "version": "1.4.9",
+   "content_hash": "51af9e9be8b309f9619be2e87b2faae11a6ec3e7c48a03482857ef54d7ce6662",
+   "file_count": 109
+  },
+  {
+   "version": "1.5.0",
+   "content_hash": "7aa07587e794d75cfccc496d7ab5ad1a431917902b665209bfb78ba75fdadcf9",
+   "file_count": 115
+  },
+  {
+   "version": "1.5.1",
+   "content_hash": "7aa07587e794d75cfccc496d7ab5ad1a431917902b665209bfb78ba75fdadcf9",
+   "file_count": 115
+  },
+  {
+   "version": "1.5.2",
+   "content_hash": "b1312f01c03a3d7e5df4363501f15589b5a82f389a2984060d4532b07002a72b",
+   "file_count": 115
+  },
+  {
+   "version": "1.5.3",
+   "content_hash": "4b9910c998090284ea6fe804d273bf8ba4596fde46b49b5605f264143b6d9219",
+   "file_count": 115
+  },
+  {
+   "version": "1.5.4",
+   "content_hash": "e3d3f0e2d4c4f4f890dab351a4cdaeaa743a8bee627e3cf2051aa9da68a393cf",
+   "file_count": 115
+  },
+  {
+   "version": "1.5.5",
+   "content_hash": "9b6dccc749a19ad53c2c0ed47cc9d9b835a958cb547148ce294fecbcca764d20",
+   "file_count": 115
+  },
+  {
+   "version": "1.5.6",
+   "content_hash": "3d99ef42cf80f60684be6f55ef6629c062f3a1ffc2e5a7824e9e28646cc17116",
+   "file_count": 119
+  },
+  {
+   "version": "1.5.7",
+   "content_hash": "68a930b8519b99cbb6d08871eca76aa4f0d2719055e3bdb40e99d3cc088d27ca",
+   "file_count": 119
+  },
+  {
+   "version": "1.5.9",
+   "content_hash": "b564b206d8371027f076e5130a7d02b925361328f35570ec224cb2455688312b",
+   "file_count": 128
+  },
+  {
+   "version": "1.6.0",
+   "content_hash": "1a2d2ea93cdd33eb934956a2a2554cbec68eed9249a9262cdf14983f5cd55ead",
+   "file_count": 139
+  },
+  {
+   "version": "1.6.1",
+   "content_hash": "6f37a9edfb8c57fbd9f9ce62aaccf2eb09b075c341237183da540a790db6eedb",
+   "file_count": 143
+  },
+  {
+   "version": "1.6.2",
+   "content_hash": "6a2bfe48311ed29db75d73eda1a58b98ab20664d432eb9405254805675e385fd",
+   "file_count": 147
+  },
+  {
+   "version": "1.6.3",
+   "content_hash": "20f059c1656fe34df3962783ff577afbd19ef1d78a96bb467bbdb77b79bfb8ed",
+   "file_count": 147
+  },
+  {
+   "version": "1.6.5",
+   "content_hash": "4398ba626b1b1481bbb4ab7c37e8acb48029d68b2750798e5d3dc97bb4aef647",
+   "file_count": 151
+  },
+  {
+   "version": "1.6.6",
+   "content_hash": "bb8796d833c280767beb33317e0e48898fdfc0a28686f8b0bfd9f515eff6dc7c",
+   "file_count": 151
+  },
+  {
+   "version": "1.6.7",
+   "content_hash": "738cd6eed1d5b8a625629c53379095588dcee6e2b017a0e07c5da6eafd570e9e",
+   "file_count": 152
+  },
+  {
+   "version": "1.6.8",
+   "content_hash": "b9b437dba9fe75a98819ec2e77f7f5d37694b1859f6afbfdd8ab10f1867d5bf3",
+   "file_count": 151
+  },
+  {
+   "version": "1.6.9",
+   "content_hash": "acbf60d9e983592ea3159ea0f91ff6fd05c8b514eff41fc81a7eb2a45bc5a51c",
+   "file_count": 151
+  },
+  {
+   "version": "1.6.10",
+   "content_hash": "699ae23acbb4da7303b33eaf90d348d398a8aff172469924f7ca723c4c7f8ede",
+   "file_count": 152
+  },
+  {
+   "version": "1.6.11",
+   "content_hash": "d2be55b6275247dd598071b519e85c1a94004f9c4aed5981b1fc4b8e5ad7a797",
+   "file_count": 152
+  },
+  {
+   "version": "1.6.12",
+   "content_hash": "9a8266d32bf61d57e0c55daeeda1c80cfe3f0ba9cb4232bb014619489d62b251",
+   "file_count": 152
+  },
+  {
+   "version": "1.6.13",
+   "content_hash": "7e8b2ab93ee86617edd3badc3ed9ab910eb4e055cfa6825ca7d371fd62c595f8",
+   "file_count": 152
+  },
+  {
+   "version": "1.6.14",
+   "content_hash": "fa24df0a24004c7e7a4d2b1c13ff2f6973e9af9409aac916863f32d89de28d5a",
+   "file_count": 152
+  },
+  {
+   "version": "1.6.15",
+   "content_hash": "a66c9b65293214aad7c264cd0722954dd4e88fb2465eb7b170368b4893a164b7",
+   "file_count": 153
+  },
+  {
+   "version": "1.6.16",
+   "content_hash": "da0006fa96e54d545f9afefedd7f991929e616d87802d1e2bdcd6eefade1327b",
+   "file_count": 153
+  },
+  {
+   "version": "1.6.17",
+   "content_hash": "da0006fa96e54d545f9afefedd7f991929e616d87802d1e2bdcd6eefade1327b",
+   "file_count": 153
+  },
+  {
+   "version": "1.6.18",
+   "content_hash": "d5c1b0544cf30b0d35fdc7c7541c1e9df96c4f68d981e6f621671d62f4c2dba7",
+   "file_count": 153
+  },
+  {
+   "version": "1.6.19",
+   "content_hash": "cd11e2f2e4e1a2b88894fbe5379dc5dd16d6cafe7db1e174830cfa01f55347a3",
+   "file_count": 153
+  },
+  {
+   "version": "1.6.20",
+   "content_hash": "21bcb326ebb0ac18f87ba8d14f85c5a3100afd24bcd94ffeb8cba2429e4ea12c",
+   "file_count": 153
+  },
+  {
+   "version": "1.7.0",
+   "content_hash": "7fe920c0370d64da04c627ca68b5d068d8b4ca866be23dd1bde2e4fe1548b7ec",
+   "file_count": 158
+  },
+  {
+   "version": "1.7.1",
+   "content_hash": "01c277633e0279a919283720b3f725a364b49cd4d5d38b6f477305f13d14ffc6",
+   "file_count": 158
+  },
+  {
+   "version": "1.8.0",
+   "content_hash": "74d9b39746cb060446a529367ae8a2a47add24a8f2a623a05746478171f184ba",
+   "file_count": 176
+  },
+  {
+   "version": "1.8.1",
+   "content_hash": "588388ee3a8eeaa725c0d865b242d3ad4acc4d890bb05adb07ba830bb501bbfd",
+   "file_count": 180
+  },
+  {
+   "version": "1.8.2",
+   "content_hash": "a59b6af868e6634fd261f17eddff556d5a8bfe575088b6a3589ba6d507662b92",
+   "file_count": 180
+  },
+  {
+   "version": "1.8.3",
+   "content_hash": "7174329a747f848f7467860cfa259f5d6f17eb954cd7390c74a0d20695893189",
+   "file_count": 180
+  },
+  {
+   "version": "1.8.4",
+   "content_hash": "7e4811e583ba8968ca12b78af174555bdf010eb1107553310dadf287e0e1a9cc",
+   "file_count": 180
+  },
+  {
+   "version": "1.8.5",
+   "content_hash": "6fc765fa805dc1e457e42510555c294fb70a144c04ed792af8434ab61ae94d83",
+   "file_count": 180
+  },
+  {
+   "version": "1.8.6",
+   "content_hash": "f47a4ea5ba12680bb6c896f75362e2b79c3c5ef10c40a54c1f9ddc8f1867596b",
+   "file_count": 181
+  },
+  {
+   "version": "1.8.7",
+   "content_hash": "384af2c8219f2ef801eb62e8735881bf92365d98d90e43d79f06e738f87ae5b1",
+   "file_count": 189
+  },
+  {
+   "version": "1.8.8",
+   "content_hash": "cc6ffd68e14ab89e88014d0c051c29092c04c6269e79157977d0f738a1d69aaa",
+   "file_count": 192
+  },
+  {
+   "version": "1.8.9",
+   "content_hash": "b9af78a6c84c273777a973b84f7adb7126c231a8e89640d5091f7f2da8957bde",
+   "file_count": 192
+  },
+  {
+   "version": "1.8.10",
+   "content_hash": "cab29f349795a4bc891e94dd47a6af6a6d6bd0432335a0654dae559b32429aac",
+   "file_count": 192
+  },
+  {
+   "version": "1.8.11",
+   "content_hash": "",
+   "file_count": 192
+  }
+ ],
+ "files": {
+  ".claude/agents/README.md": [
+   {
+    "sha256": "808e024968a0e50fddc484c26cdedff09be7b79ceb1a297b65f8d2b1388cd5ff",
+    "versions": [
+     "1.5.9"
+    ]
+   },
+   {
+    "sha256": "2166769f6cd6e13f5c8f8f901bb25294de1023e3f8ee6220cd0515f9a94da7ff",
+    "versions": [
+     "1.6.0..1.8.1"
+    ]
+   },
+   {
+    "sha256": "deb0d3d8eddae9560b8671743308aebede57bbc36bfbc821c0a4779d64770a1b",
+    "versions": [
+     "1.8.2..1.8.11"
+    ]
+   }
+  ],
+  ".claude/agents/analyst.md": [
+   {
+    "sha256": "a8e20194f3c504a40e1075f027c3ba835a376dc17267c8c9d83f7f39a6fa4d1b",
+    "versions": [
+     "1.0.0..1.8.1"
+    ]
+   },
+   {
+    "sha256": "776cf0fd237dd73888cd9d37a12b628d1a804f27283ab609e8c65012cef0e9d8",
+    "versions": [
+     "1.8.2"
+    ]
+   },
+   {
+    "sha256": "18fb50df7621e625d4dc29da356f3e4d0d027bf019b66d2547fb402258a541c5",
+    "versions": [
+     "1.8.3..1.8.11"
+    ]
+   }
+  ],
+  ".claude/agents/architect.md": [
+   {
+    "sha256": "0b046c84a46cad3b6cc0dc6c11dbf0693e7e92df77dd5d3d8569f73ab7e10bbf",
+    "versions": [
+     "1.0.0..1.8.1"
+    ]
+   },
+   {
+    "sha256": "267d15dc2a2e56b433fe41f024bef941b30c979a227d6665c6a34945773f7047",
+    "versions": [
+     "1.8.2"
+    ]
+   },
+   {
+    "sha256": "50b4df19f98ce5d3186b747fb8206c0667812ab1ba6f259c2965c910d13b8972",
+    "versions": [
+     "1.8.3..1.8.11"
+    ]
+   }
+  ],
+  ".claude/agents/boss.md": [
+   {
+    "sha256": "2a975218e5c626124263f2ea322422f92259af61923dfd3bd7075efd3f3b720c",
+    "versions": [
+     "1.0.0..1.8.1"
+    ]
+   },
+   {
+    "sha256": "58eeabeecb9b84349308b93fb0f02f1835abc029a4a006205d3fb8b237bd4c9b",
+    "versions": [
+     "1.8.2"
+    ]
+   },
+   {
+    "sha256": "9841f91107b0ae9b9d07562fb7a662aba386b0586333199e6dede56c86ee9a1b",
+    "versions": [
+     "1.8.3..1.8.11"
+    ]
+   }
+  ],
+  ".claude/agents/code-reviewer.md": [
+   {
+    "sha256": "b3057f03097e3fccdb070a103a6f232a29bf4d33faa01ad7eb43dedd2f929430",
+    "versions": [
+     "1.6.0..1.8.1"
+    ]
+   },
+   {
+    "sha256": "c32d0b728597c85261e9348fff5c7cab25cc1ae4f87e91008787c8954fa5e27b",
+    "versions": [
+     "1.8.2"
+    ]
+   },
+   {
+    "sha256": "3be54def85d141c4a6461211315b0ce815709e479a79cf78a5695b2f6f5ee5b1",
+    "versions": [
+     "1.8.3..1.8.11"
+    ]
+   }
+  ],
+  ".claude/agents/developer.md": [
+   {
+    "sha256": "a0c0ba1ea0debee5be6b5c5a3592827ab432e13b23d3ae5583c989868ae619f8",
+    "versions": [
+     "1.0.0..1.8.1"
+    ]
+   },
+   {
+    "sha256": "b5ec15c361786b9e33ab99996f1c5a4c531d322b872f7826a383e239d8a67d84",
+    "versions": [
+     "1.8.2"
+    ]
+   },
+   {
+    "sha256": "188eff7d35908a341604d80946c2ee2915a3b5afedd80bf21430cf218a8f6440",
+    "versions": [
+     "1.8.3..1.8.11"
+    ]
+   }
+  ],
+  ".claude/agents/devops.md": [
+   {
+    "sha256": "df40c90842406a148fc75388a67204595d4407bd7d9979e574d30cebfaaec920",
+    "versions": [
+     "1.0.0..1.8.1"
+    ]
+   },
+   {
+    "sha256": "9f74a51ad5571cf03568842f7a0da9507503a14709ca828940523c3f36019fe6",
+    "versions": [
+     "1.8.2"
+    ]
+   },
+   {
+    "sha256": "eacfb62ead105ab018f4b27c441f9eaedcfc7d424b55d4be4ba1a0aeeeac74be",
+    "versions": [
+     "1.8.3..1.8.11"
+    ]
+   }
+  ],
+  ".claude/agents/fix-agent.md": [
+   {
+    "sha256": "60864002e4ad84f5a308b56cd0cc8658df931844577c7f780d09e21e965cdc50",
+    "versions": [
+     "1.6.0..1.8.1"
+    ]
+   },
+   {
+    "sha256": "aaa592166729a1781453a86f6399ca9b1c3328d9c29a404103dea175dc89aae0",
+    "versions": [
+     "1.8.2"
+    ]
+   },
+   {
+    "sha256": "2eddf37f791750381a732cce8121391cfd447fdc0a0b5eb586473ce8846f0d7d",
+    "versions": [
+     "1.8.3..1.8.11"
+    ]
+   }
+  ],
+  ".claude/agents/gatekeeper.md": [
+   {
+    "sha256": "731facbd0d923401b2a456c3c39389b544685f7367b3d92059b7de3766623e3c",
+    "versions": [
+     "1.5.9..1.7.1"
+    ]
+   },
+   {
+    "sha256": "b268e44badda0675557cb8d00176648630baf20906a926368952ce5cff894d41",
+    "versions": [
+     "1.8.0..1.8.1"
+    ]
+   },
+   {
+    "sha256": "8e05d52570c21251b2cea6e934ba5ca926e42eb62345cae20a08b91710796230",
+    "versions": [
+     "1.8.2"
+    ]
+   },
+   {
+    "sha256": "7101785b8460e553a795a58e91b6ceee902dd079dba5eb3a339b8182e3f11b48",
+    "versions": [
+     "1.8.3..1.8.11"
+    ]
+   }
+  ],
+  ".claude/agents/impact-analyzer.md": [
+   {
+    "sha256": "3882f350513ee44aa5d36eab2611eaf66fb40fd2831050f0bfe779248f54bd66",
+    "versions": [
+     "1.6.0..1.8.1"
+    ]
+   },
+   {
+    "sha256": "0a0eed5d4c47185424df32e8a55d5ea454312857800f1d7b1dfc6dcfef3651e4",
+    "versions": [
+     "1.8.2"
+    ]
+   },
+   {
+    "sha256": "22c284640f926d4d5950a68d3c9dc2cd0cc3f784013280e4137d22abaa172bcb",
+    "versions": [
+     "1.8.3..1.8.11"
+    ]
+   }
+  ],
+  ".claude/agents/qa-reviewer.md": [
+   {
+    "sha256": "d7fc9a7d063e3e5e3acb1f63af0c4d0f54f228c31584bbcf7d2ae9537ec2286c",
+    "versions": [
+     "1.5.9..1.8.1"
+    ]
+   },
+   {
+    "sha256": "55452ad47d0bd1035c79a296049646ec422f2ff989ccf9244d64d07f64fb5c2e",
+    "versions": [
+     "1.8.2"
+    ]
+   },
+   {
+    "sha256": "5b0dc59c9fc87c7111107b7c68eb5a511ff067d36684f04a767e8db7279da7da",
+    "versions": [
+     "1.8.3..1.8.11"
+    ]
+   }
+  ],
+  ".claude/agents/researcher.md": [
+   {
+    "sha256": "f8639fd04795d57578f803eef4b07eaddd5064a6c1f3dfab735b8786c4c98179",
+    "versions": [
+     "1.0.0..1.8.1"
+    ]
+   },
+   {
+    "sha256": "f089889f6ea2043038683bd609be8100136a0bbba98f827e21aa054cac2c12bb",
+    "versions": [
+     "1.8.2"
+    ]
+   },
+   {
+    "sha256": "9ce3ce87c93cd243d420212f1c9dbd0312cb5d52466ab57b5c104e4eb04081c6",
+    "versions": [
+     "1.8.3..1.8.11"
+    ]
+   }
+  ],
+  ".claude/agents/reviewer.md": [
+   {
+    "sha256": "52dbba024934504d4d0eeab7c3b9062789613f663df38f2cf7dabc497ffa3686",
+    "versions": [
+     "1.0.0..1.8.1"
+    ]
+   },
+   {
+    "sha256": "64f0701c1ebc4ced5e010f8039013281a0e58bec1c595bfceec3497425ccb5e3",
+    "versions": [
+     "1.8.2"
+    ]
+   },
+   {
+    "sha256": "aa817a1f0bb2acd9cc3177920aae7a4f1997ce6aa005d2095e1917fe21457da8",
+    "versions": [
+     "1.8.3..1.8.11"
+    ]
+   }
+  ],
+  ".claude/agents/targeted-tester.md": [
+   {
+    "sha256": "70b03a1a151789cd8b7e3c1650e1dfaccc101333529ecf69b6d5126d1fef22e3",
+    "versions": [
+     "1.6.0..1.8.1"
+    ]
+   },
+   {
+    "sha256": "3e9f911a4f8355df233a8c928254f8c22ec090aeb5a8d9ed08b9639fff66ccf8",
+    "versions": [
+     "1.8.2"
+    ]
+   },
+   {
+    "sha256": "1ddc488f3e3c9f0f1f3f3352c39d9c099db7bf3653bfc11a95fa45ba6fa43691",
+    "versions": [
+     "1.8.3..1.8.11"
+    ]
+   }
+  ],
+  ".claude/agents/tester.md": [
+   {
+    "sha256": "7598760b574e12d3e5c5a93f93e2d12a4f9f85daabe9590cb7fe2a9e04d9539e",
+    "versions": [
+     "1.0.0..1.8.1"
+    ]
+   },
+   {
+    "sha256": "15a1377c22227b69d98f7e3b341c46e73fb359fcfbcf969847691d0f8355e03f",
+    "versions": [
+     "1.8.2"
+    ]
+   },
+   {
+    "sha256": "e5da5112d52f40fcf711abec296d7ee9800d0ff077c17998b7249b8b91712873",
+    "versions": [
+     "1.8.3..1.8.11"
+    ]
+   }
+  ],
+  ".claude/agents/writer.md": [
+   {
+    "sha256": "9f7cc3949a7ed2eb292b5cf86de37817d5970efec2b2110eca957eca1ca38bd1",
+    "versions": [
+     "1.0.0..1.8.1"
+    ]
+   },
+   {
+    "sha256": "225037e0d4a267d778809d070b15624966fe7eb504a79f3b50dc6a6688b65536",
+    "versions": [
+     "1.8.2"
+    ]
+   },
+   {
+    "sha256": "4591cbc4351b12adf129ef55de3261949a165bb870e128fc84ecc5bdf072a1ab",
+    "versions": [
+     "1.8.3..1.8.11"
+    ]
+   }
+  ],
+  ".claude/settings.json": [
+   {
+    "sha256": "48af12ccd1df82092bd673ad34c2adf54ac5e84f2c05cfba88866305e2700a15",
+    "versions": [
+     "1.0.0..1.8.7"
+    ]
+   },
+   {
+    "sha256": "328c2d0ebc85176f4de4192155c9f18300dece05b6b3690917aea270242c00f1",
+    "versions": [
+     "1.8.8..1.8.11"
+    ]
+   }
+  ],
+  ".claude/settings.posix.json": [
+   {
+    "sha256": "2b06e2d3df27dde6df54e603801efb05ab67f32b0077000d3d5e059aecff89b1",
+    "versions": [
+     "1.0.0..1.8.8"
+    ]
+   },
+   {
+    "sha256": "5698b4788831debb26a9f58b23224f92589569e016e911159c2dc13c5eaf6e77",
+    "versions": [
+     "1.8.9..1.8.11"
+    ]
+   }
+  ],
+  ".claude/skills/.gitkeep": [
+   {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".claude/skills/README.md": [
+   {
+    "sha256": "35e1dfb4486bb63d5fb23428d791f4255f3f7d2b318f0cca070390c6e8a82ad1",
+    "versions": [
+     "1.0.0..1.5.7"
+    ]
+   },
+   {
+    "sha256": "1f4c7d5773cde0652c5d36d9a51bb62504656861947c74f9f478c6a62dca22fd",
+    "versions": [
+     "1.5.9"
+    ]
+   },
+   {
+    "sha256": "55679f84ead0b70fb9519c25f5453883baeffe0a6f17e4d9c2e876ea84c4879c",
+    "versions": [
+     "1.6.0..1.8.0"
+    ]
+   },
+   {
+    "sha256": "4a08dd3e53948cb716b3737edecf1ea51ba8473d7baf218ae215e5390c5e4869",
+    "versions": [
+     "1.8.1..1.8.11"
+    ]
+   }
+  ],
+  ".claude/skills/analyze-requirements/SKILL.md": [
+   {
+    "sha256": "833c4671fc8f99f58ffe629b9ad1259026089b5a85814e14e6214b076d167d42",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".claude/skills/be-fe-security-audit/SKILL.md": [
+   {
+    "sha256": "d7d4c83ed288dcb461b3fa94bfec41e06e093fa897e55baaadad710e8e5fe557",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".claude/skills/commit-deploy-log/SKILL.md": [
+   {
+    "sha256": "4b3f88e5f6f16f06c84692735621b59944c531c85dfcc0fab1dfac379c76acaf",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".claude/skills/deep-research/SKILL.md": [
+   {
+    "sha256": "0b63db7cbdf3d7e3e9063b50f38dd07b17d648a9a4b9315d8b406936798098d0",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".claude/skills/deploy-to-test/SKILL.md": [
+   {
+    "sha256": "3b802326309450bc51a296ce36a3366835d1bd2eb3a74b4c42403171233d9d04",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".claude/skills/evidence-bundle/SKILL.md": [
+   {
+    "sha256": "3aa6a965aef6ff27baf8f7bed8f68ff23238d57e4d0b825839af6666ec29fcf9",
+    "versions": [
+     "1.0.0..1.4.9"
+    ]
+   },
+   {
+    "sha256": "cac2ddaa8cbd229c90e96f7a3178e7060900d7ed165141b88a402c6993f32a6c",
+    "versions": [
+     "1.5.0..1.8.11"
+    ]
+   }
+  ],
+  ".claude/skills/fan/SKILL.md": [
+   {
+    "sha256": "e2fcb372d4e4ac97cd31431168bed74310168f7f2bc50517f2ff2b67dfb4d706",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".claude/skills/fix-and-verify/SKILL.md": [
+   {
+    "sha256": "9e20c8e98a2523751e67f908e8e3d5836718e784725520e84801eeebafbd8cde",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".claude/skills/impact-review/SKILL.md": [
+   {
+    "sha256": "9cec5f62d0d32fd855d95919b52297dab7ea8736cd87ce03c189ea9e6b885169",
+    "versions": [
+     "1.6.0..1.6.3"
+    ]
+   },
+   {
+    "sha256": "eb5b91ee0c23e5542461c5fe3a85775d6acb33873419f1e9b350981f87d053e1",
+    "versions": [
+     "1.6.5..1.8.11"
+    ]
+   }
+  ],
+  ".claude/skills/implement-change/SKILL.md": [
+   {
+    "sha256": "23c9fb87c0c92101f481091c6b38a8910ff4aa3950f27617479851fa190b14d7",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".claude/skills/qa-gate/SKILL.md": [
+   {
+    "sha256": "d014916343f40f2e81fccdc9119c7554b3aaa143dc856c91ebefc9c2a0c554a5",
+    "versions": [
+     "1.5.9..1.8.11"
+    ]
+   }
+  ],
+  ".claude/skills/run-affected-tests/SKILL.md": [
+   {
+    "sha256": "4363081c416ac4dc38118514a4b0ccbbbd56c9110fa144b29ea57dd31724a654",
+    "versions": [
+     "1.6.0..1.8.11"
+    ]
+   }
+  ],
+  ".claude/skills/verify-implementation/SKILL.md": [
+   {
+    "sha256": "f4799de783c8d49117b43da1e6a9594d6570452fd1cd333f56bf18e7f2bb40f8",
+    "versions": [
+     "1.0.0..1.4.9"
+    ]
+   },
+   {
+    "sha256": "de06fb8a83604438e3223f1a19f11cbddd10638a1a1232230e41a2b63487fe39",
+    "versions": [
+     "1.5.0..1.8.11"
+    ]
+   }
+  ],
+  ".claude/skills/verify-request/SKILL.md": [
+   {
+    "sha256": "02b8c19935ac23be82217fd99e5519817ac8bea4d208a83c7a796bf849ca6df2",
+    "versions": [
+     "1.5.9..1.8.11"
+    ]
+   }
+  ],
+  ".harness/control/agent-config.yaml": [
+   {
+    "sha256": "76812e448d48c375b03b4b15776f969495edd493a6bdae8b322cf1331394a977",
+    "versions": [
+     "1.6.7"
+    ]
+   }
+  ],
+  ".harness/control/bundle-ownership.yaml": [
+   {
+    "sha256": "8da2c0a7a8f81409b411fbbe8b819407a787aef1ce6e0c78638eff329f39f00a",
+    "versions": [
+     "1.5.9"
+    ]
+   },
+   {
+    "sha256": "9bb01e80ef4bdf3efd9bb1dd14a257a5f1b61315517a478e7f411bfee0aa8708",
+    "versions": [
+     "1.6.0"
+    ]
+   },
+   {
+    "sha256": "d2cc68bfb8a2bee98db31aae43b81e9d263bb18a1ec8c32339828a27566ebaf0",
+    "versions": [
+     "1.6.1"
+    ]
+   },
+   {
+    "sha256": "e390e5f56cbb97f7158cddfba386ff1731b737e59b8d5821b6c46ded2f3cd91a",
+    "versions": [
+     "1.6.2..1.8.11"
+    ]
+   }
+  ],
+  ".harness/control/casan-policies.yaml": [
+   {
+    "sha256": "68bb6d8fc37ded64e9bca419558edcb29fe39571797bd27e668e0b6a6fe3297b",
+    "versions": [
+     "1.3.0..1.4.0"
+    ]
+   },
+   {
+    "sha256": "e61d96b3a6b6ba130f6998ab2b262b315bd685a6ee78268326c2df39087d0267",
+    "versions": [
+     "1.4.1"
+    ]
+   },
+   {
+    "sha256": "37a8c2cae80adc2be438295bbd9706d51734739d375ca50e15cdfd359d64f90f",
+    "versions": [
+     "1.4.2"
+    ]
+   },
+   {
+    "sha256": "04236e67edd5b78f5deca3906fef4824174d6734fd71bd613bff6450f656e654",
+    "versions": [
+     "1.4.3..1.4.4"
+    ]
+   },
+   {
+    "sha256": "9e1934ff0ded03a7887a0364b58726be976cb15470c82a46d1640f244a8e1775",
+    "versions": [
+     "1.4.5..1.4.9"
+    ]
+   },
+   {
+    "sha256": "93002564581379dea12221436242a6fa537bb46b069ea693aaec19ca537aa1c7",
+    "versions": [
+     "1.5.0..1.5.1"
+    ]
+   },
+   {
+    "sha256": "9c96669f57d1c944545083fae93435a6a26b345e1aef75e0f96e3b93bf1a3cb6",
+    "versions": [
+     "1.5.2..1.5.4"
+    ]
+   },
+   {
+    "sha256": "5129f42c1e8762112720f38519ba1cde53f6561bef98d4741976d37b709b0f08",
+    "versions": [
+     "1.5.5"
+    ]
+   },
+   {
+    "sha256": "b75466753c814a05a44bf46dad08499c3e5b78402b18a4f711e58e84a9ab0254",
+    "versions": [
+     "1.5.6..1.5.7"
+    ]
+   },
+   {
+    "sha256": "02e1e67649d0f9dc14806be103497a6d7c169a38d46ee90314846d0865559319",
+    "versions": [
+     "1.5.9..1.6.0"
+    ]
+   },
+   {
+    "sha256": "b04014dfa4c622d6d467c83c611dca4ad73ce4443a8a5fe5481d72bd155a0347",
+    "versions": [
+     "1.6.1..1.6.3"
+    ]
+   },
+   {
+    "sha256": "5c907349733f3646701d34ac6c6076ae0e01c11e19fddf23a4cc26fe25c638c0",
+    "versions": [
+     "1.6.5..1.6.15"
+    ]
+   },
+   {
+    "sha256": "b8c49fc844a4e5f397c518e2e6bf4242d45edf586a68514d2fc9054c1e17da7c",
+    "versions": [
+     "1.6.16..1.8.2"
+    ]
+   },
+   {
+    "sha256": "c297e3005efce5c22a3ac529017e9d9e40bb0d6dac51f43f51a9e0f0e7ff510a",
+    "versions": [
+     "1.8.3..1.8.7"
+    ]
+   },
+   {
+    "sha256": "3a798242a535ca880e887cd58193b091c0e34177ffe9bfb724d9fb1f2cb69baa",
+    "versions": [
+     "1.8.8..1.8.11"
+    ]
+   }
+  ],
+  ".harness/control/comprehension-gate.json": [
+   {
+    "sha256": "62c8fdbdaf3adaa0deb3562f5dbf8ffab1bbfa2c0c61ba4d12e37b3f56b2bd57",
+    "versions": [
+     "1.8.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/control/guard-zones.json": [
+   {
+    "sha256": "9177e9d2a54a20b98cfff686f48f328645472fb7337d41233115717899a64d24",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/control/injection-patterns.json": [
+   {
+    "sha256": "e7dfd7aeac528f1f8bda42198ed6e08b10cde89c192f9d419fdf9bd865b58856",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/control/kpi.yaml": [
+   {
+    "sha256": "1bf6070b4b5d0dc67b553473de0d96e0c73d61de264d7ddaaad51089526cf873",
+    "versions": [
+     "1.8.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/control/machine-state-paths.yaml": [
+   {
+    "sha256": "f50d55d6197e3ceeae87156c5eec6e4679542716edab233a7363877b32b5c2fc",
+    "versions": [
+     "1.8.7..1.8.11"
+    ]
+   }
+  ],
+  ".harness/control/power-policy.json": [
+   {
+    "sha256": "f6e9772706c0870eb4300a569cfb847ff65c2695badb61caced7470e298f5cea",
+    "versions": [
+     "1.0.0..1.8.2"
+    ]
+   },
+   {
+    "sha256": "8fac00cd5958cb20ac04ab1b14509adfe1bced940033b48be6d69056d8a30261",
+    "versions": [
+     "1.8.3..1.8.11"
+    ]
+   }
+  ],
+  ".harness/control/risk-policy.yaml": [
+   {
+    "sha256": "1c2bd6a0681f9f828439d11ffa516b864e8259363efe0342c03285c945cfe537",
+    "versions": [
+     "1.0.0..1.2.3"
+    ]
+   },
+   {
+    "sha256": "f16bd3981f3661ccfacef0fdb58a50fcb22da18e0f1a4fd1589491b1d5039173",
+    "versions": [
+     "1.2.4..1.2.6"
+    ]
+   },
+   {
+    "sha256": "78427a64251263c55dc244b86864c410868869a1fe346dc94436f0e3c18e6e1a",
+    "versions": [
+     "1.2.7..1.6.1"
+    ]
+   },
+   {
+    "sha256": "1178141f395dd19f526805f9133647042e96ee51712c04c573f7ea5b0a1b0d61",
+    "versions": [
+     "1.6.2..1.6.10"
+    ]
+   },
+   {
+    "sha256": "42aeacffa184fe95c10a9399be6bab8ca829a310107d10f54e3fb23ebd8b40cc",
+    "versions": [
+     "1.6.11..1.8.5"
+    ]
+   },
+   {
+    "sha256": "0bb3259c7a4de0a3c5fd7aba83e4108dd59e5a0fa5f5ce859189596314c54cfe",
+    "versions": [
+     "1.8.6..1.8.11"
+    ]
+   }
+  ],
+  ".harness/control/risk-registry.yaml": [
+   {
+    "sha256": "146820eba2816a4bf89171edc9b64eaf31e62fe4fc1739232645d1895f7373dc",
+    "versions": [
+     "1.0.0..1.7.1"
+    ]
+   },
+   {
+    "sha256": "132d67562962be5a70b51b2be42dc864b18fcbca56af17973ad34b8c8e370dab",
+    "versions": [
+     "1.8.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/control/secret-patterns.json": [
+   {
+    "sha256": "d4f48d131e2fe364ae44d8027c09f69a3499d478eefe47b629fdc4f42232f95d",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/control/sensitive-paths.json": [
+   {
+    "sha256": "177ea09eae2d296a2308ce3e7a1a4760cb3d8ef591cf6a3a25d6cd87e4fc3ec6",
+    "versions": [
+     "1.8.0..1.8.2"
+    ]
+   },
+   {
+    "sha256": "977f16ad31b1004f9bf2e5a57d5548c7f7018dcc30d5f5e8ccf1cf996c442845",
+    "versions": [
+     "1.8.3"
+    ]
+   },
+   {
+    "sha256": "23a02e1d87dfb365065a7e2cbe4ebf3fe91980ecf3117a4409640cea68734b85",
+    "versions": [
+     "1.8.4..1.8.6"
+    ]
+   },
+   {
+    "sha256": "2458bbc92910b7cf3a38e15c51c4f9b5964d0c7f2bbe0d28d355d27d0cdbe2a1",
+    "versions": [
+     "1.8.7..1.8.11"
+    ]
+   }
+  ],
+  ".harness/control/session-roles.json": [
+   {
+    "sha256": "dcfb63bd95489295eeda16976f03be329f7a9bca0d26acfe015c235729b45214",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/control/token-pricing.json": [
+   {
+    "sha256": "ef9f2ee389169a0fd104095a294bdb909919600f41dbcc7d22db6edac41c9559",
+    "versions": [
+     "1.7.0..1.7.1"
+    ]
+   },
+   {
+    "sha256": "a4cefbee518df67cea4125ef79fa09e398f1c9cdcd1cee76b98ab91eb2291f48",
+    "versions": [
+     "1.8.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/control/tool-registry.json": [
+   {
+    "sha256": "16f7e20494d9126e5dfb0c0bc0ddc6a3003d5cd5d99b89c02fbc54a544214a6e",
+    "versions": [
+     "1.0.0..1.5.7"
+    ]
+   },
+   {
+    "sha256": "58916ddc064e86a01fbaf6c534cee9fb64823a96080d83b7ea9ac2dba9b1393b",
+    "versions": [
+     "1.5.9..1.6.14"
+    ]
+   },
+   {
+    "sha256": "d11bbbf116c58ee34e89505d095103ac1891bf472cfb30744f7b1e8c4de614ee",
+    "versions": [
+     "1.6.15..1.8.11"
+    ]
+   }
+  ],
+  ".harness/eval/golden/README.md": [
+   {
+    "sha256": "4cfab09d38750982d0a1966d29db51b9710c119dedc647b3994aac2b6dd8b84a",
+    "versions": [
+     "1.5.0..1.5.3"
+    ]
+   },
+   {
+    "sha256": "a25fe1b68033f37bdd0a82bb51e51b5d49842e177b1b1e7e2575987c0e11577e",
+    "versions": [
+     "1.5.4..1.8.11"
+    ]
+   }
+  ],
+  ".harness/eval/golden/baseline-guard-cases.jsonl": [
+   {
+    "sha256": "17fce196f4d206b8a19cb7f2d959d1bd62ea2d7e5b1ae0e20da08a91681f76d4",
+    "versions": [
+     "1.6.10"
+    ]
+   },
+   {
+    "sha256": "8ceaff223f2065dee68bbb6911939104773b84d4124981ec849c58cd569e5e9d",
+    "versions": [
+     "1.6.11..1.8.5"
+    ]
+   },
+   {
+    "sha256": "0e93b84ff5b9dbd5cfe8d34959ea5aded9a1c454b45cd1634547467164e99c22",
+    "versions": [
+     "1.8.6..1.8.11"
+    ]
+   }
+  ],
+  ".harness/eval/golden/golden-cases.jsonl": [
+   {
+    "sha256": "ef02a2c8e9bc89195a462ff0f0b5eaa18cd44bc8a3a3b7872f7d65d4d266e94f",
+    "versions": [
+     "1.5.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/eval/judge/judge-rubric.md": [
+   {
+    "sha256": "11abfa8d57d85e2d81db8380f8bb01cdc808a31e8a084d3c733aedd8a3d868a3",
+    "versions": [
+     "1.5.0..1.5.7"
+    ]
+   },
+   {
+    "sha256": "1e69515626a396213fedc4023f49b87015b56cd149be64945f11b51971f89cb4",
+    "versions": [
+     "1.5.9..1.8.3"
+    ]
+   },
+   {
+    "sha256": "a6c98849305cc5cbfc15e2e037c9c2b49ad5057042509aabe2dbab4889dd9ace",
+    "versions": [
+     "1.8.4..1.8.11"
+    ]
+   }
+  ],
+  ".harness/memory/constitution.md": [
+   {
+    "sha256": "78f7748e7f2d1412c0a2bb34be3f6b91fd96501fb83d872d5a2119b75cdfe24e",
+    "versions": [
+     "1.0.0..1.4.8"
+    ]
+   },
+   {
+    "sha256": "eddfe069907d79d381b4bf2b60bd85341383b75c4c68dfa5cf10d5ea91b28945",
+    "versions": [
+     "1.4.9..1.8.11"
+    ]
+   }
+  ],
+  ".harness/schemas/agent-config.schema.json": [
+   {
+    "sha256": "22625042ac33f2fbe91a9e422eb170e4922b5df54424f22744ba187690805b8a",
+    "versions": [
+     "1.6.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/schemas/agent.schema.json": [
+   {
+    "sha256": "ab247c6e56042f57452b9cdc912c5c4fd0c287b45d963b0abc1238d5b381afc9",
+    "versions": [
+     "1.0.0..1.5.7"
+    ]
+   },
+   {
+    "sha256": "4b01d2d4f14e217d91a8d48665a20053ed9c74ab2034953df8b69f22d066696d",
+    "versions": [
+     "1.5.9..1.8.2"
+    ]
+   },
+   {
+    "sha256": "86a8649abd7c1d121dd0faae9e06b357a6bde9d628db20d073fd770505c58786",
+    "versions": [
+     "1.8.3..1.8.11"
+    ]
+   }
+  ],
+  ".harness/schemas/approval-flow.schema.json": [
+   {
+    "sha256": "bc141a5442296682cadc25fdaf70ed58a547f5afc2f839cdbe69412508e6111b",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/schemas/baseline-w0.schema.json": [
+   {
+    "sha256": "64f4bc2c73057353df36619046174fd713c8ca055500ba7662118d23d3593102",
+    "versions": [
+     "1.8.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/schemas/bundle-manifest.schema.json": [
+   {
+    "sha256": "03e53e41466dff46b21f790ab55c3cb11760a2ad70ef97fe777c4e252d12d07d",
+    "versions": [
+     "1.8.6..1.8.11"
+    ]
+   }
+  ],
+  ".harness/schemas/bundle-ownership.schema.json": [
+   {
+    "sha256": "258a2fa541f106e3178f18796144cb8e9e8a1ba02d51db90045574d5d41b3ab8",
+    "versions": [
+     "1.5.9..1.8.11"
+    ]
+   }
+  ],
+  ".harness/schemas/bundle.schema.json": [
+   {
+    "sha256": "1d7d820e1fabc54fa721b0d5775ae38b040c8fd047ad4686a099d083b0817243",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/schemas/casan-criteria.schema.json": [
+   {
+    "sha256": "473f309b672607089c1a52a6335a1afe0db11242eedfee876fc28d4b1c54c879",
+    "versions": [
+     "1.5.6..1.6.18"
+    ]
+   },
+   {
+    "sha256": "9631ee0ca49dd7eb6d424e2c204034cb1e105e2ea41aca7de45b83236ecd3582",
+    "versions": [
+     "1.6.19..1.8.6"
+    ]
+   },
+   {
+    "sha256": "a355c1be11357c48bbb4dac2a74a1e5c15c674809b20a06c04975c97b736ee04",
+    "versions": [
+     "1.8.7..1.8.11"
+    ]
+   }
+  ],
+  ".harness/schemas/casan-policies.schema.json": [
+   {
+    "sha256": "7a6e890f4da01dcdc5559e2d66c093843388ed48f92e01c1d9d3bb9a78ef513a",
+    "versions": [
+     "1.3.0..1.5.4"
+    ]
+   },
+   {
+    "sha256": "07c09b9720f7957551041752a3a1090633eb56a7fa96af43af6bc4c7355ca5f9",
+    "versions": [
+     "1.5.5..1.6.3"
+    ]
+   },
+   {
+    "sha256": "91fbacd516ed2d20b52d0d0cba0a4cd64a2a0b404ae8dbce574224177772a950",
+    "versions": [
+     "1.6.5..1.6.15"
+    ]
+   },
+   {
+    "sha256": "25d0f6debabc3aaa483299ad025d210ef642d6b16bc9a85a421770cd71abadc6",
+    "versions": [
+     "1.6.16..1.8.7"
+    ]
+   },
+   {
+    "sha256": "31df53409f17b9dfa4746fca1683ca6dc1883aa018d935b8bff161370db0523f",
+    "versions": [
+     "1.8.8..1.8.11"
+    ]
+   }
+  ],
+  ".harness/schemas/comprehension-gate.schema.json": [
+   {
+    "sha256": "e88a0744ce1af28376d2f8d285226a6e5dcdec0dda91f015d3482b116349c5db",
+    "versions": [
+     "1.8.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/schemas/evidence-bundle.schema.json": [
+   {
+    "sha256": "5a6d4382ed802a27497d5d28360e37f52a2de63c19731cd5ad8d95fac576f5c9",
+    "versions": [
+     "1.0.0..1.4.9"
+    ]
+   },
+   {
+    "sha256": "8088dbc42edc0288c605463f80d965f2cf2add96d5f2ef3c5a794fb62247e36d",
+    "versions": [
+     "1.5.0..1.6.15"
+    ]
+   },
+   {
+    "sha256": "2ca48ef053ae5e8977c641f3f3bb1343d74e1d6c4d046a6df62f5bf4f5d9c0b1",
+    "versions": [
+     "1.6.16..1.8.11"
+    ]
+   }
+  ],
+  ".harness/schemas/guard-zones.schema.json": [
+   {
+    "sha256": "c302b3448013eb7fa93639903bd4349819d39cf937787f89d5c889b9da920f14",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/schemas/impact-map.schema.json": [
+   {
+    "sha256": "3fda65ff3eaff9d0699ce9baa6efd27f9f74a61e83921992f9245388d737d724",
+    "versions": [
+     "1.6.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/schemas/ledger-entry.schema.json": [
+   {
+    "sha256": "e1989a7499f72c2fb96d8d6ced545ef106fe103f6a1c74227f865a13a0174f12",
+    "versions": [
+     "1.0.0..1.5.7"
+    ]
+   },
+   {
+    "sha256": "4511f20e1395a6ebced9f62fbd94597c75bf50e48e498aafb1695692484e219a",
+    "versions": [
+     "1.5.9..1.6.0"
+    ]
+   },
+   {
+    "sha256": "41708a0fd624b8bc1861f9b13694d812cd801aba0c0a27081db4be1b8b7fdc56",
+    "versions": [
+     "1.6.1..1.8.11"
+    ]
+   }
+  ],
+  ".harness/schemas/machine-state-paths.schema.json": [
+   {
+    "sha256": "f6e10e8b8af38a52c016fb99e2e6324338d7cc18e93e8b5528ec295cf4adf73e",
+    "versions": [
+     "1.8.7..1.8.11"
+    ]
+   }
+  ],
+  ".harness/schemas/pipeline-context.schema.json": [
+   {
+    "sha256": "9c18ca8321dba17be49d332933d004f02c14f64ae81a1d2d378f4a87c7e702fd",
+    "versions": [
+     "1.0.0..1.5.7"
+    ]
+   },
+   {
+    "sha256": "c5531a7296ff942b7e547814b2fdd4c09fa5b7c87f9470034882164a7710b640",
+    "versions": [
+     "1.5.9..1.8.11"
+    ]
+   }
+  ],
+  ".harness/schemas/power-policy.schema.json": [
+   {
+    "sha256": "85cb1b7e8a26aa519ea67db5e824c4b3601a583115094329d3cc546b9065bf54",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/schemas/project.schema.json": [
+   {
+    "sha256": "f011d3a8f6cdbf1bf8050ff7aa787afca58fc67d026e4f82b804badc4cf10cb0",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/schemas/release-index.schema.json": [
+   {
+    "sha256": "4f509a7c106baf01fbcca79a34b4aea946245e0277b15122df3322af160acdb7",
+    "versions": [
+     "1.8.7..1.8.11"
+    ]
+   }
+  ],
+  ".harness/schemas/risk-policy.schema.json": [
+   {
+    "sha256": "631996131b29b634faae9dd8ad7df734f9b5cea90e6723f2a8a58736dcc48f72",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/schemas/risk-registry.schema.json": [
+   {
+    "sha256": "19a918019ad949f78db9e703d0a7e08a6c5e54f591b4483b7b53b8da5989f6ce",
+    "versions": [
+     "1.0.0..1.6.0"
+    ]
+   },
+   {
+    "sha256": "dd09b33252a20622ce28fe34942fcef329ec2620ae396e8d331fbdf3c747ac2b",
+    "versions": [
+     "1.6.1..1.8.11"
+    ]
+   }
+  ],
+  ".harness/schemas/sensitive-paths.schema.json": [
+   {
+    "sha256": "e614c7aeb656f846921dc0bf268d760e1cf004f23b76ce332da7d521f95015fa",
+    "versions": [
+     "1.8.0..1.8.6"
+    ]
+   },
+   {
+    "sha256": "480ca1f988e0233d9d6e5ee7386106d54df63b3ade07ec6c2690a19c790fec20",
+    "versions": [
+     "1.8.7..1.8.11"
+    ]
+   }
+  ],
+  ".harness/schemas/session-roles.schema.json": [
+   {
+    "sha256": "a84afce9670d0006cba38b37e8570423cc7aa3625789a4d496c3c9e277458376",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/schemas/skill.schema.json": [
+   {
+    "sha256": "3fbcacf1596798d9e76f3f5d301a1dd06be35af258cae4b08c87fae061dceee7",
+    "versions": [
+     "1.0.0..1.5.7"
+    ]
+   },
+   {
+    "sha256": "0f28a8b7b77dbb983d850534dd3c6a09ee04a29e710990d89f95605142490f0a",
+    "versions": [
+     "1.5.9"
+    ]
+   },
+   {
+    "sha256": "14c53c8b3194fd239065e56b104066437a8ea8163d5a93a88b5cf9fb86b303b3",
+    "versions": [
+     "1.6.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/schemas/token-pricing.schema.json": [
+   {
+    "sha256": "e3be48bad064f934c9928f48fbad76a308096b04b2245efd67f8d78a42c8e02c",
+    "versions": [
+     "1.7.0..1.7.1"
+    ]
+   },
+   {
+    "sha256": "78f7b7c2655debecf580908f0dce92008fff8a6bf98cbb9b611e8262f9bbeb76",
+    "versions": [
+     "1.8.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/schemas/tool-registry-contract.schema.json": [
+   {
+    "sha256": "a65aa69a74aecce2d0ae5cd362928247f405a6cc85ef5968a8579443b9f34f36",
+    "versions": [
+     "1.6.1..1.8.11"
+    ]
+   }
+  ],
+  ".harness/schemas/tool-registry.schema.json": [
+   {
+    "sha256": "5e717fe25db9645a26a112add6aea224a659e2ad0d5406cbe56d05edda145dc7",
+    "versions": [
+     "1.0.0..1.5.7"
+    ]
+   },
+   {
+    "sha256": "e99350d73d3d2643c690ada4e1d8efca71fd1f40e6bcaef2009814447d40a6c6",
+    "versions": [
+     "1.5.9..1.6.0"
+    ]
+   },
+   {
+    "sha256": "30b30742dbe25b70539a0f1903835747bbee0b8867d7bb7764e343ef822c3f69",
+    "versions": [
+     "1.6.1..1.6.14"
+    ]
+   },
+   {
+    "sha256": "5ba3466cd2575f2b64aa8d7193ace142f0a4742f8e06d7eddbf4f1856ecece43",
+    "versions": [
+     "1.6.15..1.8.11"
+    ]
+   }
+  ],
+  ".harness/schemas/workflow.schema.json": [
+   {
+    "sha256": "4b4e49d01f00eab989e1e0dec2bdca77273a404d8763286cfdbc89ba5926a1ce",
+    "versions": [
+     "1.0.0..1.5.7"
+    ]
+   },
+   {
+    "sha256": "19773fdb25d414dabe8493602f98dd844753600ea1ea583341cd9c5c181cfbab",
+    "versions": [
+     "1.5.9..1.6.0"
+    ]
+   },
+   {
+    "sha256": "9bcb6296e2313b16c229dcc2651f14ce0979d50c3e311946aadfa140740f7193",
+    "versions": [
+     "1.6.1..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/bash/agentops-sampler.sh": [
+   {
+    "sha256": "e2f1eb450544882ce8e2a60116bf4ef3aa65fa8166ddc1a361d6814dba998375",
+    "versions": [
+     "1.0.0..1.1.0"
+    ]
+   },
+   {
+    "sha256": "1c230f6fc7640bc4745805b60dbcb846c7303d8abd25954a0a9964523b05b2a0",
+    "versions": [
+     "1.2.0..1.2.2"
+    ]
+   },
+   {
+    "sha256": "92cbfff8d74b2dca31b74e8a9f4a166a6ad941b1078c0378a377dec0cbd67dd6",
+    "versions": [
+     "1.2.3..1.5.7"
+    ]
+   },
+   {
+    "sha256": "701e27cf0122e2fb91ba51fbe3d0d58247f3c7ae330f72a465b57fe0f1812ccc",
+    "versions": [
+     "1.5.9..1.6.20"
+    ]
+   },
+   {
+    "sha256": "1ffe08bb4a15d45431a638e3fa72e655f248b58d513fb0cd9fa74cf82882ad40",
+    "versions": [
+     "1.7.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/bash/collect-codex.sh": [
+   {
+    "sha256": "1e609a7a7f756f6337bb265df00b6d87b118989f42ccf424fac6abd4694c65cd",
+    "versions": [
+     "1.7.0..1.8.6"
+    ]
+   },
+   {
+    "sha256": "464d8c2923cbf7f0ae488f4548f8813e0323d2fc321636540b6f0d7b2c31e1f3",
+    "versions": [
+     "1.8.7..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/bash/comprehension-gate.sh": [
+   {
+    "sha256": "5243c40354fee75bf3c872e9ba84f6df50eb1e905a1928a7c548390b97e8019d",
+    "versions": [
+     "1.8.1..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/bash/domain-firewall.sh": [
+   {
+    "sha256": "51f8ed8c016abbbdbb181c2c6933ebff0cb677d02d8687566efa0b3fc52ed8f0",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/bash/evidence-ledger.sh": [
+   {
+    "sha256": "63a5ed91207c25ee92d0b0c6d0dc5954a751b22224c39d2fefa29387626ef46e",
+    "versions": [
+     "1.0.0..1.6.0"
+    ]
+   },
+   {
+    "sha256": "b038a42845456ece5b786407f42bd7b71ccd544bc9dc61cdef415e54c6e9ac0a",
+    "versions": [
+     "1.6.1..1.6.15"
+    ]
+   },
+   {
+    "sha256": "8890025109318feeabdb4fcfc8202a8ce3e31c2efeaec77202eb6f68ca3f87c1",
+    "versions": [
+     "1.6.16..1.6.18"
+    ]
+   },
+   {
+    "sha256": "a423953c3832e29449360a5a6b9e515036e85f2c22472f1e8078979db4316c52",
+    "versions": [
+     "1.6.19..1.8.0"
+    ]
+   },
+   {
+    "sha256": "5df2d604e61c9c2a713c8e7253dac27bc33a2d6989ca8ca7cfff6a26d98f9fc5",
+    "versions": [
+     "1.8.1..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/bash/harness-context-build.sh": [
+   {
+    "sha256": "1c02d6df43e44614230bd867e4817d2ae3c16d80282ecbc16b2e60bd7bca0a9c",
+    "versions": [
+     "1.4.1"
+    ]
+   },
+   {
+    "sha256": "0bb5e83ad2f7c6ee68c5b04344eb4b27ff7fd3234d6ad7b853b10776cdc101c1",
+    "versions": [
+     "1.4.2..1.4.9"
+    ]
+   },
+   {
+    "sha256": "8756dd8f2d65396a005a108cda536bb5e1dcdc703e721ac2a35e27da4dcd562a",
+    "versions": [
+     "1.5.0..1.6.0"
+    ]
+   },
+   {
+    "sha256": "f9189542e7458c61a95bb02dc4ac6ad0e5e98b0ae15f56b2a022a5314883a8fc",
+    "versions": [
+     "1.6.1..1.6.6"
+    ]
+   },
+   {
+    "sha256": "91c28c231f909306d8da9e7af634573344fa0a70631f1967319ee6054bff9af7",
+    "versions": [
+     "1.6.7..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/bash/harness-context-query.sh": [
+   {
+    "sha256": "855a709b5cdf00e2cdd08a3dc73b17c9af1fe5eb33c14889369b33bbf2b25705",
+    "versions": [
+     "1.4.2..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/bash/harness-doctor.sh": [
+   {
+    "sha256": "154082116dbd19a2d151f80edf87673d7a45a0065889d5496b246ac8e6a8ce61",
+    "versions": [
+     "1.6.0..1.8.10"
+    ]
+   },
+   {
+    "sha256": "0d37a991822ca09809be133f4f8dcb3365b02d82717e1b5b040e85c7e9b8a77a",
+    "versions": [
+     "1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/bash/harness-eval.sh": [
+   {
+    "sha256": "0c7a33a06b6601ab9ad8e82325d2e9a3fdf77d0d4220f83751180ce9e4d3b568",
+    "versions": [
+     "1.4.8..1.4.9"
+    ]
+   },
+   {
+    "sha256": "85dee095a8db94d4b5fefd9df51ce9da776a76b82203a1bdf78b86a4afb29e54",
+    "versions": [
+     "1.5.0..1.8.0"
+    ]
+   },
+   {
+    "sha256": "84d3929c9068131896660d2a437a36240ad25b82b3d8241701c4e9212e17f4f4",
+    "versions": [
+     "1.8.1..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/bash/harness-fingerprint.sh": [
+   {
+    "sha256": "55fbd2879370d0d7b7d5908f064a97842aaee994d0fd214f59510938198fff9c",
+    "versions": [
+     "1.8.7..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/bash/harness-handoff-check.sh": [
+   {
+    "sha256": "283e0117e921ebac2f0da46d36bb00db5894a8b3147393b5b0988aee24fe54d5",
+    "versions": [
+     "1.8.8..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/bash/harness-model-fallback.sh": [
+   {
+    "sha256": "8e93944cd49718b612e0a7e608ccb601da70c7334f197487c1038ee0642e0210",
+    "versions": [
+     "1.4.1..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/bash/harness-pipeline-log.sh": [
+   {
+    "sha256": "fd9874fb6e95541928b2e8ba0ef6311c78f606e249c0a563194923460c91b143",
+    "versions": [
+     "1.6.5..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/bash/harness-post-tool-use.sh": [
+   {
+    "sha256": "e6c728cc697fabb2e324d71319e4d29ebb29c240ab3e15e237f55e152f41def0",
+    "versions": [
+     "1.0.0..1.1.0"
+    ]
+   },
+   {
+    "sha256": "20175c054b89c2650738ef60241148ddcd21c84c17d77930601bd43678e6c6bd",
+    "versions": [
+     "1.2.0..1.5.7"
+    ]
+   },
+   {
+    "sha256": "a55e3249778b7b1c728faad706fbd466e89689c768b7b2edf93bb78a005d0142",
+    "versions": [
+     "1.5.9..1.6.0"
+    ]
+   },
+   {
+    "sha256": "fb96cfcd876190d2a5f2d45062b357c85a0e82ffd359d93dd515e3f856d005f5",
+    "versions": [
+     "1.6.1..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/bash/harness-release.sh": [
+   {
+    "sha256": "6428cd6a73da57a661416e7676e3ab1d273aa14469b4b77040af307f7b3e7135",
+    "versions": [
+     "1.4.5..1.5.5"
+    ]
+   },
+   {
+    "sha256": "37bbd90d49bbd0fd36acb72738d17d897f3dd7bed25a66982684740cb22b4a9a",
+    "versions": [
+     "1.5.6..1.8.6"
+    ]
+   },
+   {
+    "sha256": "752d78828a03230d00355843bad9b42d3f3c927109cb32f5b2d7732c2f0139f0",
+    "versions": [
+     "1.8.7..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/bash/harness-rollback.sh": [
+   {
+    "sha256": "b90ccb7160bcba128b976eb0f25c27e343458949b963664a3a7ebf1801045448",
+    "versions": [
+     "1.4.1..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/bash/harness-runtime-guard.sh": [
+   {
+    "sha256": "4ea4cce3a48129efd206d981692a8b60542b0739f2b0599469d715bb07bdcc70",
+    "versions": [
+     "1.0.0..1.1.0"
+    ]
+   },
+   {
+    "sha256": "1b08cd1211dab8639cdf213abbb12f8cdc9d955479bfb0382b2c0a4df092efd9",
+    "versions": [
+     "1.2.0..1.2.1"
+    ]
+   },
+   {
+    "sha256": "22681a360ed1b7da917f135886f6b71103886a132619dab0883d0de6576665c5",
+    "versions": [
+     "1.2.2..1.3.0"
+    ]
+   },
+   {
+    "sha256": "4144f9b076ed46a927181db3f296da7752afedb033d03159cb08206f841fe90d",
+    "versions": [
+     "1.4.0..1.6.0"
+    ]
+   },
+   {
+    "sha256": "9a27cd15fb9c97e4b006e05abe79b027818eddad0203ae77ea4b0aa01cdaa706",
+    "versions": [
+     "1.6.1..1.6.15"
+    ]
+   },
+   {
+    "sha256": "30d15232dc6f812712aea2ec687d51aa6ee89edb421a0ccb867ad360f0d846f4",
+    "versions": [
+     "1.6.16..1.6.18"
+    ]
+   },
+   {
+    "sha256": "32603055b9f9783908a012b7b44c1f132e901bfffafaeddd46fd309666dc5d0f",
+    "versions": [
+     "1.6.19..1.8.5"
+    ]
+   },
+   {
+    "sha256": "93dec34339571c168bf9bb9ab9fdc4fd0d07b55a573580dceb3ee6d78d7e5c5b",
+    "versions": [
+     "1.8.6"
+    ]
+   },
+   {
+    "sha256": "2fa0d8aff92d20998e669e0fcb6ce81b93beb1dd218b53679b6219dedeeaf13b",
+    "versions": [
+     "1.8.7..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/bash/harness-session-end.sh": [
+   {
+    "sha256": "1abdc47a260df492a26ee5887d2b898fc072cda1a07aa78c20fbf3868f0a998a",
+    "versions": [
+     "1.0.0..1.1.0"
+    ]
+   },
+   {
+    "sha256": "370591e547ab4dd3ef8df479044e3b931540ddcac9d7d63efb51f1d0d8b7ad66",
+    "versions": [
+     "1.2.0"
+    ]
+   },
+   {
+    "sha256": "e249a7bfbc977e64d29ab3f0fa7bd1688f5eaf6b72651e3e93ed727ca868808d",
+    "versions": [
+     "1.2.1..1.5.9"
+    ]
+   },
+   {
+    "sha256": "85ffb13201d243c38d3dd444e0d45c60621ac3a02c9c4a05bb734b5dafb1dc60",
+    "versions": [
+     "1.6.0..1.6.20"
+    ]
+   },
+   {
+    "sha256": "30838a16dfccfe4b150719c6fd77d4dfbb0019db2db60ecbd6ee3427ee3cd504",
+    "versions": [
+     "1.7.0"
+    ]
+   },
+   {
+    "sha256": "be700e1c2475cecf018d942aadbfd7c91d57a4ff2abfcce1d558072acd4a689f",
+    "versions": [
+     "1.7.1..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/bash/harness-session-start.sh": [
+   {
+    "sha256": "4831e5b3c89d7839590385e683cbc05e044d44370eb4a6cc734d99d77d441ed0",
+    "versions": [
+     "1.0.0..1.4.0"
+    ]
+   },
+   {
+    "sha256": "5471e6c61302777aeb678c3a5d1947ada58b4994e1fed0813006c9d7c617a555",
+    "versions": [
+     "1.4.1..1.5.9"
+    ]
+   },
+   {
+    "sha256": "aa7b435bd2955df2004a4fc0373abc2b75345b339cfa7bf5dad4536eb6b16743",
+    "versions": [
+     "1.6.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/bash/harness-switch-account.sh": [
+   {
+    "sha256": "7d33b86fdb9869ca4935ddc900b4c695ca1a5606b491f9c59a706ad2c4e57d63",
+    "versions": [
+     "1.5.9..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/bash/injection-scan.sh": [
+   {
+    "sha256": "2df31cd5345d42877c873accf1f8f7590c9ae7350ecbe5415082a042d1ba1eaa",
+    "versions": [
+     "1.0.0..1.2.1"
+    ]
+   },
+   {
+    "sha256": "2366162e02f4e69b461f7de67a659a689677612c44beed72b38bff46e06015f8",
+    "versions": [
+     "1.2.2..1.6.18"
+    ]
+   },
+   {
+    "sha256": "3f6c5ae5fdab416175ada436463ee87464beda07487f9e6a82de4c2ac314430f",
+    "versions": [
+     "1.6.19..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/bash/kpi-report.sh": [
+   {
+    "sha256": "d2556c6f1b0de092ebf97694da89e384c11641f0e8cf484bc8c2e36324f1a09f",
+    "versions": [
+     "1.8.1..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/bash/log-human.sh": [
+   {
+    "sha256": "1f8e37cbb6bda6bbc37c61f2daac58153d9da1ee9fc9ba5aa056ccc5236effbb",
+    "versions": [
+     "1.8.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/bash/push-telemetry.sh": [
+   {
+    "sha256": "f3250d6b8e07e8d4022dcf71371f230440c9ba0867596d8684386a49ea64ef54",
+    "versions": [
+     "1.2.1..1.2.3"
+    ]
+   },
+   {
+    "sha256": "a7c11cdfe67fb4b21b6d12d9c0a84350b49f8f41786c76c475e24c84f59b1db4",
+    "versions": [
+     "1.2.4..1.4.4"
+    ]
+   },
+   {
+    "sha256": "743a9b4b2b1607c52403978529c26d68c5da5a7cda324259a74136a0eac1e8d3",
+    "versions": [
+     "1.4.5"
+    ]
+   },
+   {
+    "sha256": "76d016f2a503eab9541ca40363cac56b6aa62184d7fcf9b395bac1cee52d1f68",
+    "versions": [
+     "1.4.6"
+    ]
+   },
+   {
+    "sha256": "e425ae4ec5bd7cdbcb9e88a2e20eeb7a281a31736dc1b6360db618bc95387189",
+    "versions": [
+     "1.4.7..1.4.8"
+    ]
+   },
+   {
+    "sha256": "9fbb8f7e3dcf767e923893fd48bc24e9d8e3db8f29e822326b70f5d98373324b",
+    "versions": [
+     "1.4.9..1.5.5"
+    ]
+   },
+   {
+    "sha256": "320ed8d7d061fa8cca60f71adfe791796df497fb0efa7c47a988913fb7a2a3e7",
+    "versions": [
+     "1.5.6..1.5.7"
+    ]
+   },
+   {
+    "sha256": "89cc0d201219ceaca02b690161735656e3623c2ec7fe955870dd4be8fba3c8d2",
+    "versions": [
+     "1.5.9"
+    ]
+   },
+   {
+    "sha256": "17c37f02736f7381c0c526a5feed124d3432f84fdc1fe8ba32f59006e6fdc550",
+    "versions": [
+     "1.6.0"
+    ]
+   },
+   {
+    "sha256": "50ae930534f8c0f7d850e20fd3c7369b925656adf393ee52c103f0c874a301fc",
+    "versions": [
+     "1.6.1..1.6.2"
+    ]
+   },
+   {
+    "sha256": "69d762da7e5f390a7dc5ea18d598e55e3b4a8b59ecd5bd0eb0efac6a18879dbc",
+    "versions": [
+     "1.6.3"
+    ]
+   },
+   {
+    "sha256": "003f743dd513ea201c5eaddcccffad0c120da1a1757c7a2558b2d52f15a04689",
+    "versions": [
+     "1.6.5..1.6.15"
+    ]
+   },
+   {
+    "sha256": "f6ddea77d38c3415228af42ea27dc53b5404f2078d8da8ee3151b28404ac9847",
+    "versions": [
+     "1.6.16..1.7.0"
+    ]
+   },
+   {
+    "sha256": "9dec382948e6a0ffe62024ae61ef110a9c98f5c021d31b4fcf62f3c01d16129e",
+    "versions": [
+     "1.7.1..1.8.6"
+    ]
+   },
+   {
+    "sha256": "529a74675efe47b11307fa3e56e13fa168aabd67486e7f38f0d762ebc68d6940",
+    "versions": [
+     "1.8.7..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/bash/rotate-logs.sh": [
+   {
+    "sha256": "3f8df55bd26e966b59f8f2700f4712375946c64d405da06b3d6f214325c1804f",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/bash/rtm-check.sh": [
+   {
+    "sha256": "61eb83dad6eb0715945c7d0929a0c5933d840b0572c874ee3f7f501dfc6480bc",
+    "versions": [
+     "1.8.1..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/bash/secret-scan.sh": [
+   {
+    "sha256": "e0f93daecf42fcc77b66ce345d2ed5c229429420ea33a1916b5417d51beabf81",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/bash/sensitivity-enforce.sh": [
+   {
+    "sha256": "419f0b636b789f6f5d220f1d796bdeb807e77c58d63499915989e6e67355c00a",
+    "versions": [
+     "1.8.1..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/bash/tool-idempotency.sh": [
+   {
+    "sha256": "3170db5e1b841227d1b9521cbcca5294f7e0ae35763a8c7660c18e489f02405c",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/lib/codex_collect.py": [
+   {
+    "sha256": "735661c07b2c59d83c9b0491bf7270e925868b2315bc1f0b91fdf823fd3b7820",
+    "versions": [
+     "1.7.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/lib/harness_casan_snapshot.py": [
+   {
+    "sha256": "63ca19c065bc742b3d024ef588136ec7a6450c963b86e60dbb3c3d302356a54f",
+    "versions": [
+     "1.5.6..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/lib/harness_checkout_facts.py": [
+   {
+    "sha256": "7c7f9a91e8f29d9a9c962671bc6a5e62a2da3d3459e3df061135ae09f8b7d950",
+    "versions": [
+     "1.8.7..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/lib/harness_comprehension.py": [
+   {
+    "sha256": "0309b2af473f6b06c8e7f93645120d48ff366551200edbf7c608cce6f1f856c5",
+    "versions": [
+     "1.8.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/lib/harness_docscan.py": [
+   {
+    "sha256": "ec30a5a0187d8817ccb959fb3584baa95c2f4b9eb251650ff92cf98ad4c68047",
+    "versions": [
+     "1.4.7..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/lib/harness_doctor.py": [
+   {
+    "sha256": "d96433053a6cd2d38351ca56255471b593850282853e6fce8ae1d070ee026e23",
+    "versions": [
+     "1.6.0..1.6.2"
+    ]
+   },
+   {
+    "sha256": "5df92019c7db36d6ed594b2d0e6359b1e18670c5d63aad2ee078f59a8c2bd554",
+    "versions": [
+     "1.6.3"
+    ]
+   },
+   {
+    "sha256": "cd0a030113581b4a73c131c348fb17e1a066a1f0a5327b932cb1ba76b9b13bae",
+    "versions": [
+     "1.6.5..1.6.7"
+    ]
+   },
+   {
+    "sha256": "74f6ef59bc907c901b917123060a6f9d5437a0e69899e0114b9ad0e43b4f4b9c",
+    "versions": [
+     "1.6.8"
+    ]
+   },
+   {
+    "sha256": "51050d32871e52ac55e8e7a590d7c65197f9579e06c6a1b700d2e00121eb0686",
+    "versions": [
+     "1.6.9..1.6.11"
+    ]
+   },
+   {
+    "sha256": "810d24616e924f4d667e320bf3c38d014bee9f9de3fa353ddf1191fd75e3eaf3",
+    "versions": [
+     "1.6.12..1.6.13"
+    ]
+   },
+   {
+    "sha256": "348b3eb045b3195541db705cc6db9a5c2d61d9f232325774670c1ac87baec557",
+    "versions": [
+     "1.6.14..1.6.17"
+    ]
+   },
+   {
+    "sha256": "65f84a8de932e3139bd4b02ace63f15c4b4309692eaf3f5557c5360bf76c0916",
+    "versions": [
+     "1.6.18"
+    ]
+   },
+   {
+    "sha256": "074894cfe8ffde019fbf5fd10b0aa463db1ac856a87ca326926cb5cacb7cdd96",
+    "versions": [
+     "1.6.19..1.8.0"
+    ]
+   },
+   {
+    "sha256": "adf98e843584836bf1959c972a54a4cf39eafca53afe417d88ae5b2cfb40ce71",
+    "versions": [
+     "1.8.1"
+    ]
+   },
+   {
+    "sha256": "624458010ae1b79de9d0532ad9616129a1a43907d1a9fb9ce4ec667e4212bb55",
+    "versions": [
+     "1.8.2..1.8.5"
+    ]
+   },
+   {
+    "sha256": "aa4fe8aec9c99a9a9cedb7d56deb570da2e649f9a5ce36a82b5b11a2aa495927",
+    "versions": [
+     "1.8.6..1.8.7"
+    ]
+   },
+   {
+    "sha256": "b94d3ad2fc5d12504ea74a64fa8eac8613cd59899683b52c103e06fd62b3f092",
+    "versions": [
+     "1.8.8"
+    ]
+   },
+   {
+    "sha256": "a333cf19afa4b81977ef1718a6de495794f3e28fd30dab7b2a70a2ee9eb752bb",
+    "versions": [
+     "1.8.9..1.8.10"
+    ]
+   },
+   {
+    "sha256": "bcf8f36bf3d2af831e149ed81e3bd34f6c42f9adc8f9af4187000d4000439f88",
+    "versions": [
+     "1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/lib/harness_fingerprint.py": [
+   {
+    "sha256": "e601054397793595bc2feee06941ea914cdde200b053f90fea59ba7886d026de",
+    "versions": [
+     "1.8.7..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/lib/harness_golden.py": [
+   {
+    "sha256": "875efae37adb1e92bb1d84e5c58f152e53b03a7f16092cc9dc56d384f81915c5",
+    "versions": [
+     "1.5.0..1.5.3"
+    ]
+   },
+   {
+    "sha256": "55c664c73a26c23f8efe3b9f76edc698f09b3d2e1c30dee19ac50063c52d3311",
+    "versions": [
+     "1.5.4..1.8.1"
+    ]
+   },
+   {
+    "sha256": "ce8586bd05ea14d8c0c9e708d5667396765f77024326107ea037da49cfffe677",
+    "versions": [
+     "1.8.2..1.8.9"
+    ]
+   },
+   {
+    "sha256": "466585927b998c2d066dd76b455f88ca1c253e90d4936230abfeaaf1ee3ca94b",
+    "versions": [
+     "1.8.10..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/lib/harness_golden_gen.py": [
+   {
+    "sha256": "b2843f8b3c0bf9f70bd3bf4aaa1f3d74866bd9c82b57082d34360260b2d87321",
+    "versions": [
+     "1.6.2..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/lib/harness_handoff.py": [
+   {
+    "sha256": "5efcde91d2bd4074ca0d62d420720ebbd728986deece731cd67bc468b9a983ea",
+    "versions": [
+     "1.8.8..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/lib/harness_human_log.py": [
+   {
+    "sha256": "243665081fbe157f4c17c6e4913ae767bc29a4b86591dcbd3eca65e8394e39bf",
+    "versions": [
+     "1.8.0..1.8.9"
+    ]
+   },
+   {
+    "sha256": "125a018397b83e726aad8d9e9d469b0b85eba5c03a125d19f0f925dbf784e94e",
+    "versions": [
+     "1.8.10..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/lib/harness_kpi.py": [
+   {
+    "sha256": "9a0ea9a791b18e41302934a6db0ed204d319e802c5e9c7a1f4923dd494f00e86",
+    "versions": [
+     "1.8.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/lib/harness_ledger_anchor.py": [
+   {
+    "sha256": "3af730e5957a9717c3a08747d6adcfd4fae396cf1a6e9e968b3b29e58e29a008",
+    "versions": [
+     "1.6.5..1.8.6"
+    ]
+   },
+   {
+    "sha256": "7dac762016a3247bcb7c7ff9874d70ef0ae0c37937f86a5e2e9369d0f23880b4",
+    "versions": [
+     "1.8.7..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/lib/harness_local_state.py": [
+   {
+    "sha256": "4197be336f8ea2477209c33af545bb2a4f4067fdba05a76709faec6d5f35c7aa",
+    "versions": [
+     "1.8.7..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/lib/harness_pipeline_log.py": [
+   {
+    "sha256": "b8627909809c506fb0d2e5df9c765929a1ea23a9f172314e665f34a86a9f030f",
+    "versions": [
+     "1.6.5..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/lib/harness_policy_check.py": [
+   {
+    "sha256": "33a604d8f0d3bf9f036fe191a46336c717fbdfc4a81433c4a2139a363159e8b6",
+    "versions": [
+     "1.5.0..1.5.4"
+    ]
+   },
+   {
+    "sha256": "b5d622ecbe6cc13df15103f041377b5246ee1fd8f98a06c445e503e732b16132",
+    "versions": [
+     "1.5.5..1.5.6"
+    ]
+   },
+   {
+    "sha256": "fb5bee4ebb1fffead34f3c90c9e257809b105bde37ba0f12553387442089e882",
+    "versions": [
+     "1.5.7..1.6.0"
+    ]
+   },
+   {
+    "sha256": "6ee45efd8ef6800157b46022edf02dbb30b2fe1a32cf689b86d15fcab670c2b0",
+    "versions": [
+     "1.6.1..1.6.11"
+    ]
+   },
+   {
+    "sha256": "127cc0e6b0023304ae98f9a2e8914aa4bc092e05ff93412aedeb52fb3d6f175e",
+    "versions": [
+     "1.6.12"
+    ]
+   },
+   {
+    "sha256": "627c2a9a4512d26c0406416af088e0c373ddb6fbd684bff129deeb90089fad3e",
+    "versions": [
+     "1.6.13"
+    ]
+   },
+   {
+    "sha256": "f950c36b7ad08b65bc34afebe4e4382501062b3120da9c8fe25c2227dc4ab373",
+    "versions": [
+     "1.6.14..1.8.0"
+    ]
+   },
+   {
+    "sha256": "3d39ff5339687d7bac14d9b62d569e710290014bb2f02013a612d3a122dd704e",
+    "versions": [
+     "1.8.1"
+    ]
+   },
+   {
+    "sha256": "3f3621c0d2e2380bb9b09a3df293e99915b84d3710f71cc22f6a38f4c9d69c6c",
+    "versions": [
+     "1.8.2"
+    ]
+   },
+   {
+    "sha256": "4868c3eed2588354aa6cebab36109be33e5b5008e24c8b3566008aad29edd056",
+    "versions": [
+     "1.8.3..1.8.5"
+    ]
+   },
+   {
+    "sha256": "f3124120963b4b71698f1307620f8ee7ff1d0809e7684a34cf3d432aabf86cf5",
+    "versions": [
+     "1.8.6"
+    ]
+   },
+   {
+    "sha256": "446a39ce0c2376112845fadc87aab37d505197740542fe187e00a5efa2c40cf0",
+    "versions": [
+     "1.8.7..1.8.9"
+    ]
+   },
+   {
+    "sha256": "e3a30351ba9b07421e1dadab23178567f531b3f240f37c797edaee1b1dfc8edd",
+    "versions": [
+     "1.8.10..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/lib/harness_rag.py": [
+   {
+    "sha256": "549821399b10496598d34ace44e069cf623832ec0412dc7b5d33d4431a2bac59",
+    "versions": [
+     "1.4.2..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/lib/harness_redteam.py": [
+   {
+    "sha256": "b7072b9a84325f6a3379fe74ff85af7ba1af27c9e01ca332c79bf7b02614eb78",
+    "versions": [
+     "1.5.0..1.8.9"
+    ]
+   },
+   {
+    "sha256": "ef7cc9246252a8b17bfb7e0c33a3d1a8073fe202e176afd983e22594794c053d",
+    "versions": [
+     "1.8.10..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/lib/harness_rtm.py": [
+   {
+    "sha256": "a36b87601741a09adcf2c3acc79e9ec5833bd8d939efbf9632f849b7ac1cc6f6",
+    "versions": [
+     "1.8.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/lib/harness_sensitivity.py": [
+   {
+    "sha256": "9215bd06e3b7a28e8f7206500982535f516739ccab0f717b05daa6e5af6e2f65",
+    "versions": [
+     "1.8.0..1.8.3"
+    ]
+   },
+   {
+    "sha256": "d6239ec50aa2a644fbdd6aa7f41bf3b50f80f151419fc35f81cbe551cf6d83b9",
+    "versions": [
+     "1.8.4"
+    ]
+   },
+   {
+    "sha256": "5bad0347ced3115cbeec704aac6c47d61d59bb8854ba9c47684bf5e509b42fa1",
+    "versions": [
+     "1.8.5"
+    ]
+   },
+   {
+    "sha256": "27e218f93b83bb688b95a7274977f7f761e17362444855c9d41654d43d4c45fb",
+    "versions": [
+     "1.8.6"
+    ]
+   },
+   {
+    "sha256": "e0e03f8ee633cd1e0dc152430bca806897a360f621286213104cc69cbcad0314",
+    "versions": [
+     "1.8.7..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/agentops-baseline.ps1": [
+   {
+    "sha256": "e0564c158f0e45cd326a2d856df81edac01a7b3f50e72f3ec41b4eb03ced1e9f",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/agentops-sampler.ps1": [
+   {
+    "sha256": "5e0d23bb472f5a01e88a3e18f2c512257c23b008bd8bf51b60d899dac2b3112a",
+    "versions": [
+     "1.0.0"
+    ]
+   },
+   {
+    "sha256": "b136e59fabc835c44dde65bdf9bfeb611d49a7b7b56635deb308b65202f844d0",
+    "versions": [
+     "1.1.0"
+    ]
+   },
+   {
+    "sha256": "ab42689eb9d4de842aeb308b6446c61010dbad3150c5d47d5f35d303d0a63589",
+    "versions": [
+     "1.2.0..1.2.2"
+    ]
+   },
+   {
+    "sha256": "5bf1ee4fbdf2f0aabdda1a60337c4b2ce5d91445c76a22d6645be8c3cc85e8c5",
+    "versions": [
+     "1.2.3..1.2.4"
+    ]
+   },
+   {
+    "sha256": "60b7a4f13b56716cd0c3ec4e9bb4af15f581288152f1c3635d025c8ceff5afe9",
+    "versions": [
+     "1.2.5..1.5.5"
+    ]
+   },
+   {
+    "sha256": "47d90296c9a86032c0ee966e500c2ef1ef265e300d18f3a13b9310f190fd3614",
+    "versions": [
+     "1.5.6..1.5.7"
+    ]
+   },
+   {
+    "sha256": "4eb7dd96c35bd49680521e5b54bde5f5a46a12fc79efcd40511231d501698457",
+    "versions": [
+     "1.5.9..1.6.20"
+    ]
+   },
+   {
+    "sha256": "4790c48e042616f80ac9654ee33503dacf05e7fce0c035cbdc8a1b15a00c0500",
+    "versions": [
+     "1.7.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/approval-gate.ps1": [
+   {
+    "sha256": "4231b3ad7f0ef271882106f8c8bc8d61707675a3ed581243d400de14fb7308e1",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/budget-meter.ps1": [
+   {
+    "sha256": "4a48e2cae1734b6fa0fb92fdc0f3934a4ef0fd114de9a8ca5ac71b87e0167ee4",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/collect-codex.ps1": [
+   {
+    "sha256": "3cb8ecc14f9e92c26d8f2048dac78761af334f855de5c64ba35740bec1c0e4ed",
+    "versions": [
+     "1.7.0..1.8.6"
+    ]
+   },
+   {
+    "sha256": "8f3c101f6457ca9449962b93bbb6a1ea089565e153638d304d89218f4f13b98b",
+    "versions": [
+     "1.8.7..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/comprehension-gate.ps1": [
+   {
+    "sha256": "12b4c0b3f6325389ed523bef49158fc0a156614289494fdefcc2c37a31773d43",
+    "versions": [
+     "1.8.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/domain-firewall.ps1": [
+   {
+    "sha256": "587d5da299ebeb15df668357c3ff79af69a982fcc32c514836c8dcb54ff8c19c",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/drift-detect.ps1": [
+   {
+    "sha256": "4ce7a9dba3aaa312ef5ad9e6392b79ef7fce79b69c30f103001e463415e3a170",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/evidence-ledger.ps1": [
+   {
+    "sha256": "3b1aca0f9a1e1b4fb79ba2daacdc3ed686372e75d7fabcba87cf827673843363",
+    "versions": [
+     "1.0.0..1.5.9"
+    ]
+   },
+   {
+    "sha256": "02fe59080d532faf6050e148d24a295391fce227e281a0ec474d27e786c5f7dd",
+    "versions": [
+     "1.6.0"
+    ]
+   },
+   {
+    "sha256": "7f148c4b51976b464e3567a955e22dfeb5802553594f829f3d6dec5110e75ca8",
+    "versions": [
+     "1.6.1"
+    ]
+   },
+   {
+    "sha256": "f257a69f8d332b995e616201796e7d7ad5690e2b821fa79c9a461788729a9569",
+    "versions": [
+     "1.6.2..1.6.10"
+    ]
+   },
+   {
+    "sha256": "e089c1d04dbb9b99a496721eff19d84ef4c135424fe334ba0fb36937180a93c2",
+    "versions": [
+     "1.6.11..1.6.15"
+    ]
+   },
+   {
+    "sha256": "3a295532df787e1a5cdb24840bd88e3d8b72a179b63544a6ad19bc8d4c93be20",
+    "versions": [
+     "1.6.16..1.8.0"
+    ]
+   },
+   {
+    "sha256": "094ec2884e599f54a56660118617c24a21a9dd41f6d4387d55a905587feb68a7",
+    "versions": [
+     "1.8.1..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/hard-gate.ps1": [
+   {
+    "sha256": "85e7c71775be904953207281cc65eb9b1de6d26d582eeadf3a54b7117c0ac1de",
+    "versions": [
+     "1.0.0..1.4.9"
+    ]
+   },
+   {
+    "sha256": "798ecd0fad404fd08e70a9735a1090303ae3301eddefa2141ecad2c9b3cda4ff",
+    "versions": [
+     "1.5.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/harness-context-build.ps1": [
+   {
+    "sha256": "2ddd64f15c0c6e6050a9a7a041ee1364ebec4b89760f4e12adab9545e806478d",
+    "versions": [
+     "1.4.1"
+    ]
+   },
+   {
+    "sha256": "1e80a9fe769ae905bea6b0ad1d4ea6f600c550e41e79c8516e5651ebaed231ea",
+    "versions": [
+     "1.4.2..1.4.9"
+    ]
+   },
+   {
+    "sha256": "9a96d244eebe28ea4b19bb02ed144f49eb092125800e51480571a98ed6fa9735",
+    "versions": [
+     "1.5.0..1.6.0"
+    ]
+   },
+   {
+    "sha256": "a86a27cd9af885eab0f45192ba90ecfc7493e49feb425fedcf95a7f87656f23f",
+    "versions": [
+     "1.6.1..1.6.6"
+    ]
+   },
+   {
+    "sha256": "8868bd2b262aeaca73e0d44e7930fb9139723e872a21dea30b46d1344d90b784",
+    "versions": [
+     "1.6.7..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/harness-context-query.ps1": [
+   {
+    "sha256": "3483081f99b2e2baa8bc7e155216cf78aa67128bd0c91e1b0313c8d8c4a8cae6",
+    "versions": [
+     "1.4.2..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/harness-doctor.ps1": [
+   {
+    "sha256": "d25e2749bfd30e842e040da60a1501d62033a093d4e73e351071ebbb64926fa5",
+    "versions": [
+     "1.6.0..1.8.10"
+    ]
+   },
+   {
+    "sha256": "8feb9271a8f074c8ed92841d272ea45e7692d10c3eba0e9574b203bbbd30c15e",
+    "versions": [
+     "1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/harness-eval.ps1": [
+   {
+    "sha256": "d93e60d38102df5bc6c0f4612561333bdb1f24d1092223da8b424516e8122751",
+    "versions": [
+     "1.4.8..1.4.9"
+    ]
+   },
+   {
+    "sha256": "19802c7ee172c1dc9a6269ba409ad45aa3c29ff716e6850f76c22aaaa7d950e1",
+    "versions": [
+     "1.5.0..1.5.5"
+    ]
+   },
+   {
+    "sha256": "27fb2c2959847c42bbcf4a7f5b518e20882a754ef121b6e607ae7cfbe974b9d0",
+    "versions": [
+     "1.5.6..1.8.0"
+    ]
+   },
+   {
+    "sha256": "f882637f3610190f111c35752b68c8c8fceac43c2e830ce26db95d9951b7443a",
+    "versions": [
+     "1.8.1..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/harness-fingerprint.ps1": [
+   {
+    "sha256": "2f1a540fdd8fd2ed57b8e8700d7e59bb7a7fa7a8c71bb70bfcbe5b85adde7537",
+    "versions": [
+     "1.8.7..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/harness-handoff-check.ps1": [
+   {
+    "sha256": "8ce734bc62b3c0182eeacc62a29651af12f6497a7af08a0c621ea0de21204e63",
+    "versions": [
+     "1.8.8..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/harness-model-fallback.ps1": [
+   {
+    "sha256": "9dabb917697a44bec8056fdeee9d0ca32e1b936d0ad6bb2913c7fdca926c0b3a",
+    "versions": [
+     "1.4.1..1.8.2"
+    ]
+   },
+   {
+    "sha256": "f8566aa67159db29f7dd796de06f4ecc59bb9c93f5d74a75ecebeb0ca98c860e",
+    "versions": [
+     "1.8.3..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/harness-pipeline-log.ps1": [
+   {
+    "sha256": "2838da2a6439cc0955e66acda5f79cd3533361f803dab20d23222a7ffa93b0a2",
+    "versions": [
+     "1.6.5..1.8.5"
+    ]
+   },
+   {
+    "sha256": "700f546ab9e6084c567a29eae1ddf8a458cf0923b378e819da297e52627d0561",
+    "versions": [
+     "1.8.6..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/harness-post-tool-use.ps1": [
+   {
+    "sha256": "53131ea0eb43ed34dea4629513b5c379c6e69e0bbc1b613ab94bede2b34d98b4",
+    "versions": [
+     "1.0.0"
+    ]
+   },
+   {
+    "sha256": "cbe85b110555ac3bffb9b4ba8ae136bf75a8c4f1f2ba28b684bf2ddca96179a1",
+    "versions": [
+     "1.1.0"
+    ]
+   },
+   {
+    "sha256": "2d015e0802b7497594d6f010ba37ef5bf6a621d288b940e16643d659702f3169",
+    "versions": [
+     "1.2.0..1.5.5"
+    ]
+   },
+   {
+    "sha256": "b00b5f14c7e9a30e880f7b69e7f1608a1cc0cc2abc05a6e24eddaf653bd37117",
+    "versions": [
+     "1.5.6..1.5.7"
+    ]
+   },
+   {
+    "sha256": "27b28334d45854fcd12b7d71a21bd702bf3cd15eda2150ac58323d1431afa1ac",
+    "versions": [
+     "1.5.9..1.6.0"
+    ]
+   },
+   {
+    "sha256": "313f160dc2ed67be2b7e53927d0a0afb350c0f9e35f1f116a7407b6b4c3f524c",
+    "versions": [
+     "1.6.1"
+    ]
+   },
+   {
+    "sha256": "1e95ff7ddf115519d49e1e1f5d1eeb47c2286d74e596b32a8bf19c9f49ae5947",
+    "versions": [
+     "1.6.2..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/harness-release.ps1": [
+   {
+    "sha256": "9952e0389a34a0a6f3c2e01ead035cc19c62878f33bae5e8b18ff9587a77adcd",
+    "versions": [
+     "1.4.5..1.5.5"
+    ]
+   },
+   {
+    "sha256": "feefb752cc27fb3aebf9f9ec808dd24cf960be1730c9beef2336c256c91034a6",
+    "versions": [
+     "1.5.6..1.8.6"
+    ]
+   },
+   {
+    "sha256": "83442cd4a7e5727abebab6811fc89216a02ee98e751d2846ad8942e28a14f25c",
+    "versions": [
+     "1.8.7..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/harness-rollback.ps1": [
+   {
+    "sha256": "3ca8b2515d1f7ae4bce034cae762ec364bb2e0f591f523ca9418fa84bb81dd03",
+    "versions": [
+     "1.4.1..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/harness-runtime-guard.ps1": [
+   {
+    "sha256": "1cee2c63f77c119379f874fbdfa6ad732521194c54489e0bc55a7560178c6c71",
+    "versions": [
+     "1.0.0..1.1.0"
+    ]
+   },
+   {
+    "sha256": "2f31ea617609b51922b9b8f1890f74818fc2edf4219a11b4e69c1f399cea3c2b",
+    "versions": [
+     "1.2.0..1.2.1"
+    ]
+   },
+   {
+    "sha256": "bab3bdee80a0c19ec38b65b8c7a6aad6a9b9605f35c993587fcdc4e1ac0ddaf0",
+    "versions": [
+     "1.2.2..1.2.3"
+    ]
+   },
+   {
+    "sha256": "afd6fcf956e9fba234a42c7b7b595af456d2286ddb77cc7bba20ed05d3a41b69",
+    "versions": [
+     "1.2.4"
+    ]
+   },
+   {
+    "sha256": "ed4554883b573af7dd383b3c98ab7e13a27c04d9cbf0f4166e70b5a4b31b6c9c",
+    "versions": [
+     "1.2.5..1.3.0"
+    ]
+   },
+   {
+    "sha256": "e7ab68820eb57ee3852f88b6311ad6c59ac4ae11d4a99625b4bb07140bab42a4",
+    "versions": [
+     "1.4.0..1.6.0"
+    ]
+   },
+   {
+    "sha256": "6daf8b1f0cecbb4cf44933fa8189329f79a34b9209536354f3c782cf9f0e971a",
+    "versions": [
+     "1.6.1..1.6.15"
+    ]
+   },
+   {
+    "sha256": "4682d514fe639ddd620ecf8f5ebb6080e2f4fd4ceddf668c9e22960efb59c42c",
+    "versions": [
+     "1.6.16..1.6.18"
+    ]
+   },
+   {
+    "sha256": "92c701fe773f0e96e01b7376fab087a411af9e565b1a35fe72816d2b92095054",
+    "versions": [
+     "1.6.19..1.7.1"
+    ]
+   },
+   {
+    "sha256": "8459890677063bddd07cf84e96c394c2e4a923fa9e29a2dec5d55993ef638ae0",
+    "versions": [
+     "1.8.0"
+    ]
+   },
+   {
+    "sha256": "8b4432971526a36772cf07fa4acac2dc8b6fe7b7920db94c63904fb3978d5b1a",
+    "versions": [
+     "1.8.1..1.8.2"
+    ]
+   },
+   {
+    "sha256": "94211507800b24266f3887261689c09ab18e6f0bc71bc85a881a3cba73721bc9",
+    "versions": [
+     "1.8.3..1.8.5"
+    ]
+   },
+   {
+    "sha256": "08dc940a62f947077e44b7dfcd47c4257c05008537ebb674b0d663aff2f5fd6b",
+    "versions": [
+     "1.8.6"
+    ]
+   },
+   {
+    "sha256": "4bd30a5636c30612427eec0f2bcdc77c71a5e1eed4a5410b2236e54974102458",
+    "versions": [
+     "1.8.7..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/harness-session-end.ps1": [
+   {
+    "sha256": "23fc675350ba150e871fcd4a33c01713bc3ed24f3c6a460f75f0183b24fff7ed",
+    "versions": [
+     "1.0.0..1.1.0"
+    ]
+   },
+   {
+    "sha256": "90a9a20ab437d8ef105bf3fbf71fc6729625509d148a635336f840a5271a400f",
+    "versions": [
+     "1.2.0"
+    ]
+   },
+   {
+    "sha256": "956b626ec5248d17b7c05b0873a34feaddcd932dcf1ace26f78746403cde8265",
+    "versions": [
+     "1.2.1..1.5.9"
+    ]
+   },
+   {
+    "sha256": "d5110b46afefd8015809c6266ef9239e547c66a0d5695e79fc2b4ad16b157d6d",
+    "versions": [
+     "1.6.0..1.6.20"
+    ]
+   },
+   {
+    "sha256": "4931b29531c3e6b1f83dbb326cf302b09d3daf138e1e38d877d552f66b314db5",
+    "versions": [
+     "1.7.0"
+    ]
+   },
+   {
+    "sha256": "b49a542b9c37cc1b93e816bc6ed5d8ed8eb6c2a748f88c2c41f74925b1a0bcb5",
+    "versions": [
+     "1.7.1"
+    ]
+   },
+   {
+    "sha256": "e01d608b842007281e631574bda850e9fe7f0b413774ba9d25be1012a2228f21",
+    "versions": [
+     "1.8.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/harness-session-start.ps1": [
+   {
+    "sha256": "83a1d33ef873d587477f88b3de21c8872ac5b58914a868acf318cb5df400f01a",
+    "versions": [
+     "1.0.0..1.4.0"
+    ]
+   },
+   {
+    "sha256": "6dcd7b046d29f6c3045e8d21a18549383578818b1ea7135f7fa0e1d71412657b",
+    "versions": [
+     "1.4.1..1.5.9"
+    ]
+   },
+   {
+    "sha256": "3f4c3abdf9f99e8ffb51c842589121debd3875ff28aa70fec946b51a5ae8f35d",
+    "versions": [
+     "1.6.0..1.6.17"
+    ]
+   },
+   {
+    "sha256": "f8aec6f3a84c8f7ce4dd0390aaae365fef3f708880f6aeb4519e53849a55e8e8",
+    "versions": [
+     "1.6.18..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/harness-switch-account.ps1": [
+   {
+    "sha256": "cf4a47a5c90f5e5bb2cd45592ebdb541228b692a6e5d24412523513e26960a8e",
+    "versions": [
+     "1.5.9..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/injection-scan.ps1": [
+   {
+    "sha256": "b0b285f65d106abf847f91e40e6563805bee95ee79f4bea41fd52ae8fc1e3664",
+    "versions": [
+     "1.0.0..1.2.1"
+    ]
+   },
+   {
+    "sha256": "d3c6f7ccdf538c9d65d651d75cc8c4d91cec4ab5f7d9eacdf990690b5a1455b9",
+    "versions": [
+     "1.2.2..1.6.18"
+    ]
+   },
+   {
+    "sha256": "3f59b2e41edb35aeb0bd7231e766f1156c9ee1adbbf425d353a02511dffc15d6",
+    "versions": [
+     "1.6.19..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/kpi-report.ps1": [
+   {
+    "sha256": "41ca894d1139e327f9115c7eaa986208a90eccc3561a86f4de46d537b4f64e11",
+    "versions": [
+     "1.8.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/lib-security-log.ps1": [
+   {
+    "sha256": "1564fbc8e7f06355547bbdf358e3eaa249f3bcdd6cf07faeff29e1e3d8305222",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/log-human.ps1": [
+   {
+    "sha256": "82d0c3072180f9aeca993e260e77e3c98ffad6362d8ef0ac6ac9e2ab48a1ed16",
+    "versions": [
+     "1.8.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/push-telemetry.ps1": [
+   {
+    "sha256": "ab6806235590482073e0dd9da44ed6eb96d9e2c20b69b560ca8e086e23d74b34",
+    "versions": [
+     "1.2.1..1.2.3"
+    ]
+   },
+   {
+    "sha256": "503e86d34095bb6b12502f41228fd88bff3d9801a6f87c236d94650fc44a3584",
+    "versions": [
+     "1.2.4..1.4.4"
+    ]
+   },
+   {
+    "sha256": "9af3ae4f8d357c6135ad874137d8d34575bbc839b82f4b44e291e6bfd502a477",
+    "versions": [
+     "1.4.5"
+    ]
+   },
+   {
+    "sha256": "a874941a0b5865db4ef3f9320369fc2f4b08581ce4916bf1913809c905b9070b",
+    "versions": [
+     "1.4.6"
+    ]
+   },
+   {
+    "sha256": "d618fbe91475658f77ccaa80bb25559ba3d3ec6d6ed422c8a6ebb8a50202aae7",
+    "versions": [
+     "1.4.7..1.4.8"
+    ]
+   },
+   {
+    "sha256": "6dbb0841c9365edf5df15169214656de759c9a6a61770e23d95e8c93a05a5c28",
+    "versions": [
+     "1.4.9..1.5.5"
+    ]
+   },
+   {
+    "sha256": "39baa1b3c6ffaec28b8ba13a784694d84a50bae94c89ffeeb80ddae31962d110",
+    "versions": [
+     "1.5.6..1.5.7"
+    ]
+   },
+   {
+    "sha256": "b0071ef4ffe5c9e057d1c88ab67eccbc5664b899feebe45a746ff0e932cc8a70",
+    "versions": [
+     "1.5.9"
+    ]
+   },
+   {
+    "sha256": "1c4203c8fda95865bf1e63138fc763c4d6dae007d73727e3b212395df81936e9",
+    "versions": [
+     "1.6.0"
+    ]
+   },
+   {
+    "sha256": "74d3edf083b6939ac7c944fd3ac93f4bacb3963fd9c12dbdaf71e45adaf967de",
+    "versions": [
+     "1.6.1..1.6.2"
+    ]
+   },
+   {
+    "sha256": "0113bc07e0aa0428e6c27d254467e64eddc27f1e6f4c754415c05c007ce971da",
+    "versions": [
+     "1.6.3"
+    ]
+   },
+   {
+    "sha256": "8f132d4d4df2fb916532e01175525b34f602cacb004323ad84fa32d54e907e58",
+    "versions": [
+     "1.6.5..1.6.15"
+    ]
+   },
+   {
+    "sha256": "274378060e3f024e026b9ddf4e9d13fdd3e26520bc19ccf0e4a6bb6034b59a67",
+    "versions": [
+     "1.6.16..1.7.0"
+    ]
+   },
+   {
+    "sha256": "b432d0adbaa9ef762c0d30d18209bff50b8cab636af251542290e6330161f15d",
+    "versions": [
+     "1.7.1..1.8.6"
+    ]
+   },
+   {
+    "sha256": "fccd862d64c4d4e4a9fc116b84859ff460f0bca2268e532bdc19f5a6b9ad8ee3",
+    "versions": [
+     "1.8.7..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/rotate-logs.ps1": [
+   {
+    "sha256": "eb2b83395be45c2d56e77ee4f744d24a066fd51d6653607184688ea8cdbca0dd",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/rtm-check.ps1": [
+   {
+    "sha256": "5483760d7b56bf9c4ca405489bb08c6a807a50e7a58cba1dc0d1c7e403f4379d",
+    "versions": [
+     "1.8.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/secret-scan.ps1": [
+   {
+    "sha256": "a0fcdad99224547995b6e8b89a0a15f436a88e72af29d23cf05e28542a317e06",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/sensitivity-enforce.ps1": [
+   {
+    "sha256": "db1e5c28e55a571ca066e8027c2b53e191a9c92dd746dcb813eea008b0f852bf",
+    "versions": [
+     "1.8.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/test-hooks.ps1": [
+   {
+    "sha256": "5c94a02fda68713e30b98cc567fe06133c23b30a603b1fe180c331922de90eb4",
+    "versions": [
+     "1.1.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/scripts/powershell/tool-idempotency.ps1": [
+   {
+    "sha256": "0f1456ec5e23421f4856c03b063369f775f3fbe5352073d551004d4a9c8e3b5e",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/templates/agent-pack/agent-config.yaml.sample": [
+   {
+    "sha256": "abf5724244b04842332c49bbb0fcc06b577af2d4e7b7d5154b0c3124c157929e",
+    "versions": [
+     "1.6.1..1.8.11"
+    ]
+   }
+  ],
+  ".harness/templates/agent-pack/impact-map.yaml.sample": [
+   {
+    "sha256": "0651726d6c2949bb24fdf834faea546d599bc637651c9efdfb16e8c16cb378e2",
+    "versions": [
+     "1.6.1..1.8.11"
+    ]
+   }
+  ],
+  ".harness/templates/baseline-w0.json.sample": [
+   {
+    "sha256": "76fffee6db0678786c77611f6e9fab86e1635eb4a74835be376d427b2fe13b06",
+    "versions": [
+     "1.8.0..1.8.11"
+    ]
+   }
+  ],
+  ".harness/templates/buglist.md": [
+   {
+    "sha256": "ee8cdc65d7419cf1daaaccdd822f1a6bd469b07dafc80fcda0c47cff422315e0",
+    "versions": [
+     "1.4.9..1.8.11"
+    ]
+   }
+  ],
+  ".harness/templates/ci/CODEOWNERS.template": [
+   {
+    "sha256": "90858fde7094be3bfbda3b78700167104c545047e475b51d29158bd903dc0dd2",
+    "versions": [
+     "1.6.2..1.8.11"
+    ]
+   }
+  ],
+  ".harness/templates/ci/harness-gate.yml.template": [
+   {
+    "sha256": "79e0d0cc86e495d3d068d91c59ba5dab39a6a2c91901488a732450c238ce8055",
+    "versions": [
+     "1.6.2..1.8.10"
+    ]
+   },
+   {
+    "sha256": "94ce555037c4e68875db5dc9a1243a7144ad111b710d1b19c3576d04b5ea7e5f",
+    "versions": [
+     "1.8.11"
+    ]
+   }
+  ],
+  ".harness/templates/ci/tests.yml.template": [
+   {
+    "sha256": "653de2cdf1d29e05d2076884ce98f02946a4ccaff417b679caa90ae481c67a00",
+    "versions": [
+     "1.6.2..1.8.11"
+    ]
+   }
+  ],
+  ".harness/templates/gitattributes.template": [
+   {
+    "sha256": "a562c5938a37423513868ee17615839f6aca13be6e4a62e7846e7bcb0f6e78f5",
+    "versions": [
+     "1.6.1..1.8.10"
+    ]
+   },
+   {
+    "sha256": "c319b859a71b68b55be7eae6121f43fc33ee95c83cb2f49eabecfdf0c32f8728",
+    "versions": [
+     "1.8.11"
+    ]
+   }
+  ],
+  "CLAUDE.harness.md": [
+   {
+    "sha256": "f10112679775a991c125a199ee49fe81c709f943235c5147161d4104419868d6",
+    "versions": [
+     "1.0.0..1.5.2"
+    ]
+   },
+   {
+    "sha256": "c102dfb6d53cc856858297967f8fe253484fb6f2cf8179f8bf54e9d77424016c",
+    "versions": [
+     "1.5.3..1.5.4"
+    ]
+   },
+   {
+    "sha256": "5d23cc4b15a77d1e524761f2194a0fb220eba195e112bdbfe5ceab70b0ad5612",
+    "versions": [
+     "1.5.5..1.5.9"
+    ]
+   },
+   {
+    "sha256": "64be7b58d91060e767b306fc4f29ed8e4dd9a0deea3e2c0d65008e8b808e1fc7",
+    "versions": [
+     "1.6.0..1.6.2"
+    ]
+   },
+   {
+    "sha256": "de9cae31232fc59b2835eb33c42824822ebba1dc09a3e4540456001924355835",
+    "versions": [
+     "1.6.3..1.8.2"
+    ]
+   },
+   {
+    "sha256": "1b547b0d1a3b9766b095c4d386a1c4d8c35ce12819ec26c6005209d2f63597f2",
+    "versions": [
+     "1.8.3..1.8.7"
+    ]
+   },
+   {
+    "sha256": "98a36dc2fb5dd823a3b08a2afc811746644b361cb886c2284bfcdfdda3e72892",
+    "versions": [
+     "1.8.8..1.8.11"
+    ]
+   }
+  ],
+  "contracts/agent.yaml": [
+   {
+    "sha256": "e333a07126f6e33a9bb994091fddcd84989889cc1e2a907d09b75f48bf449f65",
+    "versions": [
+     "1.0.0..1.5.7"
+    ]
+   },
+   {
+    "sha256": "ea45eccbc30d7e53d5526945fc6c7b7e82a170d2702a5ed7ceedcbf43880aca7",
+    "versions": [
+     "1.5.9"
+    ]
+   },
+   {
+    "sha256": "a3f29f5c45743ebf3a22ba59fcc47b0f00f07bc05ee10c67837b76c1e198e51f",
+    "versions": [
+     "1.6.0..1.8.1"
+    ]
+   },
+   {
+    "sha256": "d22d955fa9f5855a22be66b8fdcc54b8627cb2013974db4a021b21943728c4a8",
+    "versions": [
+     "1.8.2"
+    ]
+   },
+   {
+    "sha256": "5f19d1bb956311f730a759711bd6e53c7067c73208b5be605f28985367341746",
+    "versions": [
+     "1.8.3..1.8.11"
+    ]
+   }
+  ],
+  "contracts/approval-flow.yaml": [
+   {
+    "sha256": "5c458fec19ca02297f0c066846727bd8331609874651c5d76249db76a09a9c67",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  "contracts/project.yaml": [
+   {
+    "sha256": "87dc5dc36bbd19cb9bf94389ee25888f57381c5c7b955c972429ee9d7157132d",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  "contracts/tool-contracts.yaml": [
+   {
+    "sha256": "7324ea47af7b855d1542f795aefd1878ec88cecb1b133c01115fe69750d7b1cf",
+    "versions": [
+     "1.6.15..1.8.11"
+    ]
+   }
+  ],
+  "contracts/tool-registry.yaml": [
+   {
+    "sha256": "385fc4e73c861507ebe720346441939b8d3d32cefdeaedf67ba59b99a2caca6f",
+    "versions": [
+     "1.0.0..1.5.7"
+    ]
+   },
+   {
+    "sha256": "feb2555b97601a3faee4403bac306194442a22bdfeff6e9470f807522f490ad8",
+    "versions": [
+     "1.5.9..1.8.11"
+    ]
+   }
+  ],
+  "contracts/workflow.yaml": [
+   {
+    "sha256": "9fdf0d40c9573281315d33c9f0d0beef1716f9846d5bc524e5f28bd800fb9c05",
+    "versions": [
+     "1.0.0..1.5.7"
+    ]
+   },
+   {
+    "sha256": "5c6c349f3e73d932ab442f5149e902ed513327d80332c1143e3eccd8f9b41fd9",
+    "versions": [
+     "1.5.9..1.8.11"
+    ]
+   }
+  ],
+  "docs/casan_harness_assessment.md": [
+   {
+    "sha256": "515b50a54f33f46fe2b2d2c6378c15f690ad417ed020cd708e745373c12e70d9",
+    "versions": [
+     "1.5.6..1.8.11"
+    ]
+   }
+  ],
+  "docs/harness-rules-and-assessment-20260719.html": [
+   {
+    "sha256": "044d6c4d3ec66745eda89254c9ef684f79d32e81b31cc50003f3e0a657e6474c",
+    "versions": [
+     "1.5.6..1.8.11"
+    ]
+   }
+  ],
+  "tools/harness-bundle/harness-lock.ps1": [
+   {
+    "sha256": "bdacca407cc26cd1b3b4ced7ce2b05b7e535d5b2834a73eb527798bc2d849e8d",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  "tools/harness-bundle/harness-lock.sh": [
+   {
+    "sha256": "1e91a3decc49890bf5f356691e671fc5846e08b9848a3d3c9d30acc6981356f1",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  "tools/harness-bundle/harness-verify.ps1": [
+   {
+    "sha256": "bbbef61a5abd558a70ff0a6d48c9931656465ce8c704e5ea74f1fc0cba335349",
+    "versions": [
+     "1.0.0..1.8.5"
+    ]
+   },
+   {
+    "sha256": "bc0265ab13ccb2f5dfdefca968bfa8798bbbf965d7450a03aec089301759d8b4",
+    "versions": [
+     "1.8.6..1.8.10"
+    ]
+   },
+   {
+    "sha256": "5e40f0ffda7fba5820444008d1cf741162879e653fe9bb9ee148d16c825fd47b",
+    "versions": [
+     "1.8.11"
+    ]
+   }
+  ],
+  "tools/harness-bundle/harness-verify.sh": [
+   {
+    "sha256": "11f0fa9890eb5cfce0cbf1c51a8975bfc9c6f9e27c9a09a88c82a653eeb13b0b",
+    "versions": [
+     "1.0.0..1.8.5"
+    ]
+   },
+   {
+    "sha256": "1d59c583c4c39bb30fc43f9776164def63233284e73d0dcf3d058a2373d6262a",
+    "versions": [
+     "1.8.6..1.8.10"
+    ]
+   },
+   {
+    "sha256": "e1104110e9baa78375fb80536d8b2f4fab83c8ae1d4c1cd038dc7f359416b65c",
+    "versions": [
+     "1.8.11"
+    ]
+   }
+  ],
+  "tools/harness-bundle/install.ps1": [
+   {
+    "sha256": "f581f0fafe10a2277e921ef38a0ce95e4187e984ee887278e2b01352f6482c04",
+    "versions": [
+     "1.0.0..1.1.0"
+    ]
+   },
+   {
+    "sha256": "3207126782cc4706715964f9667f7556fc517ce4c9a32543916a339838b26e7d",
+    "versions": [
+     "1.2.0..1.2.5"
+    ]
+   },
+   {
+    "sha256": "9aa46a2b3292c5455fc0afd25cd910da464514e66bc85e5138b28700da299aa1",
+    "versions": [
+     "1.2.6..1.4.3"
+    ]
+   },
+   {
+    "sha256": "be9e1c06049e00697a024dbebad299d2e6797a1c7bada2724cff837095974a32",
+    "versions": [
+     "1.4.4..1.4.5"
+    ]
+   },
+   {
+    "sha256": "d2647836fbdc15b4902d18166ac0c82dbac88a599759d53cc6b39ccd4d59bffc",
+    "versions": [
+     "1.4.6..1.4.8"
+    ]
+   },
+   {
+    "sha256": "c850146d04c920575546ba7a714b16a6bb7d28cb8a53f3b5d4c48cca58c98e1a",
+    "versions": [
+     "1.4.9"
+    ]
+   },
+   {
+    "sha256": "5ec814c5069e6ea2f4e181e5016705cfe0fa5fa4f70000149eac8d83b2254728",
+    "versions": [
+     "1.5.0..1.5.1"
+    ]
+   },
+   {
+    "sha256": "a48faf2924e8ea1c8eaa535085deb036a6e61cbdb8f05162fc10e8a3d10a8a15",
+    "versions": [
+     "1.5.2"
+    ]
+   },
+   {
+    "sha256": "bd53d264c20fd60941c2f942dc32c1343360ceb4bad2cfb8d2c5a26a313daf8c",
+    "versions": [
+     "1.5.3"
+    ]
+   },
+   {
+    "sha256": "63085cb8a607c588f730a916ee4bfb2a946722f7047b9581668975ba1aae520a",
+    "versions": [
+     "1.5.4"
+    ]
+   },
+   {
+    "sha256": "28e4e677c5dad578fbcee7b4a49897e23835ca085cc8d3ebb882190ebe482dba",
+    "versions": [
+     "1.5.5..1.5.7"
+    ]
+   },
+   {
+    "sha256": "4438b5caf0728c8eae2f4fdfb04e368b03561084f8b676b144a63ff062b15512",
+    "versions": [
+     "1.5.9"
+    ]
+   },
+   {
+    "sha256": "ca4be0d5e655f1be9bcd6875ae774b5060d78faa986aef80a354cbad35899974",
+    "versions": [
+     "1.6.0"
+    ]
+   },
+   {
+    "sha256": "962d74cb429048e2daff4b6e3643cfcc9231260fc6ace77111dfc9bd811b8b51",
+    "versions": [
+     "1.6.1"
+    ]
+   },
+   {
+    "sha256": "92dd982ccc9d0c63a000eda1968928d12e6088c2f223ec414b80e37a8fa11a4d",
+    "versions": [
+     "1.6.2"
+    ]
+   },
+   {
+    "sha256": "d3c925254d84ea19d14b82e8d38807046199d65d01cd8f5002358d85244a04b1",
+    "versions": [
+     "1.6.3..1.6.18"
+    ]
+   },
+   {
+    "sha256": "d0b6ad0dcd731f5e3068ab2fb6f931a1ea7f81c2e1eab307a99690689df10ee4",
+    "versions": [
+     "1.6.19"
+    ]
+   },
+   {
+    "sha256": "e9701ab928f78f51ed333cfc1120384db94f0accb5fee3e694fd4dfd7bcdcc63",
+    "versions": [
+     "1.6.20..1.8.0"
+    ]
+   },
+   {
+    "sha256": "9e0c049234d36241e47dcae1f1b821bb72d3d4913818cc27b2e984418c361973",
+    "versions": [
+     "1.8.1..1.8.5"
+    ]
+   },
+   {
+    "sha256": "55d81335057b284873b641e4bde04b6968616a5a58d11a37709b7e8dee08c09a",
+    "versions": [
+     "1.8.6"
+    ]
+   },
+   {
+    "sha256": "4e2f28a305874860aeb9d33f95ca4aadd53c40c4e0a0c3d1cf3fda55d4ed427f",
+    "versions": [
+     "1.8.7..1.8.10"
+    ]
+   },
+   {
+    "sha256": "c7b06b5e4c3eed9823e7b9eb36399f75ea12ef94fea3fdb97826cc213aacd590",
+    "versions": [
+     "1.8.11"
+    ]
+   }
+  ],
+  "tools/harness-bundle/install.sh": [
+   {
+    "sha256": "c25a70525ed58ef79956e6abcce9fb53e82268b0958e3979d88d86f6d464bdce",
+    "versions": [
+     "1.0.0..1.2.5"
+    ]
+   },
+   {
+    "sha256": "0831b1227e59ccefbe7a1a8de032887e0785b9e3e845bc62d1c522776ed93df7",
+    "versions": [
+     "1.2.6..1.4.3"
+    ]
+   },
+   {
+    "sha256": "c0310fb6788ff064d52aba8b8623164a93c0496ccd375a2ad4db4c3bda064099",
+    "versions": [
+     "1.4.4..1.4.5"
+    ]
+   },
+   {
+    "sha256": "0252262d43532b7d9ca6a0b33d6a28a9eae4119ff044384da22ca595dfb72128",
+    "versions": [
+     "1.4.6..1.4.8"
+    ]
+   },
+   {
+    "sha256": "718342e3f82d48727545fc5c05d72f0ac00068a85cb6b83edab1faa699b0819b",
+    "versions": [
+     "1.4.9"
+    ]
+   },
+   {
+    "sha256": "2cf19a841de17940e550e5f587b0639718db4e11ec711fe082565f945d117dd9",
+    "versions": [
+     "1.5.0..1.5.1"
+    ]
+   },
+   {
+    "sha256": "16a64483885c1b0164f09fdb03929fbe9df1e0d493ddffb3cb37d779a9bd5a3b",
+    "versions": [
+     "1.5.2"
+    ]
+   },
+   {
+    "sha256": "22f13d2a97c784fd42dbc9120edcdeb9a8c6a6c44090dcdab920951e7b86e2b9",
+    "versions": [
+     "1.5.3"
+    ]
+   },
+   {
+    "sha256": "b4e1cea9a5c116d566c5a59dbbbe0e5f30a0e3ac736a39a9c273fcebb89d2bb5",
+    "versions": [
+     "1.5.4"
+    ]
+   },
+   {
+    "sha256": "0ea1e9ecb5f02e624eb723e8de30d7556f7a047f98d108b36d81abc930aae5c1",
+    "versions": [
+     "1.5.5..1.5.9"
+    ]
+   },
+   {
+    "sha256": "51d30bb85669518073d9738adaf8cfdb776d1ca1f6fa2d3c07122d578b27e514",
+    "versions": [
+     "1.6.0"
+    ]
+   },
+   {
+    "sha256": "f80e87878fd123005c15a448ddfb8c9eb37c3f7ed26fe91502ced85b9d267f51",
+    "versions": [
+     "1.6.1"
+    ]
+   },
+   {
+    "sha256": "67c8f94fb8adbcf19d668e2422727a7d8329927d30c34be5c56331dbceb3e22a",
+    "versions": [
+     "1.6.2..1.6.18"
+    ]
+   },
+   {
+    "sha256": "cab4b9b299cdd85aeb047928ae50db22ecd96e56da240dcfbf765360af21960a",
+    "versions": [
+     "1.6.19..1.8.0"
+    ]
+   },
+   {
+    "sha256": "186c97635b2d8457fde0d4016dbd59ddeb9e8ae5c3f88e1ce595d69ef7ca476e",
+    "versions": [
+     "1.8.1..1.8.5"
+    ]
+   },
+   {
+    "sha256": "001312e003147c502eb2e44c907d4df281f087f67a08b36844149edec3472129",
+    "versions": [
+     "1.8.6"
+    ]
+   },
+   {
+    "sha256": "a1cdfd627042aa62a3cda44f60c592f5309b97160690683b3886e4b4a0401315",
+    "versions": [
+     "1.8.7..1.8.10"
+    ]
+   },
+   {
+    "sha256": "c4bf2386948a20222f003ef1b682d802130e34876b3545d3af463bdb5b3a1edd",
+    "versions": [
+     "1.8.11"
+    ]
+   }
+  ],
+  "tools/harness-bundle/uninstall.ps1": [
+   {
+    "sha256": "ea1b10cb7bc0b6550a3e8410693a8f9c72b995cf5b7c08af551e9648d256e95b",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ],
+  "tools/harness-bundle/uninstall.sh": [
+   {
+    "sha256": "d7cebd18da3537f2f4700632ef92bed2cc2428189b6cc9712dbdce42f7946dae",
+    "versions": [
+     "1.0.0..1.8.11"
+    ]
+   }
+  ]
+ }
+}

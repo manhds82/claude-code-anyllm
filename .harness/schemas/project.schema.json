@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://harness.internal/schemas/project.schema.json",
+  "title": "Project Contract Schema",
+  "description": "SSOT for project-level policy: identity, RBAC, budget, risk policy reference.",
+  "type": "object",
+  "required": ["schema_version", "project_version", "project", "identity"],
+  "properties": {
+    "schema_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "project_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "project": {
+      "type": "object",
+      "required": ["name", "description", "tech_stack"],
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "tech_stack": {
+          "type": "object",
+          "properties": {
+            "languages": { "type": "array", "items": { "type": "string" } },
+            "frameworks": { "type": "array", "items": { "type": "string" } },
+            "databases": { "type": "array", "items": { "type": "string" } },
+            "infrastructure": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "domain_refs": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    },
+    "identity": {
+      "type": "object",
+      "required": ["provider", "default_role", "roles"],
+      "properties": {
+        "provider": { "type": "string" },
+        "default_role": { "type": "string" },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "description", "allowed_tools"],
+            "properties": {
+              "name": { "type": "string" },
+              "description": { "type": "string" },
+              "allowed_tools": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "risk_policy_ref": { "type": "string" },
+    "budget": {
+      "type": "object",
+      "properties": {
+        "max_tokens_per_session": { "type": "integer", "minimum": 0 },
+        "max_cost_per_session_usd": { "type": "number", "minimum": 0 },
+        "alert_at_percent": { "type": "integer", "minimum": 1, "maximum": 100 }
+      }
+    }
+  }
+}

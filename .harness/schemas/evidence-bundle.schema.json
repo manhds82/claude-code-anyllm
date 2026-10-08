@@ -1,0 +1,111 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://harness.internal/schemas/evidence-bundle.schema.json",
+  "title": "Evidence Bundle Schema",
+  "description": "Definition of Done — 8-part evidence bundle attached to every change (D11, §18.3 spec).",
+  "type": "object",
+  "required": [
+    "bundle_id", "change_id", "created_at", "created_by",
+    "requirement_trace", "design_impact", "code_diff",
+    "test_report", "security_scan", "review_verdict",
+    "approval_record", "cost_telemetry"
+  ],
+  "properties": {
+    "bundle_id": { "type": "string", "description": "UUID of this evidence bundle" },
+    "change_id": { "type": "string", "description": "Reference to the change (commit hash, PR number, or pipeline run ID)" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "created_by": {
+      "type": "object",
+      "required": ["agent", "user", "session_id"],
+      "properties": {
+        "agent": { "type": "string" },
+        "user": { "type": "string" },
+        "session_id": { "type": "string" }
+      }
+    },
+    "requirement_trace": {
+      "type": "object",
+      "required": ["spec_ref", "requirement_ids"],
+      "properties": {
+        "spec_ref": { "type": "string" },
+        "requirement_ids": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "design_impact": {
+      "type": "object",
+      "properties": {
+        "description": { "type": "string" },
+        "affected_components": { "type": "array", "items": { "type": "string" } },
+        "design_doc_ref": { "type": "string" }
+      }
+    },
+    "code_diff": {
+      "type": "object",
+      "required": ["files_changed", "diff_ref"],
+      "properties": {
+        "files_changed": { "type": "array", "items": { "type": "string" } },
+        "diff_ref": { "type": "string" },
+        "diff_hash": { "type": "string" }
+      }
+    },
+    "test_report": {
+      "type": "object",
+      "properties": {
+        "passed": { "type": "integer" },
+        "failed": { "type": "integer" },
+        "skipped": { "type": "integer" },
+        "coverage_percent": { "type": "number" },
+        "report_ref": { "type": "string" }
+      }
+    },
+    "security_scan": {
+      "type": "object",
+      "properties": {
+        "scanner": { "type": "string" },
+        "findings_count": { "type": "integer" },
+        "high_critical_count": { "type": "integer" },
+        "passed": { "type": "boolean" },
+        "report_ref": { "type": "string" }
+      }
+    },
+    "review_verdict": {
+      "type": "object",
+      "required": ["verdict", "score", "reviewer_agent"],
+      "properties": {
+        "verdict": { "type": "string", "enum": ["APPROVED", "CHANGES_REQUIRED", "REJECTED"] },
+        "score": { "type": "number", "minimum": 0, "maximum": 100 },
+        "reviewer_agent": { "type": "string" },
+        "feedback": { "type": "string" },
+        "rubric_scores": {
+          "type": "object",
+          "description": "Per-dimension judge scores 0-100 (H3). Overall = weighted/avg of these. The 5 keys below are the H3-2 gate (casan-criteria.yaml#rubric_dimensions) -- keep them in sync, or a judge scoring exactly what this schema documents can silently fail to satisfy the gate (found 2026-08-11: catalogue said 'perf', this schema said 'performance'). intake_clarity is a 6th dimension qa-gate/verify-implementation already score (judge-rubric.md) but is deliberately NOT yet gate-required -- see that doc's own note -- so it is listed for schema accuracy, not because H3-2 reads it.",
+          "properties": {
+            "correctness":    { "type": "number", "minimum": 0, "maximum": 100 },
+            "maintainability":{ "type": "number", "minimum": 0, "maximum": 100 },
+            "security":       { "type": "number", "minimum": 0, "maximum": 100 },
+            "performance":    { "type": "number", "minimum": 0, "maximum": 100 },
+            "traceability":   { "type": "number", "minimum": 0, "maximum": 100 },
+            "intake_clarity": { "type": "number", "minimum": 0, "maximum": 100 }
+          }
+        }
+      }
+    },
+    "approval_record": {
+      "type": "object",
+      "properties": {
+        "required": { "type": "boolean" },
+        "approved_by": { "type": "string" },
+        "approved_at": { "type": "string", "format": "date-time" },
+        "approval_ref": { "type": "string" }
+      }
+    },
+    "cost_telemetry": {
+      "type": "object",
+      "properties": {
+        "tokens_used": { "type": "integer" },
+        "estimated_cost_usd": { "type": "number" },
+        "duration_seconds": { "type": "number" }
+      }
+    }
+  }
+}

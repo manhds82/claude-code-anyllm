@@ -1,0 +1,122 @@
+{
+  "$schema": "../schemas/sensitive-paths.schema.json",
+  "schema_version": "1.0.0",
+  "description": "Sensitivity modifier input (F2) — raises an action's risk score by WHAT it touches, not just by what the action is called. Consumed by risk-registry.yaml modifier `target_matches_sensitive_path`.",
+  "governs": "assistant_workflow",
+  "enforced_at": "gatekeeper_agent+pretooluse_optin",
+  "enforcement_note": "HONEST STATUS (C10): two consumers. (1) The `gatekeeper` agent reads this when it fills risk_class -- advisory, always on. (2) harness-runtime-guard.ps1 (PreToolUse) enforces it HARD, but only when enforce_at_pretooluse is true. That flag ships FALSE: turning it on changes runtime behaviour for every session in the project, so it is opted into per project, not inherited. The guard fails OPEN on any error -- a broken sensitivity check must never brick a shell.",
+  "why_this_exists": "risk_scoring.base_scores keys off action_type alone, so `file_write` scores 10 whether the target is README.md or migrations/003_drop_column.sql — both land in tier `low`, which needs no approval. The same schema change scores 85 if the agent happens to call database_write instead. What decided the governance was the tool the agent picked, not what was at stake. Writing a file is the cheaper path, so it is the one an agent takes.",
+  "why_delta_is_60": "The tier thresholds are none=0 low=10 medium=40 high=70 critical=90. `medium` lists approval_roles [developer, reviewer] — but session-roles.json sets default_role to `developer`, so a medium-tier approval can be satisfied by the same principal that made the change. Only >=70 (high -> [reviewer, admin]) guarantees a different approver. file_write(10) + 60 = 70 is therefore the smallest delta that actually changes who must sign off. A smaller delta would look like governance and enforce nothing.",
+  "default_score_delta": 60,
+  "rules": [
+    {
+      "id": "db-migrations",
+      "globs": [
+        "**/migrations/**",
+        "**/migrate/**",
+        "**/alembic/versions/**"
+      ],
+      "score_delta": 60,
+      "reason": "Schema change. Irreversible in practice once applied to data that matters.",
+      "exclude_globs": [
+        "**/*.gitkeep",
+        "**/*.mako",
+        "**/env.py",
+        "**/README*"
+      ]
+    },
+    {
+      "id": "raw-sql",
+      "globs": [
+        "**/*.sql"
+      ],
+      "score_delta": 60,
+      "reason": "Raw SQL — DDL and bulk DML are indistinguishable from a read query by filename alone."
+    },
+    {
+      "id": "authn",
+      "globs": [
+        "**/auth/**",
+        "**/authentication/**",
+        "**/*session*.py",
+        "**/*session*.ts"
+      ],
+      "score_delta": 60,
+      "reason": "Authentication. A wrong change here is silent and grants access rather than denying it.",
+      "exclude_globs": [
+        "**/test_*",
+        "**/*_test.*",
+        "**/tests/**",
+        "**/*.md"
+      ]
+    },
+    {
+      "id": "authz",
+      "globs": [
+        "**/*permission*",
+        "**/*rbac*",
+        "**/*policy*.py",
+        "**/*acl*"
+      ],
+      "score_delta": 60,
+      "reason": "Authorization. Same failure mode as authn, and usually invisible to functional tests.",
+      "exclude_globs": [
+        "**/*.md",
+        "**/*_check.py",
+        "**/*_checker.py",
+        "**/*_test.*",
+        "**/check_*.py",
+        "**/test_*",
+        "**/tests/**"
+      ]
+    },
+    {
+      "id": "secrets",
+      "globs": [
+        "**/.env*",
+        "**/*secret*",
+        "**/*credential*",
+        "**/*.pem",
+        "**/*.key"
+      ],
+      "score_delta": 70,
+      "reason": "Secrets by path. secret-patterns.json catches secrets by CONTENT; this catches the file whose job is to hold them, before anything is written into it.",
+      "exclude_globs": [
+        "**/*.example",
+        "**/*.md",
+        "**/*.rst",
+        "**/*.sample",
+        "**/*.schema.json",
+        "**/*.template",
+        "**/*patterns*",
+        "**/*scan*"
+      ]
+    },
+    {
+      "id": "money",
+      "globs": [
+        "**/billing/**",
+        "**/payment/**",
+        "**/*invoice*",
+        "**/*pricing*"
+      ],
+      "score_delta": 60,
+      "reason": "Money. An off-by-one here is a refund, not a bug report.",
+      "exclude_globs": [
+        "**/*.md",
+        "**/*.schema.json",
+        "**/*_test.*",
+        "**/test_*",
+        "**/tests/**"
+      ]
+    }
+  ],
+  "notes": {
+    "calibration": "Start narrow, widen from real cases. Watch the escalation rate: if more than ~25% of changes get pushed to high, the globs are too wide and the mechanism will be turned off within a fortnight -- which is worse than not having it. Prefer removing a glob over lowering a delta: a delta below 60 puts the change in a tier whose approver can be the author (see why_delta_is_60). MEASURED 2026-09-17 on a live 162-file repo: 10 escalations (6.2%), of which 4 were false positives -- a test file, an ADR discussing secrets, and two .env.example files. exclude_globs below came from that scan, not from theory.",
+    "deliberately_excluded": ".harness/control/** and contracts/** are NOT listed. Editing governance config is arguably sensitive, but it is also what the maintainer does constantly while operating the harness; gating it would generate approval noise on exactly the work that tunes the gates. guard-zones.json already classifies .harness/** as medium.",
+    "relationship_to_guard_zones": "guard-zones.json answers CAN this agent touch this path at all (allow/deny). This file answers HOW RISKY is it when it does (score). They are different questions and both apply.",
+    "when_a_rule_fires": "Highest matching score_delta wins; deltas from multiple matching rules are NOT summed. A file under both migrations/ and *.sql gets +60, not +120.",
+    "why_exclusions_matter": "A rule that escalates a test file, a document ABOUT a sensitive topic, or a TOOL THAT CHECKS one, trains people to wave the gate through -- and a gate waved through by habit still costs a click while certifying nothing. Two measured rounds produced these: round 1 on a live app repo caught test files, an ADR and .env.example; round 2 on this repo caught harness_policy_check.py (a policy CHECKER, not authorization), secret-scan.sh and secret-patterns.json (a scanner and its patterns, not secrets), and *.schema.json (the shape of pricing, not pricing). The pattern is one sentence: the thing that inspects X is not X."
+  },
+  "enforce_at_pretooluse": true
+}

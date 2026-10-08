@@ -1,0 +1,131 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://harness.internal/schemas/pipeline-context.schema.json",
+  "title": "Pipeline Context Schema",
+  "description": "H1 SSOT: central artifact tracking for multi-agent pipelines. Boss updates after each stage; sub-agents read directly instead of relying on prompt handoff.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "pipeline",
+    "project",
+    "stages",
+    "artifacts"
+  ],
+  "properties": {
+    "schema_version": {
+      "description": "SemVer of this schema — increments on breaking changes",
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "pipeline": {
+      "type": "object",
+      "required": ["id", "name", "workflow_ref", "status"],
+      "properties": {
+        "id": { "type": "string", "description": "Unique pipeline run ID (UUID)" },
+        "name": { "type": "string", "description": "Human-readable pipeline name" },
+        "workflow_ref": { "type": "string", "description": "Path to the workflow.yaml defining this pipeline" },
+        "status": { "type": "string", "enum": ["pending", "running", "paused", "completed", "failed", "rolled_back"] },
+        "current_stage": { "type": ["string", "null"], "description": "Name of the currently active stage (null when pipeline not started)" },
+        "intake_state": {
+          "type": "string",
+          "description": "Gatekeeper's pre-code triage outcome (v1.6.0 intake stage). 'unknown' is the honest default for a project on the legacy 3-stage DAG that has no intake stage at all — it must not read as 'blocked'.",
+          "enum": ["ready", "needs_clarify", "blocked", "skipped", "unknown"],
+          "default": "unknown"
+        },
+        "intake_artifact_path": { "type": "string", "description": "Path to the intake doc the gatekeeper wrote" },
+        "qa_gate_verdict": {
+          "type": "string",
+          "description": "QA gate outcome (v1.6.0 qa-gate stage). harness-post-tool-use reads THIS key to decide whether release-affecting tools may run, so an absent or unset value is treated as not-approved when the gate is enabled (fail-closed, C10).",
+          "enum": ["APPROVED", "CHANGES_REQUIRED", "REJECTED", "pending"]
+        },
+        "qa_gate_verdict_path": { "type": "string", "description": "Path to the verdict doc the qa-reviewer wrote — named in the deny message so the human knows where to look" },
+        "error": {
+          "type": "object",
+          "properties": {
+            "stage": { "type": "string" },
+            "message": { "type": "string" },
+            "timestamp": { "type": "string", "format": "date-time" }
+          },
+          "required": ["stage", "message", "timestamp"]
+        }
+      }
+    },
+    "project": {
+      "type": "object",
+      "required": ["name", "tech_stack", "domain_refs"],
+      "properties": {
+        "name": { "type": "string" },
+        "tech_stack": {
+          "type": "object",
+          "properties": {
+            "languages": { "type": "array", "items": { "type": "string" } },
+            "frameworks": { "type": "array", "items": { "type": "string" } },
+            "databases": { "type": "array", "items": { "type": "string" } },
+            "infrastructure": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "domain_refs": {
+          "type": "object",
+          "description": "Paths to domain knowledge artifacts (SRS, design docs, etc.)",
+          "properties": {
+            "srs": { "type": "string" },
+            "architecture": { "type": "string" },
+            "api_spec": { "type": "string" },
+            "test_plan": { "type": "string" },
+            "deployment_guide": { "type": "string" }
+          },
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    },
+    "stages": {
+      "type": "array",
+      "description": "Ordered list of pipeline stages, each with inputs, outputs, and status",
+      "items": {
+        "type": "object",
+        "required": ["name", "status"],
+        "properties": {
+          "name": { "type": "string" },
+          "status": { "type": "string", "enum": ["pending", "running", "passed", "failed", "skipped", "rolled_back"] },
+          "agent": { "type": "string", "description": "Agent name assigned to this stage" },
+          "inputs": {
+            "type": "object",
+            "description": "Artifact paths consumed by this stage",
+            "additionalProperties": { "type": "string" }
+          },
+          "outputs": {
+            "type": "object",
+            "description": "Artifact paths produced by this stage",
+            "additionalProperties": { "type": "string" }
+          },
+          "started_at": { "type": "string", "format": "date-time" },
+          "completed_at": { "type": "string", "format": "date-time" },
+          "evidence_bundle_ref": { "type": "string", "description": "Path to the evidence bundle for this stage" }
+        }
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "description": "Registry of all artifacts produced, keyed by path. Hash enables stale detection.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["hash", "created_by_stage", "updated_at"],
+        "properties": {
+          "hash": { "type": "string", "description": "SHA-256 hash of the artifact file" },
+          "created_by_stage": { "type": "string" },
+          "updated_at": { "type": "string", "format": "date-time" },
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "created_at": { "type": ["string", "null"], "format": "date-time" },
+        "updated_at": { "type": ["string", "null"], "format": "date-time" },
+        "updated_by_agent": { "type": ["string", "null"] },
+        "notes": { "type": "string" }
+      }
+    }
+  }
+}

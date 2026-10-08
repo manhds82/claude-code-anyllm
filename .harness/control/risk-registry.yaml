@@ -1,0 +1,132 @@
+# Risk Registry — SSOT for risk classification of actions and dependencies
+schema_version: "1.0.0"
+
+# Risk tiers and their approval requirements
+risk_tiers:
+  - level: "none"
+    threshold: 0
+    requires_approval: false
+    description: "No risk — read-only operations, trivial changes"
+  - level: "low"
+    threshold: 10
+    requires_approval: false
+    description: "Low risk — non-destructive writes, local file changes"
+  - level: "medium"
+    threshold: 40
+    requires_approval: true
+    approval_roles: ["developer", "reviewer"]
+    description: "Medium risk — git operations, config changes, test modifications"
+  - level: "high"
+    threshold: 70
+    requires_approval: true
+    approval_roles: ["reviewer", "admin"]
+    description: "High risk — deployments, DB queries, container execution"
+  - level: "critical"
+    threshold: 90
+    requires_approval: true
+    approval_roles: ["admin"]
+    description: "Critical risk — production deploy, destructive DB ops, system-wide changes"
+
+# Action risk scoring rules
+# Each action type gets a base score + modifiers
+risk_scoring:
+  base_scores:
+    - action_type: "file_read"
+      base_score: 0
+    - action_type: "file_write"
+      base_score: 10
+    - action_type: "file_delete"
+      base_score: 30
+    - action_type: "git_commit"
+      base_score: 15
+    - action_type: "git_push"
+      base_score: 25
+    - action_type: "git_force_push"
+      base_score: 60
+    - action_type: "config_change"
+      base_score: 35
+    - action_type: "dependency_add"
+      base_score: 40
+    - action_type: "dependency_update"
+      base_score: 30
+    - action_type: "command_execution"
+      base_score: 50
+    - action_type: "container_exec"
+      base_score: 65
+    - action_type: "database_query"
+      base_score: 70
+    - action_type: "database_write"
+      base_score: 85
+    - action_type: "deploy"
+      base_score: 80
+    - action_type: "deploy_production"
+      base_score: 95
+    - action_type: "rollback"
+      base_score: 75
+    - action_type: "webhook_trigger"
+      base_score: 60
+
+  # Every modifier below asks something about the CIRCUMSTANCES of an action.
+  # Until F2 none of them asked about its TARGET, so `file_write` scored 10
+  # whether it wrote README.md or migrations/003_drop_column.sql -- both land in
+  # tier `low`, neither needs approval. The same schema change scores 85 as
+  # `database_write`. What decided the governance was which tool the agent
+  # picked, not what was at stake -- and writing a file is the cheaper path.
+  modifiers:
+    - condition: "target_is_production"
+      score_delta: 20
+    - condition: "contains_destructive_flag"
+      score_delta: 25
+    - condition: "affects_multiple_projects"
+      score_delta: 15
+    - condition: "outside_business_hours"
+      score_delta: 10
+    # F2. The rules are DATA (C2): .harness/control/sensitive-paths.json holds
+    # the globs, the per-rule deltas and the reason each path is sensitive.
+    # This score_delta is the fallback used when a rule omits its own.
+    #
+    # 60 is not a round number picked for feel. Thresholds are medium=40,
+    # high=70; `medium` lists approval_roles [developer, reviewer] while
+    # session-roles.json sets default_role to `developer`, so a medium-tier
+    # approval can be signed by the same principal that made the change.
+    # file_write(10) + 60 = 70 is the smallest delta that actually puts a
+    # different person on the hook. Less than that looks like governance and
+    # enforces nothing.
+    #
+    # enforced_at: gatekeeper_agent (advisory) until B0 wires approval-gate.ps1.
+    - condition: "target_matches_sensitive_path"
+      score_delta: 60
+
+# Dependency gate rules
+# Adding/updating libraries requires approval based on risk
+dependency_gate:
+  enabled: true
+  approval_required_for:
+    - category: "runtime"
+      risk_level: "medium"
+      reason: "Runtime dependencies affect production stability"
+    - category: "security"
+      risk_level: "high"
+      reason: "Security libraries need audit"
+    - category: "network"
+      risk_level: "high"
+      reason: "Network libraries change data flow boundaries"
+    - category: "database"
+      risk_level: "high"
+      reason: "Database drivers affect data integrity"
+
+  allow_without_approval:
+    - category: "dev"
+      risk_level: "low"
+      reason: "Dev dependencies are low risk"
+    - category: "test"
+      risk_level: "low"
+      reason: "Test dependencies are low risk"
+
+  allowed_registries:
+    - "npmjs.com"
+    - "pypi.org"
+    - "nuget.org"
+    - "maven.org"
+    - "rubygems.org"
+    - "crates.io"

@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://harness.internal/schemas/risk-policy.schema.json",
+  "title": "Risk Policy Schema",
+  "type": "object",
+  "required": ["schema_version", "command_deny_patterns", "tool_deny_defaults"],
+  "properties": {
+    "schema_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "command_deny_patterns": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["pattern", "risk", "reason", "action"],
+        "properties": {
+          "pattern": { "type": "string" },
+          "risk": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+          "reason": { "type": "string" },
+          "action": { "type": "string", "enum": ["deny", "ask"] }
+        }
+      }
+    },
+    "tool_deny_defaults": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["risk", "action"],
+        "properties": {
+          "risk": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+          "action": { "type": "string", "enum": ["deny", "ask"] },
+          "unless_in_workflow": { "type": "boolean" }
+        }
+      }
+    }
+  }
+}

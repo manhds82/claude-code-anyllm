@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://harness.internal/schemas/bundle-ownership.schema.json",
+  "title": "Bundle Ownership Rules Schema",
+  "description": "Declares who owns each installed path, so install/upgrade behaviour is data the installer reads rather than branches inside it (C2). Governs the assistant-plane install process, never the product runtime.",
+  "type": "object",
+  "required": ["governs", "schema_version"],
+  "properties": {
+    "governs": {
+      "type": "string",
+      "description": "Which plane these rules govern. Asserted in a machine-readable field, not a comment, so policy-ci can check it.",
+      "enum": ["assistant_workflow", "product_runtime"]
+    },
+    "schema_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "project_owned": {
+      "type": "array",
+      "description": "Exact paths the project owns. Never written once present, not even with -Force.",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "project_owned_globs": {
+      "type": "array",
+      "description": "Glob conventions for project-owned paths, so a project can create one without coordinating with the bundle.",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "keyed_lists": {
+      "type": "object",
+      "description": "Paths whose content is a keyed YAML list the project may extend. Value is \"<listKey>:<itemKey>\" — the list to scan and the field identifying an item.",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_]+:[A-Za-z0-9_]+$"
+      }
+    }
+  }
+}

@@ -1,0 +1,156 @@
+# Machine-state paths (Portal v2 P1 1.7) -- the files that describe ONE machine or ONE
+# person, as opposed to the project.  Read by:
+#   * the policy-ci rule  local-state:machine-files-not-tracked  (FAIL when git tracks one)
+#   * tools/harness-bundle/fix-untrack-machine-state.{ps1,sh}    (git rm --cached them)
+#   * .harness/scripts/lib/harness_local_state.py                (the shared reader)
+# Validated by .harness/schemas/machine-state-paths.schema.json (C8).
+#
+# Measured on the toolkit and its fleet (2026-10-02): every entry below is written by a
+# script that exists today -- nothing here is speculative.  `status` is honest about whether
+# the value was MOVED to .harness/local/ or merely stays where it always was (C10):
+#   relocated        the value now lives in .harness/local/ (reader falls back to the old
+#                    place and says so, C13)
+#   stays_in_place   untracked but NOT relocated: moving it would break a reader/tool that
+#                    this change does not touch (reason given per entry)
+version: 1
+governs: assistant_workflow
+
+# Committed (shared) file whose content is project-wide.  Listed so the check can look INSIDE
+# it: a field that names one person has no business in a file every clone receives.
+committable:
+  - path: .harness/portal-sync.json
+    allowed_fields: [_README, portal_url, project_id, pdp_enforce]
+
+machine_local:
+  # ---- credentials / identity ------------------------------------------------------------
+  - path: ".harness/local/**"
+    kind: credential
+    status: relocated
+    reason: >-
+      checkout.json: checkout_id, device_id, checkout_credential (dpapi-v1: / plain-v1:) and,
+      since 1.7, member_email.  Written by enroll-checkout and set-member-email.
+  - path: .harness/portal-sync.key
+    kind: secret
+    status: stays_in_place
+    reason: >-
+      Legacy shared ingest key (C5).  Read by push-telemetry, the guard, harness-release and
+      harness_sensitivity at this path; retire-legacy-key is its planned end, so it is not moved.
+  - path: .harness/active-account.local.json
+    kind: identity
+    status: stays_in_place
+    reason: >-
+      Account-switch pointer.  harness-switch-account writes it under %USERPROFILE%\.harness
+      (global, not in a checkout); listed so a copy that lands in a checkout is never committed.
+  - path: .claude/settings.local.json
+    kind: identity
+    status: stays_in_place
+    reason: Permissions this operator granted on their own workstation; Claude Code owns the path.
+
+  # ---- push / sync cursors ---------------------------------------------------------------
+  - path: .harness/telemetry/.push-cursor.json
+    kind: cursor
+    status: stays_in_place
+    reason: Byte offsets into the append-only logs, written by push-telemetry.  A lost cursor only re-sends (ingest dedupes).
+  - path: .harness/telemetry/.push-content.json
+    kind: cursor
+    status: stays_in_place
+    reason: Content hashes of snapshot-shaped payload parts (S-3), written by push-telemetry.
+  - path: .harness/telemetry/.sync-cursor.json
+    kind: cursor
+    status: stays_in_place
+    reason: Central sync's per-project byte cursor.
+
+  # ---- telemetry the hooks write ---------------------------------------------------------
+  - path: .harness/telemetry/daily-*.jsonl
+    kind: telemetry
+    status: stays_in_place
+    reason: Per-day agentops samples (agentops-sampler).
+  - path: .harness/telemetry/session-*.log
+    kind: telemetry
+    status: stays_in_place
+    reason: Per-session logs (session-start / session-end hooks).
+  - path: .harness/telemetry/tool-calls.log
+    kind: telemetry
+    status: stays_in_place
+    reason: post-tool-use hook log.
+  - path: .harness/telemetry/agentops.log
+    kind: telemetry
+    status: stays_in_place
+    reason: agentops-sampler log.
+  - path: .harness/telemetry/hook-errors.log
+    kind: telemetry
+    status: stays_in_place
+    reason: Hook failure log, read locally by harness doctor.
+  - path: .harness/telemetry/security-events.jsonl
+    kind: telemetry
+    status: stays_in_place
+    reason: Guard / injection-scan events.
+  - path: .harness/telemetry/test-reports.jsonl
+    kind: telemetry
+    status: stays_in_place
+    reason: Written by harness-eval / harness-release.
+  - path: .harness/telemetry/pipeline-runs.jsonl
+    kind: telemetry
+    status: stays_in_place
+    reason: Agent Pipeline Run records (harness-pipeline-log).
+  - path: .harness/telemetry/human-effort.jsonl
+    kind: telemetry
+    status: stays_in_place
+    reason: Self-reported minutes per person (log-human, F4).
+  - path: .harness/telemetry/comprehension.jsonl
+    kind: telemetry
+    status: stays_in_place
+    reason: Per-person comprehension-gate answers (F6).
+
+  # ---- ledger runtime (untracked but NOT relocated) ----------------------------------------
+  # INTERIM (ir-20261001-p1c B1): until the owner decides whether the live chain should be
+  # machine_local at all, every entry here carries `needs_flag: include-ledger` and
+  # `grade: warn`.  fix-untrack-machine-state REFUSES to untrack them without -IncludeLedger /
+  # --include-ledger: once the untracking commit is pulled into ANOTHER clone, git deletes that
+  # clone's tracked chain.jsonl from disk (hash-chain evidence destroyed, C9).  The policy check
+  # grades them WARN, not FAIL: a FAIL the default repair refuses to clear can never be cleared.
+  # evidence-ledger, push-telemetry, harness_ledger_anchor and doctor all open
+  # .harness/ledger/chain.jsonl by that exact path; moving it would break the evidence tooling.
+  # Sealed segments (chain-001.jsonl ...) are history another clone may legitimately hold, so
+  # they are deliberately NOT listed here.
+  - path: .harness/ledger/chain.jsonl
+    kind: ledger
+    status: stays_in_place
+    grade: warn
+    needs_flag: include-ledger
+    reason: The live hash chain of THIS machine.  Untracked, not relocated -- evidence-ledger addresses it by path.
+  - path: .harness/ledger/chain.lock
+    kind: ledger
+    status: stays_in_place
+    grade: warn
+    needs_flag: include-ledger
+    reason: Append lock (byte-range lock) for the chain.
+  - path: .harness/ledger/append-failures.jsonl
+    kind: ledger
+    status: stays_in_place
+    grade: warn
+    needs_flag: include-ledger
+    reason: Diagnostics for lost appends, read by doctor.
+  - path: .harness/ledger/.chain.genesis.tmp
+    kind: ledger
+    status: stays_in_place
+    grade: warn
+    needs_flag: include-ledger
+    reason: Temp file while a genesis entry is written.
+
+  # ---- generated per session ---------------------------------------------------------------
+  - path: ".harness/context/**"
+    kind: generated
+    status: stays_in_place
+    reason: H1 pointer store, rebuilt each session.
+  - path: ".harness/tmp/**"
+    kind: generated
+    status: stays_in_place
+    reason: Scratch space.
+
+# A field that must not appear in a COMMITTED file, and where it lives instead.
+moved_fields:
+  - file: .harness/portal-sync.json
+    field: member_email
+    moved_to: .harness/local/checkout.json
+    reason: Names one person; every clone of the repo would inherit another person's attribution.

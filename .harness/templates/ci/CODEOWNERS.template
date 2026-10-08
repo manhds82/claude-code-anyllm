@@ -1,0 +1,28 @@
+# CODEOWNERS — review required on the files that decide what the AI may do.
+# The installer copies this to .github/CODEOWNERS and substitutes the owner from
+# contracts/project.yaml. If you are editing it by hand, replace @your-handle-here.
+#
+# HONEST SCOPE (C10): CODEOWNERS on its own requires NOTHING. It only bites when
+# the repo has branch protection with "Require review from Code Owners" enabled
+# on the default branch. Without that, this file is a suggestion GitHub renders
+# in the PR sidebar. Turn the branch rule on, or do not count this as a control.
+#
+# Why these paths: they are the ones where a quiet edit changes what the harness
+# permits -- which tools may run, which paths are guarded, which model ladder is
+# allowed, what the agents are told. A change here should never land unreviewed.
+
+# Governance runtime: policies, guard scripts, schemas, ledger config
+/.harness/               @your-handle-here
+
+# Agent + skill definitions: what the fleet is instructed to do
+/.claude/                @your-handle-here
+
+# Contracts: tool registry, workflow DAG, agent fleet, approval flow
+/contracts/              @your-handle-here
+
+# CI: the workflows that enforce the gates above
+/.github/                @your-handle-here
+
+# The projected governance text every assistant reads
+CLAUDE.md                @your-handle-here
+AGENTS.md                @your-handle-here

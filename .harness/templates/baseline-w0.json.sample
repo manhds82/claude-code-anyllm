@@ -1,0 +1,27 @@
+{
+  "$schema": "../schemas/baseline-w0.schema.json",
+  "schema_version": "1.0.0",
+  "description": "Baseline W0 (F5) — what a unit of work took in THIS project BEFORE it ran AI-first. The numerator of Nen.",
+
+  "governs": "assistant_workflow",
+  "enforced_at": "kpi_report",
+
+  "HOW_TO_USE_THIS_SAMPLE": "Copy to .harness/control/baseline-w0.json, replace the example reference with YOUR OWN kinds of work and YOUR OWN hours, then set frozen: true. The bundle deliberately does NOT ship a filled-in baseline: these hours are one project's answer, and inheriting another project's numerator would make Nen a number about somebody else's work while looking like a number about yours.",
+
+  "why_frozen": "These hours are an ESTIMATE declared once, not a measurement. That is fine — a remembered 'this used to take me two days' is honest data. What is not fine is revising it after seeing the result, because then Nen measures nothing but the revision. Capture at W0, freeze, and if a figure genuinely must change, record why in DEVBOOK.md and say so in the entry's note. A baseline nobody can audit is marketing.",
+
+  "how_to_use": "Add one reference per RECURRING kind of work, not per task. Then log effort against it: log-human.ps1 -Minutes 95 -Edits 6 -BaselineRef <id>. Entries without a ref still record effort; they are simply excluded from Nen, and the KPI report states what share that was.",
+
+  "captured_at": "",
+  "captured_by": "",
+
+  "references": [
+    {
+      "id": "example-api-endpoint",
+      "description": "VI DU - XOA DI. Mot REST endpoint co test: spec -> code -> unit test -> review -> merge",
+      "traditional_hours": 8,
+      "basis": "VI DU - XOA DI. Thay bang loai viec that cua du an nay, kem co so that (do tu N lan truoc, hoac tri nho cua ai, ghi ro).",
+      "frozen": false
+    }
+  ]
+}

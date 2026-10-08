@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://harness.internal/schemas/guard-zones.schema.json",
+  "title": "Guard Zones Schema",
+  "description": "Domain firewall zone definitions — restricts agent file access by path, agent role, and operation.",
+  "type": "object",
+  "required": ["schema_version", "default_action", "zones"],
+  "properties": {
+    "schema_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "description": { "type": "string" },
+    "default_action": { "type": "string", "enum": ["allow", "deny"] },
+    "zones": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "description", "paths", "allowed_agents", "allowed_operations", "risk_level"],
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "paths": { "type": "array", "items": { "type": "string" } },
+          "allowed_agents": { "type": "array", "items": { "type": "string" } },
+          "allowed_operations": { "type": "array", "items": { "type": "string", "enum": ["read", "write"] } },
+          "risk_level": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+          "notes": { "type": "string" },
+          "exceptions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["agent", "operation", "reason"],
+              "properties": {
+                "agent": { "type": "string" },
+                "operation": { "type": "string", "enum": ["read", "write"] },
+                "reason": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

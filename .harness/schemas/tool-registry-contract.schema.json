@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://harness.internal/schemas/tool-registry-contract.schema.json",
+  "title": "Tool Registry Contract Schema (contracts/tool-registry.yaml)",
+  "description": "Contract-plane shape: tools is a LIST of named entries, consistent with agent.yaml (agents:) and workflow.yaml (stages:), and with the installer's keyed_lists conflict detection ('tools:name'). The control-plane .harness/control/tool-registry.json generated from this file is an object map and validates against tool-registry.schema.json instead — one schema per real shape (C8), not one schema stretched over both.",
+  "type": "object",
+  "required": ["schema_version", "tools"],
+  "properties": {
+    "schema_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "description": { "type": "string" },
+    "tools": {
+      "type": "array",
+      "description": "List of tool definitions; 'name' identifies an entry (installer keyed_lists: 'tools:name')",
+      "items": {
+        "type": "object",
+        "required": ["name", "surface", "side_effect", "risk_level", "allowed_roles"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "surface": {
+            "type": "string",
+            "description": "Where the tool lives. 'virtual' is a marker with no executor behind it — it exists so a stage can be authorized to record an outcome (e.g. a QA verdict) without being handed a real side-effect tool to do it.",
+            "enum": ["builtin", "mcp", "virtual"]
+          },
+          "side_effect": { "type": "boolean" },
+          "risk_level": { "type": "string", "enum": ["none", "low", "medium", "high", "critical"] },
+          "allowed_roles": { "type": "array", "items": { "type": "string" } },
+          "default_action": { "type": "string", "enum": ["allow", "ask", "deny"] },
+          "unless_in_workflow": { "type": "boolean" },
+          "idempotency_key_pattern": { "type": "string" },
+          "description": { "type": "string" },
+          "enforcing_script": { "type": "string" },
+          "timeout_seconds": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Wall-clock ceiling for one call. Spelled to match its only reader: the Portal's H4-4 check accepts a high/critical tool that declares `timeout_seconds` OR `sandbox_required`, so an entry that says `timeout` or `timeout_ms` instead reads as undeclared. DECLARATIVE — nothing in this bundle kills a call that overruns; the executor or the gateway does, and until one of them reads this the field is a statement of intent, not a bound.",
+            "examples": [30, 300]
+          },
+          "sandbox_required": {
+            "type": "boolean",
+            "description": "This tool may only run inside an isolated execution context. Same reader and same caveat as timeout_seconds: declaring it does not create the sandbox. It is worth declaring anyway — it turns 'we never decided' into an auditable 'required but not yet enforced'.",
+            "examples": [true]
+          },
+          "rate_limit": {
+            "type": "object",
+            "description": "Per-tool call ceiling. NOT where the H2-4 scorer looks — that reads the fleet-wide `tool.rate_limits` map in .harness/control/casan-policies.yaml, which uses per_minute/per_hour keys. This is the per-entry declaration a gateway can enforce next to the tool it governs; nothing cross-checks the two, so keep them in agreement yourself.",
+            "required": ["calls", "per_seconds"],
+            "properties": {
+              "calls": { "type": "integer", "minimum": 1, "description": "Calls permitted inside one window." },
+              "per_seconds": { "type": "integer", "minimum": 1, "description": "Window length in seconds. Required next to `calls` because a count with no window is not a limit anyone can enforce." }
+            }
+          },
+          "retry": {
+            "type": "object",
+            "description": "What a caller may do when this tool fails. DECLARATIVE — no harness script retries on your behalf; this tells whoever does (gateway, workflow runner) where to stop. Retrying a side-effect tool safely also needs idempotency_key_pattern above, or the retry duplicates the effect instead of repeating the attempt.",
+            "required": ["max_attempts"],
+            "properties": {
+              "max_attempts": { "type": "integer", "minimum": 1, "description": "Total attempts including the first (1 = do not retry). Required inside `retry` because a backoff with no ceiling is exactly the unbounded loop H2-4 exists to prevent." },
+              "backoff_seconds": { "type": "integer", "minimum": 0, "description": "Delay between attempts." },
+              "retry_on": {
+                "type": "array",
+                "items": { "type": "string", "minLength": 1 },
+                "description": "Failure classes worth retrying, e.g. \"timeout\", \"http_5xx\". Left open instead of enumerated: the useful values are provider-specific error names, and a closed list here would reject the ones a project actually sees.",
+                "examples": [["timeout", "http_5xx"]]
+              }
+            }
+          }
+        },
+        "if": { "properties": { "surface": { "const": "virtual" } }, "required": ["surface"] },
+        "then": {
+          "description": "A virtual tool that could claim a side-effect would defeat its own purpose: the registry is what tells the guard which calls are dangerous, so a marker must be provably harmless or it becomes a hole to smuggle real actions through.",
+          "properties": {
+            "side_effect": { "const": false },
+            "risk_level": { "const": "none" }
+          }
+        }
+      }
+    }
+  }
+}

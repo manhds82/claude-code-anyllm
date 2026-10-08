@@ -30,3 +30,12 @@ desktop.ini
 
 # One-time backup written when a legacy guide block is migrated
 *.pre-migration.bak
+
+# Harness ledger append lock - runtime state
+.harness/ledger/chain.lock
+
+# Shipped copies the installer leaves beside a file you own or edited - resolve, then delete
+*.new
+
+# Harness per-machine state (checkout credential, member_email) - never commit
+.harness/local/

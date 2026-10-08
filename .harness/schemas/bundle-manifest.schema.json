@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://harness.internal/schemas/bundle-manifest.schema.json",
+  "title": "Bundle Install Receipt (.harness/.bundle-manifest.json)",
+  "description": "What an install run did to a project, written by install.ps1 / install.sh. `version` and `content_hash` name the bundle the run was driven by; they are NOT a claim that every file landed. `status` and each file's `state` are: a receipt that says only 'version X' while files were skipped or left in conflict is a false report. Receipts written before per-file states existed carry no `status`/`state`/`counts`; readers treat their files as installed. Governs the assistant-plane install process, never the product runtime.",
+  "type": "object",
+  "required": ["name", "version", "content_hash", "installed_at", "files"],
+  "additionalProperties": false,
+  "properties": {
+    "name": { "type": "string", "minLength": 1 },
+    "version": { "type": "string", "minLength": 1, "description": "Version of the bundle this run was driven by." },
+    "content_hash": { "type": "string", "pattern": "^[0-9a-f]{64}$", "description": "Content hash of that bundle artifact." },
+    "installed_at": { "type": "string", "minLength": 1, "description": "ISO-8601 timestamp of the run." },
+    "status": {
+      "type": "string",
+      "enum": ["complete", "partial"],
+      "description": "complete = no file was left in conflict or skipped. partial = at least one was; see `files[].state`. 'kept' alone does not make a receipt partial: the project chose that file."
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["installed", "kept", "conflict", "skipped"],
+      "properties": {
+        "installed": { "type": "integer", "minimum": 0 },
+        "kept": { "type": "integer", "minimum": 0 },
+        "conflict": { "type": "integer", "minimum": 0 },
+        "skipped": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "preserve": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Paths this install treated as project-owned."
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "sha256"],
+        "additionalProperties": false,
+        "properties": {
+          "path": { "type": "string", "minLength": 1 },
+          "sha256": {
+            "$ref": "#/definitions/hash",
+            "description": "Hash of the bytes the bundle shipped for this path. 'unknown' for an empty file: the hash of nothing is a real hash and would make any empty file look verified."
+          },
+          "installed_sha256": {
+            "$ref": "#/definitions/hash",
+            "description": "For state=installed: hash of the file this run left on disk (re-stamped after scaffolding). For every other state: the baseline CARRIED from the previous receipt, 'unknown' when there was none. Never the hash of a hand-edited or conflicted file."
+          },
+          "state": {
+            "type": "string",
+            "enum": ["installed", "kept", "conflict", "skipped"],
+            "description": "installed = on disk is what this run put there (written, merged, or already identical). kept = project-owned, or hand-edited while the bundle did not change it. conflict = hand-edited AND changed by the bundle: yours kept, shipped copy beside it as <file>.new. skipped = exists and no --force."
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "required": ["status"], "properties": { "status": { "const": "complete" } } },
+      "then": {
+        "properties": {
+          "files": {
+            "items": {
+              "properties": { "state": { "enum": ["installed", "kept"] } }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "hash": {
+      "type": "string",
+      "pattern": "^([0-9a-f]{64}|unknown)$"
+    }
+  }
+}

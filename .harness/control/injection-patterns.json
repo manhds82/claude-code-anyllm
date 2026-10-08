@@ -1,0 +1,22 @@
+{
+  "$schema": "https://harness.internal/schemas/injection-patterns.schema.json",
+  "description": "SSOT for prompt injection scanning patterns — guard scripts read this, not hardcoded patterns (C2)",
+  "patterns": [
+    { "pattern": "(?i)ignore\\s+(all\\s+)?previous\\s+instructions", "severity": "high", "category": "instruction-override" },
+    { "pattern": "(?i)ignore\\s+(all\\s+)?prior\\s+(instructions|directives)", "severity": "high", "category": "instruction-override" },
+    { "pattern": "(?i)forget\\s+(everything|all\\s+(previous|prior)\\s+instructions)", "severity": "high", "category": "instruction-override" },
+    { "pattern": "(?i)\\bDAN\\b", "severity": "high", "category": "role-jailbreak" },
+    { "pattern": "(?i)reset\\s+(your\\s+)?(instructions|context|memory|personality)", "severity": "high", "category": "instruction-override" },
+    { "pattern": "(?i)you\\s+(are\\s+)?(now|are\\s+free)\\s+(to\\s+)?(ignore|disregard|bypass)", "severity": "high", "category": "role-jailbreak" },
+    { "pattern": "(?i)DAN\\s*:|do\\s+anything\\s+now|jail\\s*break", "severity": "high", "category": "role-jailbreak" },
+    { "pattern": "(?i)you\\s+are\\s+now\\s+a\\s+Linux\\s+terminal", "severity": "high", "category": "role-jailbreak" },
+    { "pattern": "(?i)(system|security|admin)?\\s*(prompt|instruction|directive)s?\\s*:\\s*(ignore|override|bypass)", "severity": "high", "category": "system-prompt-override" },
+    { "pattern": "(?:[A-Za-z0-9+/]{40,}={0,2})", "severity": "medium", "category": "encoded-payload" },
+    { "pattern": "(?i)(?:hex|base64|rot13|binary)\\s*(?:encode|decode|convert)\\s*(?:this|the|following)", "severity": "medium", "category": "encoded-instruction" },
+    { "pattern": "(?i)output\\s+(only|just|solely)\\s+(the\\s+)?(json|xml|yaml|raw)\\s+(and|without)", "severity": "medium", "category": "output-steering" },
+    { "pattern": "(?i)print\\s+(the\\s+)?(full|complete|entire)\\s+(prompt|system\\s+prompt|instructions)", "severity": "high", "category": "prompt-leak" },
+    { "pattern": "(?i)repeat\\s+(the\\s+)?(words|text|sentence|phrase)\\s+(above|before|below)", "severity": "medium", "category": "prompt-leak" },
+    { "pattern": "(?i)<\\s*(system|instructions?|context)\\s*>", "severity": "medium", "category": "delimiter-confusion" },
+    { "pattern": "(?i)---+\\s*(begin|start)\\s+(system|instructions?|context)", "severity": "medium", "category": "delimiter-confusion" }
+  ]
+}

@@ -1,0 +1,104 @@
+{
+  "$schema": "../schemas/power-policy.schema.json",
+  "schema_version": "1.0.0",
+  "description": "Power Level policy (D4) — maps power level 1-10 to model bands and capability gates",
+  "power_levels": {
+    "1": {
+      "description": "Minimal — summarization, simple reads, telemetry aggregation",
+      "max_model_tier": "haiku",
+      "allowed_profiles": ["summarization"],
+      "max_tokens_per_call": 8192,
+      "max_cost_per_call_usd": 0.01
+    },
+    "2": {
+      "description": "Simple queries — grep, read, basic web fetch",
+      "max_model_tier": "haiku",
+      "allowed_profiles": ["summarization", "review"],
+      "max_tokens_per_call": 16384,
+      "max_cost_per_call_usd": 0.02
+    },
+    "3": {
+      "description": "Quick review — simple code review, linting, format checks",
+      "max_model_tier": "sonnet",
+      "allowed_profiles": ["summarization", "review"],
+      "max_tokens_per_call": 32768,
+      "max_cost_per_call_usd": 0.05
+    },
+    "4": {
+      "description": "Standard coding — routine implementation, test writing",
+      "max_model_tier": "sonnet",
+      "allowed_profiles": ["summarization", "review", "coding"],
+      "max_tokens_per_call": 65536,
+      "max_cost_per_call_usd": 0.10
+    },
+    "5": {
+      "description": "Complex coding — refactoring, multi-file changes, integration tests",
+      "max_model_tier": "sonnet",
+      "allowed_profiles": ["summarization", "review", "coding", "planning"],
+      "max_tokens_per_call": 131072,
+      "max_cost_per_call_usd": 0.25
+    },
+    "6": {
+      "description": "Advanced — architecture review, security audit, cross-system changes",
+      "max_model_tier": "opus",
+      "allowed_profiles": ["summarization", "review", "coding", "planning"],
+      "max_tokens_per_call": 131072,
+      "max_cost_per_call_usd": 0.50
+    },
+    "7": {
+      "description": "Expert review — deep code review, performance optimization, complex debugging",
+      "max_model_tier": "opus",
+      "allowed_profiles": ["summarization", "review", "coding", "planning"],
+      "max_tokens_per_call": 262144,
+      "max_cost_per_call_usd": 1.00
+    },
+    "8": {
+      "description": "Architecture — system design, ADR production, multi-component planning",
+      "max_model_tier": "opus",
+      "allowed_profiles": ["planning", "review"],
+      "max_tokens_per_call": 262144,
+      "max_cost_per_call_usd": 2.00
+    },
+    "9": {
+      "description": "Strategic — cross-project orchestration, policy design, governance decisions",
+      "max_model_tier": "opus",
+      "allowed_profiles": ["planning"],
+      "max_tokens_per_call": 524288,
+      "max_cost_per_call_usd": 5.00
+    },
+    "10": {
+      "description": "Maximum — full orchestration, multi-agent coordination, critical decisions",
+      "max_model_tier": "opus",
+      "allowed_profiles": ["planning"],
+      "max_tokens_per_call": 1048576,
+      "max_cost_per_call_usd": 10.00
+    }
+  },
+  "agent_power_defaults": {
+    "boss": 10,
+    "architect": 8,
+    "analyst": 6,
+    "developer": 5,
+    "reviewer": 6,
+    "tester": 4,
+    "devops": 5,
+    "researcher": 6,
+    "writer": 2
+  },
+  "model_tier_map": {
+    "haiku": ["claude-haiku-4-5-20251001"],
+    "sonnet": ["claude-sonnet-5-5", "claude-haiku-4-5-20251001"],
+    "opus": ["claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-4-5-20251001"]
+  },
+  "fallback_chain": {
+    "claude-opus-5-5": ["claude-sonnet-5-5", "claude-haiku-4-5-20251001"],
+    "claude-sonnet-5-5": ["claude-haiku-4-5-20251001"],
+    "claude-haiku-4-5-20251001": []
+  },
+  "local_tier": {
+    "enabled": false,
+    "provider": "ollama",
+    "power_map": {},
+    "note": "Local OSS models are a separate ladder, never called Claude (C4)"
+  }
+}

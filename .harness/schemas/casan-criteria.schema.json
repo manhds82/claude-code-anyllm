@@ -1,0 +1,278 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "casan-criteria.schema.json",
+  "title": "CASAN criteria catalogue",
+  "description": "The rubric behind every H1..H7 evidence score (portal/backend/config/casan-criteria.yaml). It is the ONE file that decides what a project is scored on, so it is schema-validated like every other policy file (C8): a typo in `check` silently turned a machine control into something an admin could self-attest, and a missing `why` leaves a criterion nobody can argue with.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "source_doc",
+    "harnesses"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "source_doc": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Where the criteria come from. Every criterion's `source` points into this document, which is what makes a score traceable rather than asserted."
+    },
+    "attestation_ttl_days": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "How long a human attestation counts as evidence; 0 disables expiry. A claim with no machine proof ages out like any other evidence (harness convention, not a requirement of source_doc)."
+    },
+    "rubric_dimensions": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Judge-rubric dimensions a prompt_score row must ALL carry before H3-2 counts it. Must match app/models/prompt_score.py."
+    },
+    "ledger_verify_entries": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "How many most-recent ledger entries H5-2 recomputes entry_hash for."
+    },
+    "risk_registry": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "action_path": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Dotted path to the list of classified actions in risk-registry.yaml — the thing H5-3 actually asks for."
+        },
+        "tier_path": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Dotted path to the severity tiers; reported for context, not required for the verdict."
+        }
+      }
+    },
+    "registry_thresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "H2 scoring thresholds. They were literals inside the check functions while every other tunable came from this file, so an operator could not see — let alone change — what 'registry đủ lớn' meant (C2).",
+      "properties": {
+        "min_entries": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "H2-2: a tool registry with fewer entries than this is a stub, not a registry."
+        },
+        "contract_coverage_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "H2-1: percent of registry entries that must declare both input and output contracts."
+        },
+        "idempotency_coverage_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "H2-3: percent of side-effect tools that must declare an idempotency_key_pattern."
+        }
+      }
+    },
+    "context_ttl_default_minutes": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "H1-2 freshness TTL used only when the project's own casan-policies declares no context.staleness_ttl_minutes."
+    },
+    "alert_threshold_paths": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "H6-3: the dotted paths in the project's casan-policies that app/core/alerts.py actually reads. Each must be present and NON-ZERO. Matching key *names* instead passed `agentops: {alert_bananas: {quantity: 7}}` and a threshold of 0, while alerts.py ran on its built-in defaults."
+    },
+    "drift_threshold_paths": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "H6-4: the dotted paths app/core/alerts.py:check_drift() consumes. Present and non-zero, or drift detection is not configured."
+    },
+    "drift_disable_paths": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "H6-4: paths whose false/off value means the project declared drift detection OFF. `any key containing \"drift\"` scored a DISABLED config as configured."
+    },
+    "drift_scripts": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "H6-4: client-side drift scripts; any one present satisfies the script half (PowerShell primary, bash parity — C7)."
+    },
+    "snapshot_retention_per_project": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "How many pushed evidence snapshots app/api/ingest.py keeps per project; only the newest is ever read. 0 disables pruning."
+    },
+    "doctor_report_retention_per_project": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "How many pushed `harness doctor` reports app/api/ingest.py keeps per project. Unlike the CASAN snapshot, doctor is recomputed and pushed on every sync, so without a cap a frequently-synced project accumulates rows forever. 0 disables pruning."
+    },
+    "snapshot_retention_per_checkout": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "How many pushed evidence snapshots app/api/ingest.py keeps per (project, checkout) group; the group of rows with no checkout is its own group. Wins over snapshot_retention_per_project when both are set. 0 disables pruning."
+    },
+    "doctor_report_retention_per_checkout": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "How many pushed `harness doctor` reports app/api/ingest.py keeps per (project, checkout) group; the group of rows with no checkout is its own group. Wins over doctor_report_retention_per_project when both are set. 0 disables pruning."
+    },
+    "workflow_min_stages": {
+      "type": "integer",
+      "minimum": 2,
+      "description": "Minimum stages before H7-1 will look for a dependency edge. Below 2 a DAG cannot have one."
+    },
+    "hook_bindings": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "event",
+          "script"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "event": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Hook event name in .claude/settings.json (e.g. PreToolUse)."
+          },
+          "script": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Marker that must appear in the hook command or its args for the hook to count as wired."
+          }
+        }
+      }
+    },
+    "harnesses": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^H[1-7]$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "name",
+          "criteria"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "closing_question": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The one question the layer exists to answer, quoted from source_doc."
+          },
+          "criteria": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "text",
+                "source",
+                "why"
+              ],
+              "additionalProperties": false,
+              "allOf": [
+                {
+                  "description": "Every machine-checked criterion must say where its evidence comes from. Without it the evaluator has to guess, and the guess that blanked out the four telemetry-only criteria told the whole fleet 'chưa đo được' about rows in the Portal's own database.",
+                  "if": {
+                    "required": [
+                      "check"
+                    ],
+                    "properties": {
+                      "check": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "then": {
+                    "required": [
+                      "data_source"
+                    ]
+                  }
+                }
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^H[1-7]-[0-9]+$"
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "source": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Where in source_doc this criterion is stated."
+                },
+                "why": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Why it matters. Required: a criterion nobody can justify is a criterion nobody will fix."
+                },
+                "weight": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "description": "Relative weight in the layer score. Omitted = 1."
+                },
+                "check": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "description": "Name of the automatic check in casan_criteria.CHECKS. null (`check: ~`) means the machine cannot prove it — ONLY those criteria are attestable by a human, because an attestation that could overturn a check the machine ran turns the evidence axis into an opinion."
+                },
+                "data_source": {
+                  "enum": [
+                    "repo",
+                    "telemetry",
+                    "mixed"
+                  ],
+                  "description": "Where the check reads its evidence. `telemetry` = the Portal's own tables only, so it runs whether or not the server can see the project's files. `repo` = the project's governance files. `mixed` = both, and it is unmeasured without the files. A repo/mixed criterion with no file source — or whose file the dev machine deliberately withheld — is UNMEASURED: excluded from both sides of the score fraction, never counted as a failure."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
