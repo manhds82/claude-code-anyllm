@@ -5,7 +5,7 @@ schema_version: "1.0.0"
 # Deny patterns for Bash/PowerShell commands
 # Each entry: regex pattern matched against the command string
 command_deny_patterns:
-  - pattern: "rm\\s+-[rR][fF]"
+  - pattern: "\\brm\\s+-[rR][fF]"
     risk: "critical"
     reason: "Recursive force delete — potential data loss"
     action: "deny"
@@ -133,7 +133,7 @@ command_deny_patterns:
     reason: "History rewrite / mirror push — erases shared-branch evidence"
     action: "deny"
   # --- Tamper the immutable audit ledger (C9) — only destructive verbs ---
-  - pattern: "(rm|del|Remove-Item|truncate|shred)\\s+[^\\n]*chain\\.jsonl"
+  - pattern: "\\b(rm|del|Remove-Item|truncate|shred)\\b\\s+[^\\n]*chain\\.jsonl"
     risk: "critical"
     reason: "Deleting/truncating the hash-chain ledger — audit tampering (C9)"
     action: "deny"
