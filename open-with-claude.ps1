@@ -1,4 +1,4 @@
-<#
+﻿<#
 ================================================================
   open-with-claude.ps1  — per-project Claude Code launcher
   Drop this file into any project folder.
